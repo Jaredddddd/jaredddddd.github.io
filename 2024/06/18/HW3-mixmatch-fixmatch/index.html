@@ -1,0 +1,2699 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @LvKouKou 的个人博客，与你一起发现更大的世界 | 要做一个想环游世界的程序员">
+    <meta name="keywords" content="LvKouKou, jaredddddd, @jaredddddd, LvKouKou Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <link
+  rel="stylesheet"
+  href="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+/>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  defer="defer"
+></script>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  defer="defer"
+  onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
+></script>
+    <script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/mathtex-script-type.min.js"
+  defer="defer"
+></script>
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="半监督图像分类 - LvKouKou的博客 | LV Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="
+    
+    
+    
+    
+    
+        Pattern Recognition
+    
+    
+    
+        HW3 半监督图像分类 
+        Mixmatch &amp; Fixmatch
+    
+    
+    
+        Student ID: 21307381 &nbsp;&nbsp;
+        Student Na...">
+    
+    <meta property="article:published_time" content=" 2024-06-18T00:00:00Z">
+    
+    
+    <meta property="article:author" content="LvKouKou">
+    
+    
+    <meta property="article:tag" content="AI">
+    
+    <meta property="article:tag" content="PatternRecognition">
+    
+    <meta property="article:tag" content="NOTES">
+    
+    <meta property="article:tag" content="Project">
+    
+    
+    <meta property="og:image" content="https://jaredddddd.github.io/img/LVKOUKOU.jpg">
+    <meta property="og:url" content="https://jaredddddd.github.io/2024/06/18/HW3-mixmatch-fixmatch/">
+    <meta property="og:site_name" content="LvKouKou的博客 | LV Blog">
+
+    <title>半监督图像分类 - LvKouKou的博客 | LV Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jaredddddd.github.io/2024/06/18/HW3-mixmatch-fixmatch/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* 打字机效果的样式 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #666 }
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid #666;
+            white-space: nowrap;
+            word-wrap: break-word;
+            letter-spacing: .1em;
+            width: fit-content;
+            margin: 0 auto;
+            animation: 
+                typing 2s steps(40, end), /* 打字机效果, 3s 完成打字, 每步40个字符 */
+                blink-caret .75s step-end infinite; /* 光标闪烁效果, 0.75s 完成一次闪烁  */
+        }
+
+        /* 添加包装容器样式 */
+        .typing-wrapper {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%; /* 确保不会超出父容器 */
+        }
+
+        /* 添加响应式样式 */
+        @media (max-width: 768px) {
+        .typing-effect {
+            font-size: 16px; /* 在手机上可以适当调整字体大小 */
+            letter-spacing: normal; /* 在手机上减小字间距 */
+        }
+    }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptions = document.getElementsByClassName('subheading');
+            if (descriptions.length > 0) {
+                const description = descriptions[0];
+                const text = description.textContent;
+                description.innerHTML = `<span class="typing-wrapper"><span class="typing-effect">${text}</span></span>`;
+            }
+        });
+    </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">LvKouKou Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/resume-home/">Resume</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/roadtrip/">On The Road</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="Searching...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!--//添加评论系统gitalk-->
+<link rel="stylesheet" href="../../../../css/gitalk.css">
+<script src="../../../../js/gitalk.min.js"></script>
+
+<!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=AI" title="AI">AI</a>
+                        
+                        <a class="tag" href="/archive/?tag=PatternRecognition" title="PatternRecognition">PatternRecognition</a>
+                        
+                        <a class="tag" href="/archive/?tag=NOTES" title="NOTES">NOTES</a>
+                        
+                        <a class="tag" href="/archive/?tag=Project" title="Project">Project</a>
+                        
+                    </div>
+                    <h1>半监督图像分类</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by LvKouKou on June 18, 2024</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<div align="center" style="page-break-after: always;">
+    <br /><br />
+    <br /><br />
+    <img src="/img/in-post/PatternRecognition/sysu.png" alt="img" style="zoom:150%;" />
+    <br /><br /><br /><br />
+    <font size="20" face="Impact">
+        Pattern Recognition
+    </font>
+    <br /><br /><br />
+    <font size="6" face="Arial Black">
+        HW3 半监督图像分类 <br />
+        Mixmatch &amp; Fixmatch
+    </font>
+    <br /><br /><br />
+    <font size="5" face="华文隶书">
+        Student ID: 21307381 &nbsp;&nbsp;
+        Student Name: LJW <br />
+        <br />
+        Date: 2024.6.18
+    </font>
+    <br /><br />
+    <font size="5" face="华文隶书">
+        Lectured by: Jinhua Ma<br />
+        Pattern Recognition<br />
+        Sun Yat-sen University<br />
+    </font>
+    <br /><br />
+</div>
+
+<h1 id="作业介绍">作业介绍</h1>
+
+<h2 id="实验目的">实验目的</h2>
+
+<h3 id="关于半监督学习">关于半监督学习</h3>
+
+<p>神经网络模型通常需要大量标记好的训练数据来训练模型。然而，在许多情况下，获取大量标记好的数据可能是困难、耗时或昂贵的。这就是半监督学习的应用场景。 半监督学习的核心思想是利用无标记数据的信息来改进模型的学习效果。在半监督学习中，我们使用少量标记数据进行有监督学习，同时利用大量无标记数据的信息。通过充分利用无标记数据的潜在结构和分布特征，半监督学习可以帮助模型更好地泛化和适应未标记数据。 关于深度学习中半监督学习更全面的总结，可以参考深度学习半监督学习综述[1]</p>
+
+<h3 id="半监督图像分类">半监督图像分类</h3>
+
+<p>半监督学习在图像分类取得了非常大的进步，涌现了许多经典的半监督图像分类算法，如：π Model[2]， Mean Teacher[3]， MixMatch[4], FixMatch[5]等。这些算法都取得了非常好的结果，能够在仅使用少量标注数据的情况下，实现高精度的图像分类，在 ImageNet， CIFAR-10， CIFAR-100 等数据集上都有非常不错的效果。 TorchSSL[6]是微软发布的一个用于半监督深度学习的库，其中提供了许多半监督学习算法的实现，如下图所示：</p>
+
+<p><img src="/img/in-post/PatternRecognition/HW3/image-20240609131718642.png" alt="image-20240609131718642" /></p>
+
+<h2 id="实验内容">实验内容</h2>
+
+<h3 id="一基于-mixmatch-的-cifar-10-数据集半监督图像分类">一、基于 MixMatch 的 CIFAR-10 数据集半监督图像分类</h3>
+
+<p>MixMatch 采用两种方式来利用无标注数据，即熵最小化和一致性正则化。 具体来说， MixMatch 首先对无标注数据进行 K 次增强，并获得对应的 K 个输出，并计算模型平均的预测分布，之后， MixMatch 使用一个”sharpening”函数来对无标注数据的平均预测进行锐化，并把锐化后的预测分布作为该无标注数据的标签。获得对无标注数据的标签后，将标注数据和无标注数据结合起来，通过 Mixup 的方式完成新数据集的构建，最后使用新的数据集进行训练。</p>
+
+<h3 id="二基于-fixmatch-的-cifar-10-数据集半监督图像分类">二、基于 FixMatch 的 CIFAR-10 数据集半监督图像分类</h3>
+
+<p>FixMatch 结合了伪标签和一致性正则化来实现对无标注数据的高效利用， 训练过程包括两个部分，有监督训练和无监督训练。有标注的数据，执行有监督训练，和普通分类任务训练没有区别。没有标注的数据，首先将其经过弱增强之后送到模型中推理获取伪标签，然后再将其经过强增强送到模型中进行预测，并利用生成的伪标签监督模型对强增强数据的预测。模型对弱增强数据的预测，只有大于一定阈值条件时才执行伪标签的生成，并使用该伪标签来进行无标注图像的训练。</p>
+
+<h2 id="实验要求">实验要求</h2>
+
+<ol>
+  <li>阅读原始论文和相关参考资料，基于 Pytorch 分别实现 MixMatch 和 FixMatch半监督图像分类算法， 按照原始论文的设置， MixMatch 和 FixMatch 均使用<strong>WideResNet-28-2</strong> 作为 Backbone 网络，即深度为 28，扩展因子为 2， 在CIFAR-10 数据集上进行半监督图像分类实验， 报告算法在分别使用 <strong>40, 250,4000</strong> 张标注数据的情况下的图像分类效果（标注数据随机选取指定数量）</li>
+  <li>使用 TorchSSL[6]中提供的 MixMatch 和 FixMatch 的实现进行半监督训练和测试， 对比自己实现的算法和 TorchSSL 中的实现的效果</li>
+  <li>提交源代码， 不需要包含数据集， 并提交实验报告， 实验报告中应该包含代码的使用方法， 对数据集数据的处理步骤以及算法的主要实现步骤，并分析对比 MixMatch 和 FixMatch 的相同点和不同点</li>
+</ol>
+
+<blockquote>
+  <p>硬性要求  ：</p>
+
+  <ol>
+    <li>鉴于部分同学没有GPU可以使用，统一要求训练的迭代数为20000和batch大小为64，所有报告结果都是基于此设置。</li>
+    <li>报告中必须包含对MixMatch和FixMatch方法的解读（结合代码)</li>
+    <li>上述要求内容全部完成</li>
+  </ol>
+
+  <p>加分项</p>
+
+  <ol>
+    <li>可以完成GPU环境的配置，并成功用于加速训练（需要CPU,GPU训练时长比较与截图）</li>
+    <li>对方法中的组件进行细致的分析，采取不同超参数对准确率的影响</li>
+  </ol>
+</blockquote>
+
+<h1 id="数据处理">数据处理</h1>
+
+<p>Mixmatch和Fixmatch中的数据抽取方式如下：</p>
+
+<p>每个类带标签数据的个数是均衡的，每个类带标签的数据个数 = 带标签数据总个数//类数。所以，使用一个循环（10个类）：对于每一个类，找出它们在总数据（labels）中的数据索引，并用Sampler随机选择label_per_class个数据，它们加入到带标签的数据索引labeled_idx中。对于不带标签的数据，使用了所有的数据（包含带标签的数据），所以它的索引为全部数据的索引。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="n">sampler_x</span> <span class="o">=</span> <span class="n">RandomSampler</span><span class="p">(</span><span class="n">ds_x</span><span class="p">,</span> <span class="n">replacement</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="n">n_iters_per_epoch</span> <span class="o">*</span> <span class="n">batch_size</span><span class="p">)</span>
+<span class="n">batch_sampler_x</span> <span class="o">=</span> <span class="n">BatchSampler</span><span class="p">(</span><span class="n">sampler_x</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">drop_last</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+</pre></td><td class="rouge-code"><pre><span class="k">def</span> <span class="nf">load_data_train</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">dspth</span><span class="o">=</span><span class="s">'./data'</span><span class="p">):</span>
+    <span class="s">"""
+    加载训练数据集并进行预处理
+
+    参数：
+    L (int): 标签数量
+    dspth (str): 数据集路径
+
+    返回：
+    data_x, label_x, data_u, label_u: 已处理的训练数据和标签
+    """</span>
+    <span class="c1"># 构建训练数据文件列表
+</span>    <span class="n">datalist</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">osp</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">dspth</span><span class="p">,</span> <span class="s">'cifar-10-batches-py'</span><span class="p">,</span> <span class="s">'data_batch_{}'</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="c1"># 逐个读取数据文件并加载数据
+</span>    <span class="k">for</span> <span class="n">data_batch</span> <span class="ow">in</span> <span class="n">datalist</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">data_batch</span><span class="p">,</span> <span class="s">'rb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fr</span><span class="p">:</span>
+            <span class="n">entry</span> <span class="o">=</span> <span class="n">pickle</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">fr</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s">'latin1'</span><span class="p">)</span>
+            <span class="n">lbs</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s">'labels'</span><span class="p">]</span> <span class="k">if</span> <span class="s">'labels'</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="n">entry</span><span class="p">[</span><span class="s">'fine_labels'</span><span class="p">]</span>
+            <span class="n">data</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s">'data'</span><span class="p">])</span>
+            <span class="n">labels</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">lbs</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># 合并数据
+</span>    <span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># 合并标签
+</span>    <span class="n">n_labels</span> <span class="o">=</span> <span class="n">L</span> <span class="o">//</span> <span class="mi">10</span>  <span class="c1"># 每个类别的标签数量
+</span>    <span class="n">data_x</span><span class="p">,</span> <span class="n">label_x</span><span class="p">,</span> <span class="n">data_u</span><span class="p">,</span> <span class="n">label_u</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>  <span class="c1"># 遍历每个类别
+</span>        <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">where</span><span class="p">(</span><span class="n">labels</span> <span class="o">==</span> <span class="n">i</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>  <span class="c1"># 随机打乱索引
+</span>        <span class="n">inds_x</span><span class="p">,</span> <span class="n">inds_u</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[:</span><span class="n">n_labels</span><span class="p">],</span> <span class="n">indices</span><span class="p">[</span><span class="n">n_labels</span><span class="p">:]</span>
+        <span class="n">data_x</span> <span class="o">+=</span> <span class="p">[</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">).</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">inds_x</span>
+        <span class="p">]</span>
+        <span class="n">label_x</span> <span class="o">+=</span> <span class="p">[</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">inds_x</span><span class="p">]</span>
+        <span class="n">data_u</span> <span class="o">+=</span> <span class="p">[</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">).</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">inds_u</span>
+        <span class="p">]</span>
+        <span class="n">label_u</span> <span class="o">+=</span> <span class="p">[</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">inds_u</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">data_x</span><span class="p">,</span> <span class="n">label_x</span><span class="p">,</span> <span class="n">data_u</span><span class="p">,</span> <span class="n">label_u</span>  <span class="c1"># 返回处理后的数据和标签
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<h1 id="mixmatch">Mixmatch</h1>
+
+<blockquote>
+  <p>数据集：CIFAR-10 数据集由 10 个类别的 60000 个 32x32 彩色图像组成，每个类别包含 6000 个图像。有 50000 个训练图像和 10000 个测试图像。
+数据集下载地址：<a href="https://www.cs.toronto.edu/~kriz/cifar.html">CIFAR-10 and CIFAR-100 datasets (toronto.edu)</a></p>
+</blockquote>
+
+<p>MixMatch抓住了半监督算法的三个重要观点：第一是<strong>熵最小化</strong>；第二是<strong>一致性正则化</strong>，第三是<strong>一般正则化</strong>。结合这三个观点的算法就形成了MixMatch。一般正则化也就是使用L2范数，下面介绍<strong>熵最小化</strong>和<strong>一致性正则化</strong>。</p>
+
+<p><strong>熵最小化</strong>：</p>
+
+<p>在许多半监督学习方法中，一个常见的基本假设是分类器的决策边界不应通过边缘数据分布的高密度区域。这句话简单的理解可以想象一个聚类模型，其决策边界一定是在簇与簇之间的稀疏边界上，不可能穿过一个簇的中心（高密度区域）。而实现这一点的一种方法就是要求分类器对未标记数据输出低熵预测。MixMatch中使用一个”sharpening”函数来隐式实现熵最小化。所谓熵最小化、低熵预测，都是指使输出概率分布比较有“偏向性”，而不希望输出一个“平均的预测”。熵在信息论中是不确定度的度量，根据离散模型的熵最大定理，可知在均匀分布时熵取得最大值，换句话说，出现一个确定的分布，即某一类的概率是1，其余类的概率是0时，熵为0。也就是说想要得到熵最小，就得使分类器输出后的模型预测概率集中分配给某一类。后面再介绍“sharpening”函数如何实现这一点。</p>
+
+<p><strong>一致性正则化</strong>：
+一致性正则化也是一个常见的半监督假设。VAT、MeanTeacher等其实都或多或少使用了这种假设。其核心在于，我们希望一个样本和其加扰版本（通常图像中称为Augment）通过分类器后，得到相似的输出。其实也就是说分类边界不应该穿过数据分布的高密度区域。如下图，红色点是原始样本，蓝色和绿色为其扰动版本，红色同心圆的虚线圆是我们期望的容差范围，即在这个区间类的都应该认为和其中心数据点为同一类。通过扰动数据点的加入，将决策边界推到合适的位置，使分类器的鲁棒性更强。</p>
+
+<p><img src="/img/in-post/PatternRecognition/HW3/391a4b60403d99fb826ff03a3e1bf178.png" alt="img" style="zoom: 33%;" /></p>
+
+<p>MixMatch 还使用了 Mixup，也就是会将图像拼接在一起，例如我们输入一张一半是猫一半是狗的图像（通过叠加图像或将它们并排放置在图像中），并期望模型产生 p(dog)=.5、p(cat)=.5 以及其余类别的概率 0。可以这样理解：MixMatch 是对之前来出现的几种技术的组合和改进。我认为 MixMatch 论文的神奇之处在于他们找到了一种合理的方法来组合使用以上之前已经提出的思想！</p>
+
+<p>接下来我将先大致说明主要算法流程，然后结合我实现的代码详细分析。</p>
+
+<ol>
+  <li>数据增强</li>
+  <li>标签猜测生成伪标签</li>
+  <li>Mixup</li>
+</ol>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre></td><td class="rouge-code"><pre><span class="k">def</span> <span class="nf">mixmatch</span><span class="p">():</span>
+    <span class="n">model</span><span class="p">,</span> <span class="n">Loss_x</span><span class="p">,</span> <span class="n">Loss_u</span> <span class="o">=</span> <span class="n">set_model</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+    <span class="n">n_iters_per_epoch</span> <span class="o">=</span> <span class="n">n_imgs_per_epoch</span> <span class="o">//</span> <span class="n">batchsize</span>
+    <span class="c1"># 第一步：对数据进行增强
+</span>    <span class="n">dataloader_train_x</span><span class="p">,</span> <span class="n">dataloader_train_x</span> <span class="o">=</span> <span class="n">LoadAndAugment_Val</span><span class="p">(</span>
+        <span class="n">batchsize</span><span class="p">,</span> <span class="n">n_iters_per_epoch</span><span class="p">,</span> <span class="n">L</span><span class="o">=</span><span class="n">n_labels</span><span class="p">,</span> <span class="n">K</span><span class="o">=</span><span class="n">n_guesses</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">data_path</span>
+    <span class="p">)</span>
+    <span class="c1"># 第二步：标签猜测 + Sharpening
+</span>    <span class="n">lb_guessor</span> <span class="o">=</span> <span class="n">GuessAndSharpening</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">temperature</span><span class="p">)</span>
+    <span class="c1"># 第三步：MixUp,将有标签数据和无标签数据进行混合
+</span>    <span class="n">mixuper</span> <span class="o">=</span> <span class="n">MixUp</span><span class="p">(</span><span class="n">mixup_alpha</span><span class="p">)</span>
+    <span class="c1"># 第四步：论文中参考Mean Teacher的EMA方法，我也模仿论文中的EMA方法，使用EMA方法进行参数更新
+</span>    <span class="n">ema</span> <span class="o">=</span> <span class="n">EMA</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">ema_alpha</span><span class="p">)</span>  <span class="c1"># 创建EMA对象
+</span>    <span class="p">...</span>
+    <span class="p">...</span>
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="第一步数据增强">第一步：数据增强</h2>
+
+<p>第一步，正如许多SSL方法中的典型做法一样，对数据进行数据增强(Augment)。分别在有标记数据集$X$和无标记数据集$U$上进行增强，分别记为$\hat{X}=Augument(X)$ 和$ \hat{U} =Augument(U)$。对$X$中每一个数据$x_b$进行一次数据增强，对$U$中每个数据$u_b$进行$K$次数据增强，文章中取$ K=2$。之后还会使用这些单独的增强为每个$u_b$生成一个“猜测标签”$q_b$，但这都是后话了。</p>
+
+<p>具体到代码上</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="c1"># 第一步：对数据进行增强
+</span>    <span class="n">dataloader_train_x</span><span class="p">,</span> <span class="n">dataloader_train_x</span> <span class="o">=</span> <span class="n">LoadAndAugment_Val</span><span class="p">(</span>
+        <span class="n">batchsize</span><span class="p">,</span> <span class="n">n_iters_per_epoch</span><span class="p">,</span> <span class="n">L</span><span class="o">=</span><span class="n">n_labels</span><span class="p">,</span> <span class="n">K</span><span class="o">=</span><span class="n">n_guesses</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">data_path</span>
+    <span class="p">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>其中对数据进行增强部分如下：</p>
+
+<p>首先定义数据增强的方法(具体的函数例如<code class="language-plaintext highlighter-rouge">RandomHorizontalFlip</code>可见Fixmatch的数据增强部分)：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+</pre></td><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">Cifar10Augment</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="s">"""
+    CIFAR-10数据集的自定义Dataset类。
+    """</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">n_guesses</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">is_train</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Cifar10Augment</span><span class="p">,</span> <span class="bp">self</span><span class="p">).</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="p">,</span> <span class="n">labels</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">n_guesses</span> <span class="o">=</span> <span class="n">n_guesses</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">labels</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="p">.</span><span class="n">n_guesses</span> <span class="o">&gt;=</span> <span class="mi">1</span>
+        <span class="c1"># 数据预处理和增强
+</span>        <span class="n">mean</span><span class="p">,</span> <span class="n">std</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.0172</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0356</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1069</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.4940</span><span class="p">,</span> <span class="mf">0.4869</span><span class="p">,</span> <span class="mf">0.5231</span><span class="p">)</span> <span class="c1"># [-1, 1]
+</span>        <span class="k">if</span> <span class="n">is_train</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">trans</span> <span class="o">=</span> <span class="n">T</span><span class="p">.</span><span class="n">Compose</span><span class="p">([</span>
+                <span class="n">T</span><span class="p">.</span><span class="n">Resize</span><span class="p">((</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)),</span>
+                <span class="n">T</span><span class="p">.</span><span class="n">PadandRandomCrop</span><span class="p">(</span><span class="n">border</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">cropsize</span><span class="o">=</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)),</span>
+                <span class="n">T</span><span class="p">.</span><span class="n">RandomHorizontalFlip</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span>
+                <span class="n">T</span><span class="p">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">),</span>
+                <span class="n">T</span><span class="p">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+            <span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">trans</span> <span class="o">=</span> <span class="n">T</span><span class="p">.</span><span class="n">Compose</span><span class="p">([</span>
+                <span class="n">T</span><span class="p">.</span><span class="n">Resize</span><span class="p">((</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)),</span>
+                <span class="n">T</span><span class="p">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">),</span>
+                <span class="n">T</span><span class="p">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+            <span class="p">])</span>
+            
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="n">im</span><span class="p">,</span> <span class="n">lb</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="bp">self</span><span class="p">.</span><span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">ims</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># 对每个样本进行n_guesses次预处理和增强
+</span>        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">n_guesses</span><span class="p">):</span>
+            <span class="n">im_trans</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">trans</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+            <span class="n">ims</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">im_trans</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ims</span><span class="p">,</span> <span class="n">lb</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>之后对$X$中每一个数据$x_b$进行<strong>一次</strong>数据增强，对$U$中每个数据$u_b$<strong>进行$K$次</strong> 数据增强</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="rouge-code"><pre><span class="c1"># 创建有标签数据集和无标签数据集
+</span><span class="n">dataset_x</span> <span class="o">=</span> <span class="n">Cifar10Augment</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">data_x</span><span class="p">,</span>
+    <span class="n">labels</span><span class="o">=</span><span class="n">label_x</span><span class="p">,</span>
+    <span class="n">n_guesses</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="c1">#有标记只进行一次增强
+</span>    <span class="n">is_train</span><span class="o">=</span><span class="bp">True</span>
+<span class="p">)</span>
+<span class="n">dataset_u</span> <span class="o">=</span> <span class="n">Cifar10Augment</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">data_u</span><span class="p">,</span>
+    <span class="n">labels</span><span class="o">=</span><span class="n">label_u</span><span class="p">,</span>
+    <span class="n">n_guesses</span><span class="o">=</span><span class="n">K</span><span class="p">,</span>
+    <span class="n">is_train</span><span class="o">=</span><span class="bp">True</span>
+<span class="p">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="第二步进行标签猜测生成伪标签">第二步：进行标签猜测生成伪标签</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="c1"># 第二步：标签猜测 + Sharpening
+</span><span class="n">lb_guessor</span> <span class="o">=</span> <span class="n">GuessAndSharpening</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">temperature</span><span class="p">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>对于U中每个未标记的示例，MixMatch使用模型的预测为该示例的标签生成一个“猜测”。为此，我们通过$u_b$ 的所有K个增量计算模型的预测类分布的平均值。通过如下公式计算，其中$ (\hat{u_{b,k}},y)$是$ \hat{U} $ 的一个Batch：</p>
+
+\[\bar{q_b}=\frac{1}{K}\sum_kP_{model}(y|\hat{u_{b,k}};\theta)\]
+
+<p>值得注意的是，$P_{model}(y\mid \hat{u_{b,k}};\theta)$是Softmax之后的预测概率分布。</p>
+
+<p>具体到代码上即为</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre><span class="p">...</span>
+<span class="c1"># guess
+</span><span class="n">all_probs</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 用于存储所有样本的类别概率
+</span><span class="k">for</span> <span class="n">im</span> <span class="ow">in</span> <span class="n">ims</span><span class="p">:</span> <span class="c1"># ims (list of torch.Tensor): 输入的图像数据列表
+</span>    <span class="k">if</span> <span class="n">use_gpu</span><span class="p">:</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="p">.</span><span class="n">cuda</span><span class="p">()</span>  <span class="c1"># 将图像数据移动到GPU上
+</span>    <span class="n">logits</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">guessor</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>  <span class="c1"># 使用模型进行前向传播，得到logits
+</span>    <span class="n">probs</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># 对logits进行softmax操作，得到预测类别概率
+</span>    <span class="n">all_probs</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">probs</span><span class="p">)</span>  <span class="c1"># 将类别概率添加到列表中
+</span><span class="n">qb</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">all_probs</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_probs</span><span class="p">)</span>  <span class="c1"># 对所有样本的类别概率进行求和并取平均
+</span><span class="p">...</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>之后给定对增幅$q_b$的平均预测，我们应用锐化函数来减少标签分布的熵:</p>
+
+\[Sharpen(p,T)_i=\frac{p_i^{\frac{1}{T}}}{\sum^L_{j=1}p_j^{\frac{1}{T}}}\]
+
+<p>当超参数$ T\to 0$时，$Sharpen(p,T)$趋向于one-hot分布，即其中一个类别的概率为1，其余概率为0；锐化后的概率分布作为$\hat{U} $的数据伪标签(pseudo label)。</p>
+
+<p>具体到代码上：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="p">...</span>
+<span class="c1"># sharpen
+</span><span class="n">lbs_tem</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nb">pow</span><span class="p">(</span><span class="n">qb</span><span class="p">,</span> <span class="mf">1.</span> <span class="o">/</span> <span class="bp">self</span><span class="p">.</span><span class="n">T</span><span class="p">)</span>  <span class="c1"># 对概率进行温度调节
+</span><span class="n">lbs</span> <span class="o">=</span> <span class="n">lbs_tem</span> <span class="o">/</span> <span class="n">torch</span><span class="p">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">lbs_tem</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c1"># 对概率进行归一化，得到伪标签
+</span><span class="p">...</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>结合起来得到完整代码如下：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+</pre></td><td class="rouge-code"><pre><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="c1"># 这个标签猜测器通过对无标签样本的预测结果进行温度调节，生成伪标签，用于无监督学习中的训练。
+</span>
+<span class="n">use_gpu</span> <span class="o">=</span> <span class="bp">False</span>  <span class="c1"># 设置是否使用GPU
+</span>
+<span class="k">class</span> <span class="nc">GuessAndSharpening</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+        <span class="s">"""
+        初始化标签猜测器
+        
+        参数：
+        - model (torch.nn.Module): 用于进行标签猜测的模型
+        - T (float): softmax温度参数
+        """</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">T</span> <span class="o">=</span> <span class="n">T</span>  <span class="c1"># softmax温度参数
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">guessor</span> <span class="o">=</span> <span class="n">model</span>  <span class="c1"># 用于进行标签猜测的模型
+</span>
+    <span class="o">@</span><span class="n">torch</span><span class="p">.</span><span class="n">no_grad</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">ims</span><span class="p">):</span>
+        <span class="s">"""
+        进行标签猜测
+        
+        参数：
+        - model (torch.nn.Module): 要进行标签猜测的模型
+        - ims (list of torch.Tensor): 输入的图像数据列表
+        
+        返回：
+        - lbs (torch.Tensor): 伪标签，形状为[batch_size, num_classes]
+        """</span>
+        <span class="c1"># guess
+</span>        <span class="n">org_state</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">.</span><span class="n">clone</span><span class="p">().</span><span class="n">detach</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">model</span><span class="p">.</span><span class="n">state_dict</span><span class="p">().</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>  <span class="c1"># 备份模型当前状态
+</span>        <span class="n">is_train</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">guessor</span><span class="p">.</span><span class="n">training</span>  <span class="c1"># 记录模型当前是否处于训练状态
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">guessor</span><span class="p">.</span><span class="n">train</span><span class="p">()</span>  <span class="c1"># 将模型设置为训练模式
+</span>        <span class="n">all_probs</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 用于存储所有样本的类别概率
+</span>        <span class="k">for</span> <span class="n">im</span> <span class="ow">in</span> <span class="n">ims</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">use_gpu</span><span class="p">:</span>
+                <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="p">.</span><span class="n">cuda</span><span class="p">()</span>  <span class="c1"># 将图像数据移动到GPU上
+</span>            <span class="n">logits</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">guessor</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>  <span class="c1"># 使用模型进行前向传播，得到logits
+</span>            <span class="n">probs</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># 对logits进行softmax操作，得到类别概率
+</span>            <span class="n">all_probs</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">probs</span><span class="p">)</span>  <span class="c1"># 将类别概率添加到列表中
+</span>        <span class="n">qb</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">all_probs</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_probs</span><span class="p">)</span>  <span class="c1"># 对所有样本的类别概率进行求和并取平均
+</span>
+        <span class="c1"># sharpen
+</span>        <span class="n">lbs_tem</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nb">pow</span><span class="p">(</span><span class="n">qb</span><span class="p">,</span> <span class="mf">1.</span> <span class="o">/</span> <span class="bp">self</span><span class="p">.</span><span class="n">T</span><span class="p">)</span>  <span class="c1"># 对概率进行温度调节
+</span>        <span class="n">lbs</span> <span class="o">=</span> <span class="n">lbs_tem</span> <span class="o">/</span> <span class="n">torch</span><span class="p">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">lbs_tem</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c1"># 对概率进行归一化，得到伪标签
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">guessor</span><span class="p">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">org_state</span><span class="p">)</span>  <span class="c1"># 恢复模型之前的状态
+</span>        <span class="k">if</span> <span class="n">is_train</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">guessor</span><span class="p">.</span><span class="n">train</span><span class="p">()</span>  <span class="c1"># 如果之前处于训练状态，则重新设置为训练模式
+</span>        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">guessor</span><span class="p">.</span><span class="nb">eval</span><span class="p">()</span>  <span class="c1"># 如果之前处于评估状态，则设置为评估模式
+</span>        <span class="k">return</span> <span class="n">lbs</span><span class="p">.</span><span class="n">detach</span><span class="p">()</span>  <span class="c1"># 返回伪标签，使用detach()方法使其与计算图脱离，避免梯度传播
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="第三步mixup">第三步：Mixup</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="c1"># 第三步：MixUp,将有标签数据和无标签数据进行混合
+</span><span class="n">mixuper</span> <span class="o">=</span> <span class="n">MixUp</span><span class="p">(</span><span class="n">mixup_alpha</span><span class="p">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>第三步，通过MixUp完成新数据集的构建。先将第一步增强后的$\hat{X} $和$\hat{U} $进行拼接再打乱顺序，得到$W=Shuffle(Concat(\hat{X},\hat{U}))$，然后再将$W$分为两部分，第一部分大小与$\hat{X}$ 相同(也与$X$相同)，记为$ W_x$；第二部分大小与$\hat{U} $相同(也与U UU相同)，记为$W_u$ 。然后将$W_x$和$\hat{X}$ 进行MixUp，$W_u$和$\hat{U}$  进行MixUp，得到$X’$和$ U’$。MixUp步骤如下：</p>
+
+\[λ ∼ Beta ⁡ ( α , α ) \\
+λ ′ = max ⁡ ( λ , 1 − λ ) \\
+x ′ = λ ′ x 1 + ( 1 − λ ′ ) x 2 \\
+p ′ = λ ′ p 1 + ( 1 − λ ′ ) p 2\]
+
+<p>其中α是超参数，具体到代码上即为</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+</pre></td><td class="rouge-code"><pre><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="n">use_gpu</span> <span class="o">=</span> <span class="bp">False</span>  <span class="c1"># 设置是否使用GPU
+</span>
+<span class="k">class</span> <span class="nc">MixUp</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+        <span class="s">"""
+        - alpha (float): MixUp参数，控制混合程度
+        """</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">beta_generator</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">distributions</span><span class="p">.</span><span class="n">beta</span><span class="p">.</span><span class="n">Beta</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ims</span><span class="p">,</span> <span class="n">lbs</span><span class="p">):</span>
+        <span class="n">bs</span> <span class="o">=</span> <span class="n">ims</span><span class="p">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># 获取batch_size
+</span>        <span class="k">if</span> <span class="n">use_gpu</span><span class="p">:</span>
+            <span class="n">lam</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">beta_generator</span><span class="p">.</span><span class="n">sample</span><span class="p">([</span><span class="n">bs</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]).</span><span class="n">cuda</span><span class="p">()</span>  <span class="c1"># 从Beta分布中采样生成混合比例lam
+</span>        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lam</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">beta_generator</span><span class="p">.</span><span class="n">sample</span><span class="p">([</span><span class="n">bs</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+            
+        <span class="n">lam</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">where</span><span class="p">(</span><span class="n">lam</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">lam</span><span class="p">),</span> <span class="n">lam</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">lam</span><span class="p">))</span>  <span class="c1"># 将lam限制在[0.5, 1.0]之间
+</span>        <span class="n">indices</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">randperm</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span>  <span class="c1"># 生成随机排列的索引
+</span>        <span class="n">ims</span> <span class="o">=</span> <span class="n">lam</span> <span class="o">*</span> <span class="n">ims</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">lam</span><span class="p">)</span> <span class="o">*</span> <span class="n">ims</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>  <span class="c1"># 进行MixUp操作，线性插值
+</span>        <span class="n">lam</span> <span class="o">=</span> <span class="n">lam</span><span class="p">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># 将lam转换成[batch_size, 1]的形状
+</span>        <span class="n">lbs</span> <span class="o">=</span> <span class="n">lam</span> <span class="o">*</span> <span class="n">lbs</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">lam</span><span class="p">)</span> <span class="o">*</span> <span class="n">lbs</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>  <span class="c1"># 对标签进行MixUp操作，线性插值
+</span>        <span class="k">return</span> <span class="n">ims</span><span class="p">.</span><span class="n">detach</span><span class="p">(),</span> <span class="n">lbs</span><span class="p">.</span><span class="n">detach</span><span class="p">()</span>  <span class="c1"># 返回增强后的图像数据和标签数据，使用detach()方法使其与原数据脱离计算图，避免梯度传播
+</span>
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="第四步计算半监督损失函数">第四步：计算半监督损失函数</h2>
+
+<p>第四步是计算半监督损失函数后反向传播，分为在标记数据集$ X’$上的损失函数$L_x$和在无标记数据集$U’$ 上的损失函数$ L_u$，公式如下：</p>
+
+\[\mathrm{L_{x}=\frac{1}{|X^{\prime}|}\sum_{x,p\in X^{\prime}}H(p,P_{model}(y|x;\theta))}\\\mathrm{L_{u}=\frac{1}{L|U^{\prime}|}\sum_{u,q\in U^{\prime}}||q-P_{model}(y|u;\theta)||_{2}^{2}}\\\mathrm{L=L_{x}+\lambda_{U} L_{u}}\]
+
+<p>其中$H(\cdot)$是CorssEntropyLoss；$L_u$是MSE Loss，反向梯度传播即可完成整个MixMatch算法。</p>
+
+<p>具体到代码上即为</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre></td><td class="rouge-code"><pre><span class="p">...</span>
+<span class="n">Loss_x</span> <span class="o">=</span> <span class="n">CrossEntropyLoss</span><span class="p">().</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>  <span class="c1"># 使用交叉熵损失函数
+</span><span class="n">Loss_u</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">MSELoss</span><span class="p">().</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>        <span class="c1"># 使用均方误差损失函数
+</span><span class="p">...</span>
+
+<span class="n">optim</span><span class="p">.</span><span class="n">zero_grad</span><span class="p">()</span>  <span class="c1"># 梯度清零
+</span><span class="n">logits</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">ims</span><span class="p">)</span>  <span class="c1"># 输入模型进行前向传播
+</span><span class="n">logits_x</span> <span class="o">=</span> <span class="n">logits</span><span class="p">[:</span><span class="n">batchsize</span><span class="p">]</span>  <span class="c1"># 获取有标签数据的输出结果
+</span><span class="n">lbs_x</span> <span class="o">=</span> <span class="n">lbs</span><span class="p">[:</span><span class="n">batchsize</span><span class="p">]</span>         <span class="c1"># 获取有标签数据的标签
+</span><span class="n">logits_u</span> <span class="o">=</span> <span class="n">logits</span><span class="p">[</span><span class="n">batchsize</span><span class="p">:]</span>   <span class="c1"># 获取无标签数据的输出结果
+</span><span class="n">preds_u</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">logits_u</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># 对无标签数据进行softmax操作
+</span><span class="n">lbs_u</span> <span class="o">=</span> <span class="n">lbs</span><span class="p">[</span><span class="n">batchsize</span><span class="p">:]</span>         <span class="c1"># 获取无标签数据的标签
+</span><span class="n">loss_x</span> <span class="o">=</span> <span class="n">Loss_x</span><span class="p">(</span><span class="n">logits_x</span><span class="p">,</span> <span class="n">lbs_x</span><span class="p">)</span>  <span class="c1"># 计算有标签数据的损失
+</span><span class="n">loss_u</span> <span class="o">=</span> <span class="n">Loss_u</span><span class="p">(</span><span class="n">preds_u</span><span class="p">,</span> <span class="n">lbs_u</span><span class="p">)</span>   <span class="c1"># 计算无标签数据的损失
+</span><span class="n">lam_u</span> <span class="o">=</span> <span class="n">lambda_u</span> <span class="o">+</span> <span class="n">lambda_u_once</span> <span class="o">*</span> <span class="n">it</span>  <span class="c1"># 计算无标签数据的损失权重
+</span><span class="n">loss</span> <span class="o">=</span> <span class="n">loss_x</span> <span class="o">+</span> <span class="n">lam_u</span> <span class="o">*</span> <span class="n">loss_u</span>         <span class="c1"># 计算总损失
+</span><span class="n">loss</span><span class="p">.</span><span class="n">backward</span><span class="p">()</span>                        <span class="c1"># 反向传播
+</span><span class="n">optim</span><span class="p">.</span><span class="n">step</span><span class="p">()</span>                           <span class="c1"># 更新模型参数
+</span><span class="n">do_weight_decay</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">wd</span><span class="p">)</span>             <span class="c1"># 权重衰减
+</span><span class="n">ema</span><span class="p">.</span><span class="n">update_params</span><span class="p">()</span>                    <span class="c1"># 更新EMA参
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="ema指数平均">EMA指数平均</h2>
+
+<p>虽然论文中算法描述没有具体提到使用EMA，但是Ablation Study消融学习的时候提到using an exponential moving average (EMA) of model parameters when producing guessedlabels, as is done by Mean Teacher [44]</p>
+
+<p>所以我也参考论文中方法实现了</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+</pre></td><td class="rouge-code"><pre><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.distributed</span> <span class="k">as</span> <span class="n">dist</span>
+<span class="s">'''
+这个类实现了指数移动平均（EMA）方法，用于在训练过程中平滑模型参数。
+它会记录模型参数的当前状态，并根据衰减率将其更新到影子副本中，
+然后在训练过程中使用影子副本来计算损失和梯度，以减少参数更新的方差，从而提高模型的泛化能力。
+'''</span>
+
+<span class="k">class</span> <span class="nc">EMA</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+        <span class="s">"""
+        初始化EMA对象
+        
+        参数：
+        - model (torch.nn.Module): 要应用EMA的模型
+        - alpha (float): EMA的衰减率，控制新旧参数的权重
+        """</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">step</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># 当前训练步数
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>  <span class="c1"># 要应用EMA的模型
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>  <span class="c1"># EMA的衰减率
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">shadow</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">get_model_state</span><span class="p">()</span>  <span class="c1"># 创建模型参数的影子副本
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">backup</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># 用于备份模型参数的字典
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">param_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">named_parameters</span><span class="p">()]</span>  <span class="c1"># 获取模型参数的键列表
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">buffer_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">named_buffers</span><span class="p">()]</span>  <span class="c1"># 获取模型缓冲区的键列表
+</span>
+    <span class="k">def</span> <span class="nf">update_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"""
+        更新EMA的参数
+        """</span>
+        <span class="n">decay</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">alpha</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">step</span> <span class="o">+</span> <span class="mi">10</span><span class="p">))</span>  <span class="c1"># 计算衰减因子
+</span>        <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">state_dict</span><span class="p">()</span>  <span class="c1"># 获取模型的当前状态
+</span>        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">param_keys</span><span class="p">:</span>
+            <span class="c1"># 使用EMA公式更新参数的影子副本
+</span>            <span class="bp">self</span><span class="p">.</span><span class="n">shadow</span><span class="p">[</span><span class="n">name</span><span class="p">].</span><span class="n">copy_</span><span class="p">(</span>
+                <span class="n">decay</span> <span class="o">*</span> <span class="bp">self</span><span class="p">.</span><span class="n">shadow</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">decay</span><span class="p">)</span> <span class="o">*</span> <span class="n">state</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># 更新步数
+</span>
+    <span class="k">def</span> <span class="nf">update_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"""
+        更新EMA的缓冲区
+        """</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">state_dict</span><span class="p">()</span>  <span class="c1"># 获取模型的当前状态
+</span>        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">buffer_keys</span><span class="p">:</span>
+            <span class="c1"># 使用当前状态更新缓冲区的影子副本
+</span>            <span class="bp">self</span><span class="p">.</span><span class="n">shadow</span><span class="p">[</span><span class="n">name</span><span class="p">].</span><span class="n">copy_</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">apply_shadow</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"""
+        将EMA的参数应用到模型中
+        """</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">backup</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">get_model_state</span><span class="p">()</span>  <span class="c1"># 备份模型当前的参数状态
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">shadow</span><span class="p">)</span>  <span class="c1"># 将EMA的影子副本加载到模型中
+</span>
+    <span class="k">def</span> <span class="nf">restore</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"""
+        恢复模型参数为备份状态
+        """</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">backup</span><span class="p">)</span>  <span class="c1"># 将模型的参数恢复为备份状态
+</span>
+    <span class="k">def</span> <span class="nf">get_model_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"""
+        获取模型当前状态的副本
+        """</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">.</span><span class="n">clone</span><span class="p">().</span><span class="n">detach</span><span class="p">()</span>  <span class="c1"># 使用clone()方法创建参数的副本，并使用detach()方法使其与计算图脱离，避免梯度传播
+</span>            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">state_dict</span><span class="p">().</span><span class="n">items</span><span class="p">()</span>  <span class="c1"># 遍历模型参数的字典，并创建副本
+</span>        <span class="p">}</span>
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="实验结果">实验结果</h2>
+
+<blockquote>
+  <p>所有运行的log文件都在附录文件中</p>
+</blockquote>
+
+<p>为了节约计算资源，对于CPU版本只给出训练一个epoch的时间(1个epoch是1000个iteration)，根据一个epoch的时间即可大致推断出完整训练20000个iteration的时间。</p>
+
+<h3 id="训练时间">训练时间</h3>
+
+<h4 id="cpu">CPU</h4>
+
+<p>CPU计算时间：大约2210s一个epoch，训练完20000个iteration(20个epoch)大约需要44200秒=736.6667分钟=12.2778小时:cry:</p>
+
+<p><img src="/img/in-post/PatternRecognition/HW3/image-20240609164348473.png" alt="image-20240609164348473" /></p>
+
+<h4 id="gpu">GPU</h4>
+
+<p>GPU计算时间：大约125s一个epoch，训练完20000个iteration(20个epoch)大约需要2500秒=41.6667分钟，相比CPU计算节约了1750%的时间。</p>
+
+<p><img src="/img/in-post/PatternRecognition/HW3/image-20240609164506835.png" alt="image-20240609164506835" /></p>
+
+<h3 id="torchssl">TorchSSL</h3>
+
+<blockquote>
+  <p>python mixmatch.py –c config/mixmatch/mixmatch_cifar10_250_0.yaml</p>
+</blockquote>
+
+<p>使用TorchSSL，直接使用给出的默认参数，得到结果如下：</p>
+
+<p><strong>标注数据数量为40时</strong></p>
+
+<p><img src="/img/in-post/PatternRecognition/HW3/image-20240609165228099.png" alt="image-20240609165228099" /></p>
+
+<p><strong>标注数据数量为250时</strong></p>
+
+<p><img src="/img/in-post/PatternRecognition/HW3/image-20240610154454086.png" alt="image-20240610154454086" /></p>
+
+<p><strong>标注数据数量为4000时</strong></p>
+
+<p><img src="/img/in-post/PatternRecognition/HW3/image-20240610154517905.png" alt="image-20240610154517905" /></p>
+
+<h3 id="超参数调整">超参数调整</h3>
+
+<p>文中发现 $\alpha = 0.75$ 和 $ \lambda_{\mathcal{U}}=100$是调整的良好起点。</p>
+
+<blockquote>
+  <p>截取TorchSSL中参数设置</p>
+
+  <p>mixup_alpha(ulb_loss_ratio) : 0.5</p>
+
+  <p>weight_decay: 0.0005</p>
+
+  <p>lr: 0.03</p>
+
+  <p>temperature(T) : 0.5</p>
+
+  <p>lam_u(ulb_loss_ratio) : 100</p>
+
+  <p>优化器：SGD</p>
+</blockquote>
+
+<p>如果我的模型的超参数设置为和TorchSSL一样，那么训练20000iteration时结果与TorchSSL中基本一致，调节之后超参数的结果要优于TorchSSL。</p>
+
+<blockquote>
+  <p>超参数调节</p>
+
+  <p>mixup_alpha = 0.75</p>
+
+  <p>weight_decay = 0.02</p>
+
+  <p>lr = 0.002</p>
+
+  <p>temperature = 0.5</p>
+
+  <p>lam_u = 75 #无标签数据的损失权重</p>
+
+  <p>优化器：Adam</p>
+
+  <p>kaiming初始化，且a=0.1时效果远远好于a=0时情况，a=0.1时在第一个epoch就可以达到a=0时8个epoch的情况，且第3个epoch时就可以达到a=0时第18个epoch的情况</p>
+
+  <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>nn.init.kaiming_normal_(md.weight, a=0.1, mode='fan_in', nonlinearity='leaky_relu')
+</pre></td></tr></tbody></table></code></pre></div>  </div>
+</blockquote>
+
+<h3 id="最终结果">最终结果</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">版本/标注数据数量</th>
+      <th style="text-align: center">40</th>
+      <th style="text-align: center">250</th>
+      <th style="text-align: center">4000</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">我的实现(与Torch超参一致)</td>
+      <td style="text-align: center">0.3379</td>
+      <td style="text-align: center">0.6702</td>
+      <td style="text-align: center">0.8521</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">我的实现</td>
+      <td style="text-align: center">0.3998</td>
+      <td style="text-align: center">0.7360</td>
+      <td style="text-align: center">0.8780</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">TorchSSL</td>
+      <td style="text-align: center">0.3159</td>
+      <td style="text-align: center">0.6891</td>
+      <td style="text-align: center">0.8817</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>之后为了探究我的实现能达到的精度，在标注数据数量为40时进行了探究，参考精度是$63.81\pm6.48$。</p>
+
+<ul>
+  <li>
+    <p>我用自己实现的版本训练了100个epoch（100 000个iteration），在第53个epoch(53 000个iteration)就达到了0.5833的精度，最终在第70个epoch达到了最高的0.6539(尝试了3次取平均)</p>
+  </li>
+  <li>
+    <p>与之对比的是TorchSSL在标注数据数量为40时，在100 000个iteration时准确率为0.5779，最终在<strong>705 000</strong>个iteration时达到了最高的<strong>0.7</strong>。</p>
+  </li>
+</ul>
+
+<p>可以看到我实现的mixmatch是可以达到论文中描述的精度的。</p>
+
+<h1 id="fixmatch">Fixmatch</h1>
+
+<p>FixMatch 是 SSL 两种方法的组合: 一致性正则化和伪标签。它的新颖之处在于这两种方法的组合以及在执行一致性正则化时使用单独的弱增强和强增强。一致性正则化就如MixMatch中描述那样。</p>
+
+<p>伪标记（pseudo label）是一种常用的半监督算法。代表算法是self-training。简单地说就是通过训练的模型对无标记样本打标签，这个标签有对有错，通过一些方法筛选标签后，选择一部分无标记样本和模型打的标签一起送入模型继续训练。伪标记的方法最大问题在于，如何保证伪标记的正确性。因为当模型打的标签提供了较多的错误信息时，会使模型的训练结果更劣。一般常见的筛选方式是将模型输出的预测结果(Softmax之后)进行阈值判断，其argmax的概率大于阈值，才认为是有效标记，否则将此无标记样本丢弃。</p>
+
+<p>FixMatch算法并不复杂，由其论文中的流程图就可以很好的理解：将弱增强图像输入模型, 当某一预测类别概率高于阈值(虚线)时，预测将转换为 one-hot 伪标签。 然后，计算模型对同一图像的强增强的预测。计算强增强的预测与伪标签之间的交叉熵损失。</p>
+
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9tbWJpei5xcGljLmNuL21tYml6X3BuZy9LWVNEVG1PVlp2cFVwMDlueE05ZnYwYmw2Z3hmVTd1ZFBjWjdyN3ZkUEhVZldja1l1d2pGWEQzeUxPUmlieFhFcm9uUnM2SVVqZ09BWHhPMG0zd01kdVEvNjQw?x-oss-process=image/format,png" alt="img" /></p>
+
+<p>简单而言，Fixmatch的流程可以分为以下五步：</p>
+
+<p>1)计算有标记数据集上的交叉熵损失 $L_s$</p>
+
+<p>2)对无标签样本进行数据增强，增强分为强增强和弱增强。</p>
+
+<p>3)对每一个 $ \mu B$batch, 计算弱增强无标签数据集上的预测分布及伪标签 $q_b$, $\hat{q}_b$</p>
+
+<p>4)计算无标签数据交叉熵损失 $ L_u$</p>
+
+<p>5)得到目标函数总损失 $L_s+\lambda L_u$</p>
+
+<p>接下来我将结合代码具体描述每一个步骤。</p>
+
+<h2 id="第一步有标记样本训练">第一步：有标记样本训练</h2>
+
+<p>对于<strong>有标记样本</strong>，进行正常的监督学习，损失函数为CrossEntropyLoss，得到$L_s$</p>
+
+\[L_\mathrm{s} = \frac{1}{\mathrm{B}} \sum_{\mathrm{b}=1}^\mathrm{B} \mathrm{B}(\mathrm{p}_\mathrm{b} ,\mathrm{p}_\mathrm{m} (\mathrm{y} |\alpha(\mathrm{x}_\mathrm{b} )))\]
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="p">...</span>
+<span class="n">logits_x</span><span class="p">,</span> <span class="n">logits_u</span> <span class="o">=</span> <span class="n">logits_x_u</span><span class="p">[:</span><span class="n">n_x</span><span class="p">],</span> <span class="n">logits_x_u</span><span class="p">[</span><span class="n">n_x</span><span class="p">:]</span>
+<span class="n">lbs_x</span> <span class="o">=</span> <span class="n">lbs_x</span><span class="p">.</span><span class="nb">long</span><span class="p">()</span>
+<span class="n">loss_x</span> <span class="o">=</span> <span class="n">Loss_x</span><span class="p">(</span><span class="n">logits_x</span><span class="p">,</span> <span class="n">lbs_x</span><span class="p">)</span>  <span class="c1"># 计算有标签数据的损失
+</span><span class="p">...</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="第二步-数据增强">第二步 数据增强</h2>
+
+<p>对于<strong>无标记样本</strong>，参照上图，共四步。</p>
+
+<p><strong>第一步</strong>，先对无标记样本进行增强(Augment)，增强分为强增强和弱增强。</p>
+
+<p><strong>弱增强</strong>是一种标准的翻转和移位增强策略。 例如在数据集上以 50% 的概率随机水平翻转图像, 并且在垂直和水平方向上随机平移。</p>
+
+<blockquote>
+  <p>这里的弱增强代码与mixmatch中一致，直接复用</p>
+</blockquote>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+</pre></td><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">PadandRandomCrop</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="s">'''
+    将输入张量期望为形状为(H, W, 3)
+    '''</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">border</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">cropsize</span><span class="o">=</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">border</span> <span class="o">=</span> <span class="n">border</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">cropsize</span> <span class="o">=</span> <span class="n">cropsize</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">im</span><span class="p">):</span>
+        <span class="c1"># 添加边界
+</span>        <span class="n">borders</span> <span class="o">=</span> <span class="p">[(</span><span class="bp">self</span><span class="p">.</span><span class="n">border</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">border</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">border</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">border</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span>
+        <span class="n">canvas</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">pad</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">borders</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">'reflect'</span><span class="p">)</span>
+        <span class="n">H</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">canvas</span><span class="p">.</span><span class="n">shape</span>
+        <span class="n">h</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">cropsize</span>
+        <span class="c1"># 计算裁剪范围
+</span>        <span class="n">dh</span><span class="p">,</span> <span class="n">dw</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">H</span> <span class="o">-</span> <span class="n">h</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">W</span> <span class="o">-</span> <span class="n">w</span><span class="p">)</span>
+        <span class="n">sh</span><span class="p">,</span> <span class="n">sw</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dh</span><span class="p">),</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dw</span><span class="p">)</span>
+        <span class="c1"># 随机裁剪
+</span>        <span class="n">out</span> <span class="o">=</span> <span class="n">canvas</span><span class="p">[</span><span class="n">sh</span><span class="p">:</span><span class="n">sh</span> <span class="o">+</span> <span class="n">h</span><span class="p">,</span> <span class="n">sw</span><span class="p">:</span><span class="n">sw</span> <span class="o">+</span> <span class="n">w</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+<span class="k">class</span> <span class="nc">RandomHorizontalFlip</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">p</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">im</span><span class="p">):</span>
+        <span class="c1"># 随机水平翻转
+</span>        <span class="k">if</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="p">.</span><span class="n">p</span><span class="p">:</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="p">[:,</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="k">return</span> <span class="n">im</span>
+
+<span class="k">class</span> <span class="nc">Resize</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">im</span><span class="p">):</span>
+        <span class="c1"># 调整大小
+</span>        <span class="n">im</span> <span class="o">=</span> <span class="n">cv2</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">im</span>
+
+<span class="k">class</span> <span class="nc">Normalize</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="s">'''
+    输入为像素值范围在[0, 255]之间，通道顺序为'rgb'
+    '''</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">array</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">float32</span><span class="p">).</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">std</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">array</span><span class="p">(</span><span class="n">std</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">float32</span><span class="p">).</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">im</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">im</span><span class="p">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">mean</span><span class="p">,</span> <span class="n">std</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">mean</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">...],</span> <span class="bp">self</span><span class="p">.</span><span class="n">std</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">...]</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">im</span><span class="p">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">mean</span><span class="p">,</span> <span class="n">std</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">mean</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">std</span>
+        <span class="c1"># 将像素值归一化到[0, 1]
+</span>        <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="p">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span> <span class="o">/</span> <span class="mf">255.</span>
+        <span class="c1"># 像素值标准化
+</span>        <span class="n">im</span> <span class="o">-=</span> <span class="n">mean</span>
+        <span class="n">im</span> <span class="o">/=</span> <span class="n">std</span>
+        <span class="k">return</span> <span class="n">im</span>
+
+<span class="k">class</span> <span class="nc">ToTensor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">im</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">im</span><span class="p">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="c1"># 将NumPy数组转换为张量并转置通道
+</span>            <span class="k">return</span> <span class="n">torch</span><span class="p">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">im</span><span class="p">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">im</span><span class="p">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="c1"># 将NumPy数组转换为张量并转置通道
+</span>            <span class="k">return</span> <span class="n">torch</span><span class="p">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">im</span><span class="p">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+
+<span class="k">class</span> <span class="nc">Compose</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ops</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">ops</span> <span class="o">=</span> <span class="n">ops</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">im</span><span class="p">):</span>
+        <span class="c1"># 应用所有操作
+</span>        <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">ops</span><span class="p">:</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">op</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">im</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>对于<strong>强增强</strong>, 文中尝试了两种基于 AutoAugment 的方法, 然后是 Cutout。AutoAugment 使用强化学习来查找包含来自 Python Imaging Library 的转换的增强策略。这需要标记数据来学习增强策略，这使得在可用标记数据有限的 SSL 设置中使用存在问题。因此, 使用不需要利用标记数据学习增强策略的 AutoAugment 变体，例如 RandAugment 和 CTAugment。RandAugment 和 CTAugment 都没有使用学习策略，而是为每个样本随机选择转换。 对于 RandAugment， 控制所有失真严重程度的幅度是从预定义的范围内随机采样的。具有随机幅度的 RandAugment 也被用于 UDA。而对于 CTAugment，单个变换的幅度是即时学习的。</p>
+
+<h3 id="cutout">Cutout</h3>
+
+<p>这种增强会随机删除图像的正方形部分，并用灰色或黑色填充。</p>
+
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9tbWJpei5xcGljLmNuL21tYml6X2dpZi9LWVNEVG1PVlp2cFVwMDlueE05ZnYwYmw2Z3hmVTd1ZGRPWTNjWmNUakd1T3NVRmdIZDhvTWFyTkNKcVFwaWJkVUJLNWljeXlhaWNxVVdZaWJmbU1XQkM1YkEvNjQw?x-oss-process=image/format,png" alt="img" /></p>
+
+<p>PyTorch没有内置的Cutout函数，于是我实现代码如下：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre><span class="k">def</span> <span class="nf">cutout_func</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">pad_size</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)):</span>
+    <span class="n">replace</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">array</span><span class="p">(</span><span class="n">replace</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="p">.</span><span class="n">uint8</span><span class="p">)</span>
+    <span class="n">H</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="n">img</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">img</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">rh</span><span class="p">,</span> <span class="n">rw</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">random</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">pad_size</span> <span class="o">=</span> <span class="n">pad_size</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="n">ch</span><span class="p">,</span> <span class="n">cw</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">rh</span> <span class="o">*</span> <span class="n">H</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">rw</span> <span class="o">*</span> <span class="n">W</span><span class="p">)</span>
+    <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ch</span> <span class="o">-</span> <span class="n">pad_size</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">ch</span> <span class="o">+</span> <span class="n">pad_size</span><span class="p">,</span> <span class="n">H</span><span class="p">)</span>
+    <span class="n">y1</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">cw</span> <span class="o">-</span> <span class="n">pad_size</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">cw</span> <span class="o">+</span> <span class="n">pad_size</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">img</span><span class="p">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">out</span><span class="p">[</span><span class="n">x1</span><span class="p">:</span><span class="n">x2</span><span class="p">,</span> <span class="n">y1</span><span class="p">:</span><span class="n">y2</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">replace</span>
+    <span class="k">return</span> <span class="n">out</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="randaugment">RandAugment</h3>
+
+<p>Random Augmentation(RandAugment) 思想是非常简单的。首先，有一个14种可能的增强的列表，以及一系列可能的幅度。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+</pre></td><td class="rouge-code"><pre><span class="c1"># 图像增强函数字典
+</span><span class="n">func_dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'Identity'</span><span class="p">:</span> <span class="n">identity_func</span><span class="p">,</span>
+    <span class="s">'AutoContrast'</span><span class="p">:</span> <span class="n">autocontrast_func</span><span class="p">,</span>
+    <span class="s">'Equalize'</span><span class="p">:</span> <span class="n">equalize_func</span><span class="p">,</span>
+    <span class="s">'Rotate'</span><span class="p">:</span> <span class="n">rotate_func</span><span class="p">,</span>
+    <span class="s">'Solarize'</span><span class="p">:</span> <span class="n">solarize_func</span><span class="p">,</span>
+    <span class="s">'Color'</span><span class="p">:</span> <span class="n">color_func</span><span class="p">,</span>
+    <span class="s">'Contrast'</span><span class="p">:</span> <span class="n">contrast_func</span><span class="p">,</span>
+    <span class="s">'Brightness'</span><span class="p">:</span> <span class="n">brightness_func</span><span class="p">,</span>
+    <span class="s">'Sharpness'</span><span class="p">:</span> <span class="n">sharpness_func</span><span class="p">,</span>
+    <span class="s">'ShearX'</span><span class="p">:</span> <span class="n">shear_x_func</span><span class="p">,</span>
+    <span class="s">'TranslateX'</span><span class="p">:</span> <span class="n">translate_x_func</span><span class="p">,</span>
+    <span class="s">'TranslateY'</span><span class="p">:</span> <span class="n">translate_y_func</span><span class="p">,</span>
+    <span class="s">'Posterize'</span><span class="p">:</span> <span class="n">posterize_func</span><span class="p">,</span>
+    <span class="s">'ShearY'</span><span class="p">:</span> <span class="n">shear_y_func</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># 默认参数字典
+</span><span class="n">translate_const</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">MAX_LEVEL</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">replace_value</span> <span class="o">=</span> <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
+<span class="n">arg_dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'Identity'</span><span class="p">:</span> <span class="n">none_level_to_args</span><span class="p">,</span>
+    <span class="s">'AutoContrast'</span><span class="p">:</span> <span class="n">none_level_to_args</span><span class="p">,</span>
+    <span class="s">'Equalize'</span><span class="p">:</span> <span class="n">none_level_to_args</span><span class="p">,</span>
+    <span class="s">'Rotate'</span><span class="p">:</span> <span class="n">rotate_level_to_args</span><span class="p">(</span><span class="n">MAX_LEVEL</span><span class="p">,</span> <span class="n">replace_value</span><span class="p">),</span>
+    <span class="s">'Solarize'</span><span class="p">:</span> <span class="n">solarize_level_to_args</span><span class="p">(</span><span class="n">MAX_LEVEL</span><span class="p">),</span>
+    <span class="s">'Color'</span><span class="p">:</span> <span class="n">enhance_level_to_args</span><span class="p">(</span><span class="n">MAX_LEVEL</span><span class="p">),</span>
+    <span class="s">'Contrast'</span><span class="p">:</span> <span class="n">enhance_level_to_args</span><span class="p">(</span><span class="n">MAX_LEVEL</span><span class="p">),</span>
+    <span class="s">'Brightness'</span><span class="p">:</span> <span class="n">enhance_level_to_args</span><span class="p">(</span><span class="n">MAX_LEVEL</span><span class="p">),</span>
+    <span class="s">'Sharpness'</span><span class="p">:</span> <span class="n">enhance_level_to_args</span><span class="p">(</span><span class="n">MAX_LEVEL</span><span class="p">),</span>
+    <span class="s">'ShearX'</span><span class="p">:</span> <span class="n">shear_level_to_args</span><span class="p">(</span><span class="n">MAX_LEVEL</span><span class="p">,</span> <span class="n">replace_value</span><span class="p">),</span>
+    <span class="s">'TranslateX'</span><span class="p">:</span> <span class="n">translate_level_to_args</span><span class="p">(</span>
+        <span class="n">translate_const</span><span class="p">,</span> <span class="n">MAX_LEVEL</span><span class="p">,</span> <span class="n">replace_value</span>
+    <span class="p">),</span>
+    <span class="s">'TranslateY'</span><span class="p">:</span> <span class="n">translate_level_to_args</span><span class="p">(</span>
+        <span class="n">translate_const</span><span class="p">,</span> <span class="n">MAX_LEVEL</span><span class="p">,</span> <span class="n">replace_value</span>
+    <span class="p">),</span>
+    <span class="s">'Posterize'</span><span class="p">:</span> <span class="n">posterize_level_to_args</span><span class="p">(</span><span class="n">MAX_LEVEL</span><span class="p">),</span>
+    <span class="s">'ShearY'</span><span class="p">:</span> <span class="n">shear_level_to_args</span><span class="p">(</span><span class="n">MAX_LEVEL</span><span class="p">,</span> <span class="n">replace_value</span><span class="p">),</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>然后从这个列表里随机选出N个增强和选择一个随机的幅度M，从1到10。这里我们从列表里选出两种，选择一个幅度10，这意味着以百分比表示的幅度为100％(<code class="language-plaintext highlighter-rouge">RandomAugment(2, 10)</code>)。</p>
+
+<p>最后，将所选的增强应用于序列中的图像。每种增强都有100％的可能性被应用。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre></td><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">RandomAugment</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">N</span> <span class="o">=</span> <span class="n">N</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">M</span> <span class="o">=</span> <span class="n">M</span>
+
+    <span class="c1"># 随机选择N个增强操作
+</span>    <span class="k">def</span> <span class="nf">get_random_ops</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">sampled_ops</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">func_dict</span><span class="p">.</span><span class="n">keys</span><span class="p">()),</span> <span class="bp">self</span><span class="p">.</span><span class="n">N</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="n">op</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">M</span><span class="p">)</span> <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">sampled_ops</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">):</span>
+        <span class="n">ops</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">get_random_ops</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">prob</span><span class="p">,</span> <span class="n">level</span> <span class="ow">in</span> <span class="n">ops</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">prob</span><span class="p">:</span> <span class="k">continue</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">arg_dict</span><span class="p">[</span><span class="n">name</span><span class="p">](</span><span class="n">level</span><span class="p">)</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="n">func_dict</span><span class="p">[</span><span class="n">name</span><span class="p">](</span><span class="n">img</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">cutout_func</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">replace_value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">img</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>最终弱增强和强增强代码封装如下</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+</pre></td><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">Cifar10Augment</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="s">"""
+    自定义CIFAR-10数据集类
+    """</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">is_train</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Cifar10Augment</span><span class="p">,</span> <span class="bp">self</span><span class="p">).</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="p">,</span> <span class="n">labels</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">is_train</span> <span class="o">=</span> <span class="n">is_train</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">labels</span><span class="p">)</span>  <span class="c1"># 确保数据和标签数量相等
+</span>        <span class="n">mean</span><span class="p">,</span> <span class="n">std</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.4914</span><span class="p">,</span> <span class="mf">0.4822</span><span class="p">,</span> <span class="mf">0.4465</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.2471</span><span class="p">,</span> <span class="mf">0.2435</span><span class="p">,</span> <span class="mf">0.2616</span><span class="p">)</span>
+        <span class="c1">#  mean, std = (-0.0172, -0.0356, -0.1069), (0.4940, 0.4869, 0.5231) # [-1, 1]
+</span>        <span class="k">if</span> <span class="n">is_train</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">trans_weak</span> <span class="o">=</span> <span class="n">T</span><span class="p">.</span><span class="n">Compose</span><span class="p">([</span>
+                <span class="n">T</span><span class="p">.</span><span class="n">Resize</span><span class="p">((</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)),</span>
+                <span class="n">T</span><span class="p">.</span><span class="n">PadandRandomCrop</span><span class="p">(</span><span class="n">border</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">cropsize</span><span class="o">=</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)),</span>
+                <span class="n">T</span><span class="p">.</span><span class="n">RandomHorizontalFlip</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span>
+                <span class="n">T</span><span class="p">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">),</span>
+                <span class="n">T</span><span class="p">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+            <span class="p">])</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">trans_strong</span> <span class="o">=</span> <span class="n">T</span><span class="p">.</span><span class="n">Compose</span><span class="p">([</span>
+                <span class="n">T</span><span class="p">.</span><span class="n">Resize</span><span class="p">((</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)),</span>
+                <span class="n">T</span><span class="p">.</span><span class="n">PadandRandomCrop</span><span class="p">(</span><span class="n">border</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">cropsize</span><span class="o">=</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)),</span>
+                <span class="n">T</span><span class="p">.</span><span class="n">RandomHorizontalFlip</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span>
+                <span class="n">RandomAugment</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="c1"># 强增强
+</span>                <span class="n">T</span><span class="p">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">),</span>
+                <span class="n">T</span><span class="p">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+            <span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">trans</span> <span class="o">=</span> <span class="n">T</span><span class="p">.</span><span class="n">Compose</span><span class="p">([</span>
+                <span class="n">T</span><span class="p">.</span><span class="n">Resize</span><span class="p">((</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)),</span>
+                <span class="n">T</span><span class="p">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">),</span>
+                <span class="n">T</span><span class="p">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+            <span class="p">])</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="第三步对弱增强样本预测生成伪标签">第三步：对弱增强样本预测生成伪标签</h2>
+
+<p><strong>第二步</strong>，对增强后的样本进行预测。对于<strong>弱增强</strong>的样本，输出的预测结果(Softmax之后的)最高预测概率(即argmax的结果)大于阈值(图中的虚线)，则认为是有效的样本，将其预测结果转换为one-hot编码作为标签（这就是pseudo label）。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="n">lbs_u</span><span class="p">,</span> <span class="n">valid_u</span> <span class="o">=</span> <span class="n">lb_guessor</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">ims_u_weak</span><span class="p">)</span>  <span class="c1"># 使用LabelGuessor预测未标记数据的标签
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9tbWJpei5xcGljLmNuL21tYml6X3BuZy9LWVNEVG1PVlp2cFVwMDlueE05ZnYwYmw2Z3hmVTd1ZE9vcFdHWjE3R2liYUdIVGlheUJERENGTzlzQWZXYUhBQ2t3ZFlPckgwRko3aWJpYlpITXlLVlR6WncvNjQw?x-oss-process=image/format,png" alt="img" /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+</pre></td><td class="rouge-code"><pre><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="k">class</span> <span class="nc">LabelGuessor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thresh</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">thresh</span> <span class="o">=</span> <span class="n">thresh</span>  <span class="c1"># 设置阈值，用于筛选高置信度的标签
+</span>
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">ims</span><span class="p">):</span>
+        <span class="c1"># 备份模型的当前状态
+</span>        <span class="n">org_state</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">.</span><span class="n">clone</span><span class="p">().</span><span class="n">detach</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">model</span><span class="p">.</span><span class="n">state_dict</span><span class="p">().</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="c1"># 记录模型当前的训练模式（训练或评估）
+</span>        <span class="n">is_train</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">training</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="p">.</span><span class="n">no_grad</span><span class="p">():</span>  <span class="c1"># 禁用梯度计算
+</span>            <span class="n">model</span><span class="p">.</span><span class="n">train</span><span class="p">()</span>  <span class="c1"># 切换模型到训练模式，以确保BatchNorm和Dropout层的行为一致
+</span>            <span class="n">all_probs</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 初始化一个空列表，用于存储所有的概率
+</span>            <span class="n">logits</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">ims</span><span class="p">)</span>  <span class="c1"># 前向传播，计算模型的输出
+</span>            <span class="n">probs</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># 计算每个类别的概率
+</span>            <span class="n">scores</span><span class="p">,</span> <span class="n">lbs</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nb">max</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># 获取每个样本的最高概率和对应的标签
+</span>            
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">scores</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="p">.</span><span class="n">thresh</span>  <span class="c1"># 根据阈值筛选高置信度的样本
+</span>            <span class="n">lbs</span> <span class="o">=</span> <span class="n">lbs</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>  <span class="c1"># 仅保留高置信度样本的标签
+</span>
+        <span class="c1"># 恢复模型的原始状态
+</span>        <span class="n">model</span><span class="p">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">org_state</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_train</span><span class="p">:</span>
+            <span class="n">model</span><span class="p">.</span><span class="n">train</span><span class="p">()</span>  <span class="c1"># 恢复训练模式
+</span>        <span class="k">else</span><span class="p">:</span>
+            <span class="n">model</span><span class="p">.</span><span class="nb">eval</span><span class="p">()</span>  <span class="c1"># 恢复评估模式
+</span>        <span class="k">return</span> <span class="n">lbs</span><span class="p">.</span><span class="n">detach</span><span class="p">(),</span> <span class="n">idx</span>  <span class="c1"># 返回高置信度样本的标签和索引
+</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="第四步对强增强样本计算交叉熵损失一致性正则化">第四步：对强增强样本计算交叉熵损失(一致性正则化)</h2>
+
+<p><strong>第三步</strong>：对<strong>强增强</strong>的样本，输出的预测结果和对应<strong>弱标记样本</strong>得到的<strong>伪标签</strong>做CrossEntropyLoss，得到损失函数$ L_u$ 其公式表达为：</p>
+
+\[L_u=\frac{1}{\mu B}\sum^{\mu B}_{b=1}\mathcal(max(q_b)\geq \tau )H(\hat{q_b},p_m(y|\mathcal{A}(u_b))) \\\]
+
+<p>$p_m(y∣x) $为预测类别分布，$\tau$为阈值，鼓励模型的预测是对未标记数据的低熵，或者说是高置信度。μ是一个超参数，它决定批中未标注图像的相对大小，μ=2意味着我们使用的未标注图像数量是标注图像的两倍。我取得是μ=7。</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>结合第三第四步，也就是选择$max(q_b)\geq \tau$的$H(\hat{q_b},p_m(y</td>
+      <td>\mathcal{A}(u_b)))$作为$L_u$ 的组成成分，参与反向梯度传播更新。</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9tbWJpei5xcGljLmNuL21tYml6X3BuZy9LWVNEVG1PVlp2cFVwMDlueE05ZnYwYmw2Z3hmVTd1ZGxNcTJPUUVWMnR1blMzdVBMZmJ5bmd2YmViU043b29BTWlhU2NSRW9Ob0tDaWI3Zzg2dXhpYnVpYlEvNjQw?x-oss-process=image/format,png" alt="img" /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="n">logits_x_u</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">ims_x_u</span><span class="p">)</span>
+<span class="n">logits_x</span><span class="p">,</span> <span class="n">logits_u</span> <span class="o">=</span> <span class="n">logits_x_u</span><span class="p">[:</span><span class="n">n_x</span><span class="p">],</span> <span class="n">logits_x_u</span><span class="p">[</span><span class="n">n_x</span><span class="p">:]</span>
+<span class="n">lbs_x</span> <span class="o">=</span> <span class="n">lbs_x</span><span class="p">.</span><span class="nb">long</span><span class="p">()</span>
+<span class="n">loss_x</span> <span class="o">=</span> <span class="n">Loss_x</span><span class="p">(</span><span class="n">logits_x</span><span class="p">,</span> <span class="n">lbs_x</span><span class="p">)</span>  <span class="c1"># 计算有标签数据的损失
+</span><span class="n">loss_u</span> <span class="o">=</span> <span class="n">Loss_u</span><span class="p">(</span><span class="n">logits_u</span><span class="p">,</span> <span class="n">lbs_u</span><span class="p">)</span>  <span class="c1"># 计算无标签数据的损失
+</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="第五步最终损失函数">第五步：最终损失函数</h2>
+
+<p>在前面已经使用交叉熵损失在<strong>标注的图像</strong>上训练了监督模型。对于每个<strong>未标注的图像</strong>，使用弱增强和强增强获得两个图像。弱增强图像被传递到我们的模型中，我们得到了关于类的预测。将最有信心的类别的概率与阈值进行比较。如果它高于阈值，那么我们将该类作为ground truth的标签，即<strong>伪标签</strong>。然后，将经过强增强的图像传递到我们的模型中，获取类别的预测。使用交叉熵损失将此概率分布与ground truth伪标签进行比较。两种损失组合起来进行模型的更新。所以最终损失函数为$Loss = L_s+\lambda L_u$，$\lambda$是超参数。对Loss反向梯度传播完成整个算法模型更新。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="n">loss</span> <span class="o">=</span> <span class="n">loss_x</span> <span class="o">+</span> <span class="n">lambda_u</span> <span class="o">*</span> <span class="n">loss_u</span>  <span class="c1"># 总损失
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="实验结果-1">实验结果</h2>
+
+<blockquote>
+  <p>所有运行的log文件都在附录文件中</p>
+</blockquote>
+
+<h3 id="训练时间-1">训练时间</h3>
+
+<h4 id="cpu-1">CPU</h4>
+
+<p>CPU计算时间：大约4200s一个epoch，训练完20000个iteration(20个epoch)大约需要84 000秒= 1400分钟= 23.34小时:cry:</p>
+
+<p><img src="/img/in-post/PatternRecognition/HW3/image-20240611162210871.png" alt="image-20240611162210871" /></p>
+
+<h4 id="gpu-1">GPU</h4>
+
+<p>GPU计算时间：大约400秒一个epoch，训练完20000个iteration(20个epoch)大约需要8000秒=133.34分钟=2.22小时，相比CPU计算节约了1050%的时间。与mixmatch相比时间增加了320%。</p>
+
+<p><img src="/img/in-post/PatternRecognition/HW3/image-20240610152921907.png" alt="image-20240610152921907" /></p>
+
+<h4 id="torch">Torch</h4>
+
+<blockquote>
+  <p>python fixmatch.py –c config/fixmatch/fixmatch_cifar10_40_0.yaml</p>
+</blockquote>
+
+<p><strong>标注数据数量为40时：</strong></p>
+
+<p><img src="/img/in-post/PatternRecognition/HW3/image-20240610154738952.png" alt="image-20240610154738952" /></p>
+
+<p><strong>标注数据数量为250时：</strong></p>
+
+<p><img src="/img/in-post/PatternRecognition/HW3/image-20240610154812321.png" alt="image-20240610154812321" /></p>
+
+<p><strong>标注数据数量为4000时：</strong></p>
+
+<p><img src="/img/in-post/PatternRecognition/HW3/image-20240610154829706.png" alt="image-20240610154829706" /></p>
+
+<h2 id="超参数调整-1">超参数调整</h2>
+
+<blockquote>
+  <p>Fixmatch论文发现使用 Adam 优化器会导致更差的性能, 而使用 SGD 则没有这种情况, 另外, 使用 SGD 和使用 Nesterov 之间没有存在实质性差异。</p>
+</blockquote>
+
+<p>TorchSSL中超参数，括号中是在TorchSSL中命名</p>
+
+<blockquote>
+  <p>mu(uratio) = 7</p>
+
+  <p>lam_u(ulb_loss_ratio) = 1.0 # 无标签数据的损失权重</p>
+
+  <p>ema_alpha(ema_m) = 0.999 # EMA参数的衰减率</p>
+
+  <p>lr = 0.03</p>
+
+  <p>weight_decay = 5e-4</p>
+
+  <p>momentum = 0.9</p>
+</blockquote>
+
+<p>我的（经过多番尝试发现修改超参数和TorchSSL一样时性能最好，使用<code class="language-plaintext highlighter-rouge">kaiming_normal_</code>时选<code class="language-plaintext highlighter-rouge">fan_in</code>比<code class="language-plaintext highlighter-rouge">fan_out</code>好很多，a=0比a=0.1）</p>
+
+<blockquote>
+  <p>mu = 7 # μ=2意味着我们使用的未标注图像数量是标注图像的两倍</p>
+
+  <p>lam_u = 1.0 # 无标签数据的损失权重</p>
+
+  <p>ema_alpha = 0.999 # EMA参数的衰减率</p>
+
+  <p>lr = 0.03</p>
+
+  <p>weight_decay = 5e-4</p>
+
+  <p>momentum = 0.9</p>
+
+  <p>初始化方式发现下面这个比较好：</p>
+
+  <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="n">nn</span><span class="p">.</span><span class="n">init</span><span class="p">.</span><span class="n">kaiming_normal_</span><span class="p">(</span>
+    <span class="n">child</span><span class="p">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">'fan_in'</span><span class="p">,</span> <span class="n">nonlinearity</span><span class="o">=</span><span class="s">'leaky_relu'</span>
+<span class="p">)</span>
+</pre></td></tr></tbody></table></code></pre></div>  </div>
+</blockquote>
+
+<h2 id="最终结果-1">最终结果</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">版本/标注数据数量</th>
+      <th style="text-align: center">40</th>
+      <th style="text-align: center">250</th>
+      <th style="text-align: center">4000</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">我的实现</td>
+      <td style="text-align: center">0.5011</td>
+      <td style="text-align: center">0.7357</td>
+      <td style="text-align: center">0.8939</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">TorchSSL</td>
+      <td style="text-align: center">0.4497</td>
+      <td style="text-align: center">0.8596</td>
+      <td style="text-align: center">0.9053</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>由于Fixmatch训练时间比较久，就不像Mixmatch一样探究<strong>最终</strong>性能了。（而且发现了标注数据数量大的时候训练时间反而小，不知道是不是因为设备的原因）</p>
+
+<h1 id="mixmatch-和-fixmatch-的相同点和不同点">MixMatch 和 FixMatch 的相同点和不同点</h1>
+
+<p>MixMatch 和 FixMatch 都是半监督学习（SSL）领域的算法，旨在利用少量标记数据和大量未标记数据来训练模型。下面是对这两种算法的相同点和不同点的分析：</p>
+
+<h2 id="相同点">相同点：</h2>
+<ol>
+  <li><strong>半监督学习目标</strong>：两者都旨在解决半监督学习问题，即在有限的标记数据情况下提高模型性能。</li>
+  <li><strong>数据增强</strong>：两种方法都使用了数据增强技术来增加数据的多样性，帮助模型学习更鲁棒的特征表示。</li>
+  <li><strong>伪标签</strong>：MixMatch 和 FixMatch 都利用了伪标签的概念，即用模型自身的预测结果作为未标记数据的标签，并以此进行训练。</li>
+</ol>
+
+<h2 id="不同点">不同点：</h2>
+<ol>
+  <li><strong>标签生成策略</strong>：
+    <ul>
+      <li><strong>MixMatch</strong>：通过对未标记数据进行多次数据增强，然后取模型预测的均值，并使用一个“<strong>锐化</strong>”函数来生成低熵的伪标签。</li>
+      <li><strong>FixMatch</strong>：使用弱增强和强增强的数据样本，只有当弱增强样本的预测概率超过某个阈值时，才会生成伪标签。</li>
+    </ul>
+  </li>
+  <li><strong>损失函数设计</strong>：
+    <ul>
+      <li><strong>MixMatch</strong>：结合了交叉熵损失和MSE损失，对标记数据和未标记数据分别计算损失，并将它们结合起来。</li>
+      <li><strong>FixMatch</strong>：使用了交叉熵损失，对未标记数据的损失计算中加入了一个掩码，只更新那些预测概率超过阈值的样本。</li>
+    </ul>
+  </li>
+  <li><strong>一致性正则化</strong>：
+    <ul>
+      <li><strong>MixMatch</strong>：通过MixUp技术，将标记和未标记数据混合，增强模型的泛化能力。</li>
+      <li><strong>FixMatch</strong>：虽然也强调了一致性正则化的重要性，但在具体实现上与MixMatch有所不同，见Fixmatch的第四步</li>
+    </ul>
+  </li>
+  <li><strong>算法流程</strong>：
+    <ul>
+      <li><strong>MixMatch</strong>：算法流程包括数据增强、标签猜测、MixUp混合以及损失函数的计算。</li>
+      <li><strong>FixMatch</strong>：算法流程则更侧重于伪标签的生成和筛选，以及强、弱增强样本的损失计算。</li>
+    </ul>
+  </li>
+  <li><strong>实现复杂度</strong>：
+    <ul>
+      <li><strong>MixMatch</strong>：实现相对复杂，涉及到多次数据增强、锐化函数和MixUp操作。</li>
+      <li><strong>FixMatch</strong>：实现相对简化，重点在于伪标签的生成和筛选过程。</li>
+    </ul>
+  </li>
+  <li><strong>超参数</strong>：
+    <ul>
+      <li><strong>MixMatch</strong>：有多个超参数，如MixUp中的Beta分布参数、锐化温度等。</li>
+      <li><strong>FixMatch</strong>：主要的超参数是伪标签生成的阈值和用于未标记样本损失的权重。</li>
+    </ul>
+  </li>
+  <li><strong>性能和效率</strong>：
+    <ul>
+      <li><strong>MixMatch</strong>：在多个数据集上取得了很好的性能，特别是在标记数据非常有限的情况下，且训练速度快(约120秒训练1000个iteration)。</li>
+      <li><strong>FixMatch</strong>：效果要优于Mixmatch，但是训练时间要更长，约380秒训练1000个iteration。</li>
+    </ul>
+  </li>
+</ol>
+
+<h1 id="如何运行代码">如何运行代码</h1>
+
+<p>配置好Pytorch环境后，修改下面超参数后运行<code class="language-plaintext highlighter-rouge">fixmatch.py</code>或者<code class="language-plaintext highlighter-rouge">mixmatch.py</code>即可，主要修改的是<code class="language-plaintext highlighter-rouge">data_path</code>和<code class="language-plaintext highlighter-rouge">use_gpu</code></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+</pre></td><td class="rouge-code"><pre><span class="c1"># 超参数设置
+</span><span class="n">wresnet_k</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">wresnet_n</span> <span class="o">=</span> <span class="mi">28</span>
+<span class="n">n_classes</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">n_labeled</span> <span class="o">=</span> <span class="mi">250</span>
+<span class="n">n_epoches</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">batchsize</span> <span class="o">=</span> <span class="mi">64</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="mi">7</span>
+<span class="n">thr</span> <span class="o">=</span> <span class="mf">0.95</span>
+<span class="n">n_imgs_per_epoch</span> <span class="o">=</span> <span class="mi">64</span> <span class="o">*</span> <span class="mi">1000</span>
+<span class="n">lam_u</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">ema_alpha</span> <span class="o">=</span> <span class="mf">0.999</span>
+<span class="n">lr</span> <span class="o">=</span> <span class="mf">0.03</span>
+<span class="n">weight_decay</span> <span class="o">=</span> <span class="mf">5e-4</span>
+<span class="n">momentum</span> <span class="o">=</span> <span class="mf">0.9</span>
+<span class="n">seed</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+<span class="n">sample_interval</span> <span class="o">=</span> <span class="mi">500</span>  <span class="c1"># 每500个迭代输出一次训练信息
+</span><span class="n">data_path</span> <span class="o">=</span> <span class="s">'../../Mixmatch/data'</span>
+<span class="c1"># 全局设置
+</span><span class="n">use_gpu</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">device</span><span class="p">(</span><span class="s">'cuda'</span> <span class="k">if</span> <span class="n">use_gpu</span> <span class="k">else</span> <span class="s">'cpu'</span><span class="p">)</span>  <span class="c1"># 设置设备为GPU或CPU
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<h1 id="实验感想">实验感想</h1>
+
+<p>本次实验我复现了MixMatch和FixMatch算法，过程充满了挑战和收获。以下是我对本次实验的一些详细感想和总结。</p>
+
+<p>首先，这次实验的难度确实不小，从开始搭建基本结构到最终完成实验，我花费了整整一周时间。MixMatch和FixMatch作为半监督学习的代表算法，它们的实现涉及多个复杂的步骤，包括数据增强、伪标签生成以及损失函数的设计等。刚开始的时候，我对这些步骤的理解还不够深入，因此在代码实现上遇到了不少困难。</p>
+
+<p>在搭建好基本结构之后，调参过程也颇为漫长。半监督学习算法对超参数比较敏感，如学习率、损失权重等都需要细致调整。每次参数调整都需要大量的实验验证，而实验结果的波动性也使得调参过程变得更加复杂。为了得到较好的实验结果，我尝试了多种不同的参数组合，并花费了大量时间进行验证和比较，最终才得到了相对满意的结果。</p>
+
+<p>在实验期间，我还阅读了期末作业中关于开放词汇检测的相关论文，发现其与MixMatch和FixMatch有着异曲同工之妙。开放词汇识别旨在识别或分类训练集中未出现过的类别，这通常需要模型具备强大的泛化能力。在这一领域，伪标签技术同样扮演着关键角色，通过模型初步预测为未标记数据分配临时标签，再将这些数据融入训练过程中，以此迭代优化模型。这种自我训练或迭代增强的方法与MixMatch和FixMatch的核心思想不谋而合，都体现了半监督学习在资源有限情况下的强大适应性和学习能力。通过对比这些方法，我进一步加深了对半监督学习技术的理解。</p>
+
+<p>MixMatch和FixMatch算法的创新之处在于它们如何生成和利用伪标签。例如，FixMatch通过使用强增强和弱增强的样本来生成更可靠的伪标签，而MixMatch则通过MixUp技术来增强模型对未标记数据的泛化能力。这种方法不仅在理论上具有创新性，在实际应用中也展现出了强大的效果。特别是FixMatch，其通过更加简单有效的方式生成伪标签，并在数据增强策略上进行了改进，使得模型在半监督学习任务中的表现更加优越。</p>
+
+<p>总的来说，这次实验让我对半监督学习有了更深刻的认识。从理论学习到实践操作，每一个环节都让我受益匪浅。尽管实验过程中遇到了诸多困难，但正是这些困难促使我不断学习和思考，最终克服了挑战，完成了实验。通过这次实验，我不仅掌握了MixMatch和FixMatch的实现方法，还体会到了科学研究中坚持与探索的重要性。这将对我今后的学习和研究工作带来积极的影响。</p>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2024/06/11/VLSI-HW/" data-toggle="tooltip" data-placement="top" title="VLSI作业及知识点复习">
+                        Previous<br>
+                        <span>VLSI作业及知识点复习</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2024/06/22/finalterm/" data-toggle="tooltip" data-placement="top" title="Seq2Seq+attention中英机器翻译">
+                        Next<br>
+                        <span>Seq2Seq+attention中英机器翻译</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+
+                <!--   gitalk       -->
+                <div class="comment">
+                <div id="gitalk-container"></div>
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+                <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+                <script>
+                var gitalk = new Gitalk({
+                    id: location.pathname,
+                    clientID: '0db4b4c6d83c061f6b30',
+                    clientSecret: 'e1651c09f1a49b2b4a544cd584d3e8a55454a48a',
+                    repo: 'BlogComment',
+                    owner: 'jaredddddd',
+                    admin: ['jaredddddd'], 
+                    labels: ['Gitalk'],
+                })
+                gitalk.render('gitalk-container')
+                </script> 
+                </div>
+
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0036" 
+                    href="/archive/?tag=Computer-Organization"
+                    title="Computer-Organization"
+                    rel="21">Computer-Organization</a>
+        
+                <a data-sort="0018" 
+                    href="/archive/?tag=NOTES"
+                    title="NOTES"
+                    rel="39">NOTES</a>
+        
+                <a data-sort="0041" 
+                    href="/archive/?tag=Project"
+                    title="Project"
+                    rel="16">Project</a>
+        
+                <a data-sort="0042" 
+                    href="/archive/?tag=AI"
+                    title="AI"
+                    rel="15">AI</a>
+        
+                <a data-sort="0048" 
+                    href="/archive/?tag=OS"
+                    title="OS"
+                    rel="9">OS</a>
+        
+                <a data-sort="0052" 
+                    href="/archive/?tag=ML"
+                    title="ML"
+                    rel="5">ML</a>
+        
+                <a data-sort="0053" 
+                    href="/archive/?tag=PatternRecognition"
+                    title="PatternRecognition"
+                    rel="4">PatternRecognition</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Blog"
+                    title="Blog"
+                    rel="3">Blog</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Distributed-System"
+                    title="Distributed-System"
+                    rel="3">Distributed-System</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=ANN"
+                    title="ANN"
+                    rel="2">ANN</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CPU%E8%AE%BE%E8%AE%A1"
+                    title="CPU设计"
+                    rel="2">CPU设计</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CompilationPrinciple"
+                    title="CompilationPrinciple"
+                    rel="2">CompilationPrinciple</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     TeX: {
+       equationNumbers: {
+         autoNumber: "AMS"
+       }
+     },
+     SVG: {
+       scale: 90
+     },
+     tex2jax: {
+       inlineMath: [ ['$','$'] ],
+       displayMath: [ ['$$','$$'] ],
+       processEscapes: true,
+     }
+   });
+ </script>
+ <script type="text/javascript"
+         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+
+.post-container {
+    background: #fcfbfb; /* 背景颜色 */
+    border-radius: 25px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    padding-top: 40px; /* 特别增加顶部内边距 */
+    margin-top: 20px; /* 添加顶部外边距 */
+    /* margin-left: 40px; */
+    /* width: 900px; */
+}
+
+
+/* 在宽屏幕设备上应用特定样式 */
+@media (min-width: 1024px) {
+  .post-container {
+    margin-left: 40px; /* 向左扩展 */
+    width: 900px; /* 设置宽度 */
+  }
+  .side-catalog{
+    width: 250px;
+  }
+}
+
+.post-container:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* 当鼠标悬停时增加阴影效果 */
+}
+
+.side-catalog {
+    background: #ffffff; /* 背景颜色 */
+    border-radius: 15px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    margin-left: 10pt;
+    /* width: 200px; */
+
+}
+
+
+
+.catalog-container {
+    /* ... 其他样式 ... */
+    display: none; /* 默认不显示catalog */
+    transition: all 0.3s ease; /* 过渡效果 */
+    margin-top: 20px; /* 添加顶部外边距 */
+}
+
+</style>
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; LvKouKou Blog 2025
+                    <br>
+                    <!--  删掉了作者Hux Blog
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                    -->
+                    <!-- 不蒜子 -->
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                    您是Blog的第<span id="busuanzi_value_site_uv"></span>个小伙伴 </br>
+                     <span id="busuanzi_container_page_pv">
+                        本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<!-- 自己添加的 -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TNVD6PR5TQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNVD6PR5TQ');
+</script>
+<!-- 自己添加的 -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        // a = P.find('h1,h2,h3,h4,h5,h6');
+        a = P.find('h1,h2,h3,h4');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<!--鼠标点击爱心动画-->
+<script type="text/javascript" src="/js/love.js"></script>
+</body>
+
+</html>

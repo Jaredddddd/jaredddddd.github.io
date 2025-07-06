@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @LvKouKou 的个人博客，与你一起发现更大的世界 | 要做一个想环游世界的程序员">
+    <meta name="keywords" content="LvKouKou, jaredddddd, @jaredddddd, LvKouKou Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <link
+  rel="stylesheet"
+  href="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+/>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  defer="defer"
+></script>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  defer="defer"
+  onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
+></script>
+    <script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/mathtex-script-type.min.js"
+  defer="defer"
+></script>
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="Chapter4-2 多周期数据通路 - LvKouKou的博客 | LV Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="4-2 多周期数据通路
+
+">
+    
+    <meta property="article:published_time" content=" 2022-11-06T00:00:00Z">
+    
+    
+    <meta property="article:author" content="LvKouKou">
+    
+    
+    <meta property="article:tag" content="Computer-Organization">
+    
+    <meta property="article:tag" content="NOTES">
+    
+    
+    <meta property="og:image" content="https://jaredddddd.github.io/img/LVKOUKOU.jpg">
+    <meta property="og:url" content="https://jaredddddd.github.io/2022/11/06/4-2-Multi-Cycle-datapath/">
+    <meta property="og:site_name" content="LvKouKou的博客 | LV Blog">
+
+    <title>Chapter4-2 多周期数据通路 - LvKouKou的博客 | LV Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jaredddddd.github.io/2022/11/06/4-2-Multi-Cycle-datapath/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* 打字机效果的样式 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #666 }
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid #666;
+            white-space: nowrap;
+            word-wrap: break-word;
+            letter-spacing: .1em;
+            width: fit-content;
+            margin: 0 auto;
+            animation: 
+                typing 2s steps(40, end), /* 打字机效果, 3s 完成打字, 每步40个字符 */
+                blink-caret .75s step-end infinite; /* 光标闪烁效果, 0.75s 完成一次闪烁  */
+        }
+
+        /* 添加包装容器样式 */
+        .typing-wrapper {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%; /* 确保不会超出父容器 */
+        }
+
+        /* 添加响应式样式 */
+        @media (max-width: 768px) {
+        .typing-effect {
+            font-size: 16px; /* 在手机上可以适当调整字体大小 */
+            letter-spacing: normal; /* 在手机上减小字间距 */
+        }
+    }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptions = document.getElementsByClassName('subheading');
+            if (descriptions.length > 0) {
+                const description = descriptions[0];
+                const text = description.textContent;
+                description.innerHTML = `<span class="typing-wrapper"><span class="typing-effect">${text}</span></span>`;
+            }
+        });
+    </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">LvKouKou Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/resume-home/">Resume</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/roadtrip/">On The Road</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="Searching...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!--//添加评论系统gitalk-->
+<link rel="stylesheet" href="../../../../css/gitalk.css">
+<script src="../../../../js/gitalk.min.js"></script>
+
+<!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=Computer-Organization" title="Computer-Organization">Computer-Organization</a>
+                        
+                        <a class="tag" href="/archive/?tag=NOTES" title="NOTES">NOTES</a>
+                        
+                    </div>
+                    <h1>Chapter4-2 多周期数据通路</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by LvKouKou on November 6, 2022</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="4-2-多周期数据通路">4-2 多周期数据通路</h1>
+
+<p>单周期数据通路的时钟周期取决于最长的一条指令(lw)</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106101504713-1667700965115.png" alt="image-20221106101504713" style="zoom:80%;" /></p>
+
+<h2 id="多周期处理器的实现思想">多周期处理器的实现思想</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106101556823.png" alt="image-20221106101556823" style="zoom:80%;" /></p>
+
+<p>==多周期数据通路只有一个ALU==</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106101714270.png" alt="image-20221106101714270" style="zoom:80%;" /></p>
+
+<p>必须在每个主要功能单元之后添加寄存器以保存输出值， 在随后的时钟周期中使⽤它 
+<strong>IR指令寄存器和PC寄存器</strong>都要写使能，其他的不用</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106101756328.png" alt="image-20221106101756328" style="zoom:80%;" /></p>
+
+<h2 id="指令各阶段分析">指令各阶段分析</h2>
+
+<ol>
+  <li>Instruction Fetch</li>
+  <li>Instruction Decode and Register Fetch</li>
+  <li>Execution, Memory Address Computation, or Branch Completion</li>
+  <li>Memory Access or R-type instruction completion</li>
+  <li>Write-Back Step</li>
+</ol>
+
+<h3 id="第一个周期取值周期算pc4">第一个周期（取值周期）（算PC+4）</h3>
+
+<p>1.取指令阶段
+• 执⾏⼀次存储器读操作
+• 读出的内容（指令） 保存到寄存器IR（指令寄存器） 中
+• IR的内容不是每个时钟都更新， 所以<strong>IR必须加⼀个“写使能”控制</strong>
+• 在取指令阶段结束时， <strong>ALU的输出为PC+4， 并送到PC的输⼊端</strong>， 但不能在每个时钟到来时就更新PC， 所以<strong>PC也要有“写使能”控制</strong></p>
+
+<h3 id="第二个周期译码取数周期算分支地址pcpc44offsetoffset是相对于pc4而言的">第二个周期（译码取数周期）（算分支地址，PC=PC+4+4*offset，offset是相对于PC+4而言的）</h3>
+
+<p>2.译码/读寄存器堆阶段
+• 经过控制逻辑延迟后， 控制信号更新为新值
+• 执⾏⼀次寄存器读操作， 并同时进⾏译码
+• 期间ALU空闲， 可以考虑“投机<strong>计算”分支地址</strong></p>
+
+<h3 id="第三-四-五个周期各指令不同">第三、 四、 五个周期（各指令不同）</h3>
+
+<p>3.ALU运算阶段
+• ALU运算， 输出结果⼀定要在下个时钟到达之前稳定（如lw指令，则要算imm（rs）的imm+rs）
+• 如果是分⽀branch指令， 该阶段需决定是否将分⽀地址写⼊PC
+4.读存储器阶段
+• 由ALU运算结果作为地址访问存储器， 读出数据
+5.写结果到寄存器
+• 把之前的运算结果或读存储器结果写到寄存器堆中</p>
+
+<h2 id="multicycle-implementation-overview">Multicycle Implementation Overview</h2>
+
+<ul>
+  <li>
+    <p>每条指令每⼀步⽤⼀个时钟周期，因此每条指令花费多个时钟周期</p>
+  </li>
+  <li>
+    <p>不是每条指令都花费同样的时钟周期数</p>
+  </li>
+  <li>
+    <p>多周期CPU</p>
+    <ul>
+      <li>更快的时钟频率</li>
+      <li>不同的指令⽤不同的周期数</li>
+      <li><strong>单个ALU</strong>⽤于所有计算</li>
+      <li><strong>单个存储器⽤于指令和数据的存储</strong>（冯诺依曼结构，指令和数据在同一内存中）</li>
+      <li>需要增加寄存器暂存数据⽤于跨时钟周期</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="our-multicycle-approach">Our Multicycle Approach</h2>
+
+<ul>
+  <li>状态器件的读写： <strong>寄存器堆或PC每个时钟开始后进⾏读操作， 时钟结束进行写操作</strong>。</li>
+  <li>寄存器堆读花差不多~50% 的时钟周期时间， 控制器与其并⾏进⾏。</li>
+  <li>在功能部件前⾯增加选择器， 因为不同的时钟周期共享同⼀个ALU部件。</li>
+  <li>所有的操作在⼀个时钟周期内并⾏进⾏。（每个阶段要在同一周期内完成）
+    <ul>
+      <li>与单周期不同的是PC+4， 条件跳转地址计算都在一个ALU上进⾏，指令存储器和数据存储器使⽤同⼀个存储器， 每个时钟周期都进⾏寄存器堆的读操作。</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="the-complete-multicycle-data-with-control">The Complete Multicycle Data with Control</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106103831576.png" alt="image-20221106103831576" /></p>
+
+<h2 id="rtl-summary">RTL Summary</h2>
+
+<p>前两阶段是所有指令都要做的</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106104032206.png" alt="image-20221106104032206" /></p>
+
+<h2 id="step-1instruction-fetch--计算pc4">Step 1:Instruction Fetch  （计算PC+4）</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106111003149.png" alt="image-20221106111003149" /></p>
+
+<p>何时更新PC</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106111021148.png" alt="image-20221106111021148" /></p>
+
+<p>Datapath Activity During Instruction Fetch</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106111356249.png" alt="image-20221106111356249" /></p>
+
+<h2 id="step-2-instruction-decode-and-register-fetch--计算分支地址">Step 2: Instruction Decode and Register Fetch  （计算分支地址）</h2>
+
+<ul>
+  <li>
+    <p>指令未译码， 故只执⾏公共操作， ALU空闲， 可⽤ALU“投机<strong>计算”转移地址</strong></p>
+  </li>
+  <li>
+    <p>ALUOut = PC+(sign-extend(IR[15-0])« 2);</p>
+  </li>
+  <li>
+    <p>读出寄存器堆的两个寄存器内容
+The RTL:
+•A = Reg[IR[25-21]];
+•B = Reg[IR[20-16]];</p>
+
+    <p>请注意， 我们没有根据指令设置任何控制线（因为控制逻辑正忙于“译码”操作码位） ， 还不知道它是什么）</p>
+  </li>
+</ul>
+
+<p>Datapath Activity During Instruction Decode</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106111708165.png" alt="image-20221106111708165" /></p>
+
+<p>注意这里有个易错点</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106111726368.png" alt="image-20221106111726368" /></p>
+
+<h2 id="step-3-instruction-dependent-operations">Step 3 Instruction Dependent Operations</h2>
+
+<ul>
+  <li>ALU is performing one of four functions, based on instruction type</li>
+  <li>Memory reference (lwand sw):
+ALUOut = A + sign-extend(IR[15-0]);</li>
+  <li>R-type:
+ALUOut = A op B;</li>
+  <li>Branch:
+if (A==B) PC = ALUOut;</li>
+  <li>Jump:
+PC = PC[31-28] || (IR[25-0] « 2);</li>
+  <li>如果指令译码输出为： Beq     下⾯第三个周期就是Beq指令 的第⼀个执⾏周期！</li>
+</ul>
+
+<h3 id="beq">beq</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106112032394.png" alt="image-20221106112032394" /></p>
+
+<h3 id="lw--sw">lw &amp; sw</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106112115056.png" alt="image-20221106112115056" /></p>
+
+<h3 id="r-type">R-type</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106112313537.png" alt="image-20221106112313537" /></p>
+
+<h3 id="j型指令">J型指令</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106112333493.png" alt="image-20221106112333493" /></p>
+
+<h2 id="step-4-also-instruction-dependent">Step 4 (also instruction dependent)</h2>
+
+<ul>
+  <li>LW指令， 从内存读出的数据存⼊内存数据寄存器ＭＤＲ， sw指令把端⼝B读出的内容写⼊内存:</li>
+</ul>
+
+<table>
+  <thead>
+    <tr>
+      <th>MDR = Memory[ALUOut];</th>
+      <th>– lw</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Or</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Memory[ALUOut] = B;</td>
+      <td>– sw</td>
+    </tr>
+  </tbody>
+</table>
+
+<ul>
+  <li>R-type 计算结果写⼊⽬标寄存器
+ Reg[IR[15-11]] = ALUOut;</li>
+  <li>请记住， 寄存器写⼊实际上发⽣在时钟周期结束时的边沿</li>
+</ul>
+
+<h3 id="r-type-1">R-type</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106112527173.png" alt="image-20221106112527173" /></p>
+
+<h3 id="lw">lw</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106112540525.png" alt="image-20221106112540525" /></p>
+
+<h3 id="sw">sw</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106112606506.png" alt="image-20221106112606506" /></p>
+
+<h3 id="memory-access-control-signals-settings">Memory Access Control Signals Settings</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106112637044.png" alt="image-20221106112637044" /></p>
+
+<h2 id="step-5-memory-read-completion-write-back">Step 5: Memory Read Completion (Write Back)</h2>
+
+<h3 id="lw-1">lw</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106113026873.png" alt="image-20221106113026873" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106113118336.png" alt="image-20221106113118336" /></p>
+
+<h1 id="控制信号">控制信号</h1>
+
+<h2 id="多周期控制器的实现">多周期控制器的实现</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106113228438.png" alt="image-20221106113228438" /></p>
+
+<h3 id="multicycle-datapath-finite-state-machine">Multicycle Datapath Finite State Machine</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106113317741.png" alt="image-20221106113317741" /></p>
+
+<h3 id="finite-state-machine-implementation">Finite State Machine Implementation</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106113331622.png" alt="image-20221106113331622" /></p>
+
+<h3 id="datapath-control-outputs-truth-table">Datapath Control Outputs Truth Table</h3>
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106113417124.png" alt="image-20221106113417124" /></p>
+
+<h3 id="next-state-truth-table">Next State Truth Table</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106113434687.png" alt="image-20221106113434687" /></p>
+
+<h2 id="实现技术-plaprogrammed-logic-arrays">实现技术: PLA(Programmed Logic Arrays)</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106113506237.png" alt="image-20221106113506237" /></p>
+
+<h3 id="pla电路实现的组合逻辑控制单元硬布线式">⽤PLA电路实现的组合逻辑控制单元（硬布线⽅式）</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106113526161.png" alt="image-20221106113526161" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106113537258.png" alt="image-20221106113537258" /></p>
+
+<h2 id="硬连线路设计和微程序设计">硬连线路设计和微程序设计</h2>
+<ul>
+  <li>
+    <p>硬连线路设计的特点：
+优点： 速度快， 适合于简单或规整的指令系统， 例如， MIPS指令集。
+缺点： 它是⼀个多输⼊/多输出的巨⼤逻辑⽹络。 对于复杂指令系统来说， 结构庞杂， 实现困难； 修改、 维护不易； 灵活性差。 甚⾄⽆法⽤有限状态机描述！</p>
+  </li>
+  <li>
+    <p>简化控制器设计的⼀个⽅法： 微程序设计</p>
+  </li>
+  <li>微程序控制器的基本思想：
+• 仿照程序设计的⽅法， 编制每个指令对应的微程序</li>
+  <li>微程序设计的特点： 具有规整性、 可维性和灵活性， 但速度慢</li>
+</ul>
+
+<h3 id="微程序设计">微程序设计</h3>
+
+<ul>
+  <li>控制是处理器设计的⼀个难点， 早期计算机设计⼈员⾯临的最⼤挑战是正确地控制电路</li>
+  <li>数据通路具有较好的规整性和很好的组织</li>
+  <li>存储器具有很⾼的规整性</li>
+  <li>控制不规整， 并且涉及全局</li>
+  <li>微程序设计:⼀种特殊的实现处理器控制部件的策略， 它在寄存器传输操作的级别进⾏“编程”</li>
+  <li>微体系结构（Microarchitecture） :微程序编程⼈员所看到的硬件的逻辑结构和功能特性</li>
+</ul>
+
+<h3 id="控制存储器control-memory">控制存储器（Control Memory）</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106113849158.png" alt="image-20221106113849158" /></p>
+
+<hr />
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106113907970.png" alt="image-20221106113907970" /></p>
+
+<h3 id="微程序设计思想">微程序设计思想</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106113948357.png" alt="image-20221106113948357" /></p>
+
+<h3 id="微程序控制器的基本结构">微程序控制器的基本结构</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106114303707.png" alt="image-20221106114303707" /></p>
+
+<h3 id="microcode-implementation">Microcode Implementation</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106114339414.png" alt="image-20221106114339414" /></p>
+
+<h3 id="微程序微指令微命令微操作的关系">微程序\微指令\微命令\微操作的关系</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106114419270.png" alt="image-20221106114419270" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106114439102.png" alt="image-20221106114439102" /></p>
+
+<h3 id="微指令地址选择逻辑">微指令地址选择逻辑</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106114527230.png" alt="image-20221106114527230" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106114549605.png" alt="image-20221106114549605" /></p>
+
+<h3 id="微指令的格式">微指令的格式</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106115801747.png" alt="image-20221106115801747" /></p>
+
+<h2 id="微程序控制器设计的般步骤--了解">微程序控制器设计的⼀般步骤  （了解）</h2>
+
+<ul>
+  <li>根据指令系统， 列出微操作序列</li>
+  <li>微指令编码</li>
+  <li>控制微程序流</li>
+  <li>确定指令格式</li>
+  <li>微程序写⼊控制存储器</li>
+</ul>
+
+<h3 id="写存储器示意图">写⼊存储器示意图</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106120120987.png" alt="image-20221106120120987" /></p>
+
+<h3 id="意外和中断exceptions-and-interrupts">意外和中断(Exceptions and Interrupts)</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106120143410.png" alt="image-20221106120143410" /></p>
+
+<h3 id="异常和中断的处理">异常和中断的处理</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106120203131.png" alt="image-20221106120203131" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106120222945.png" alt="image-20221106120222945" /></p>
+
+<h3 id="处理器中的异常处理机制">处理器中的异常处理机制</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106120246888.png" alt="image-20221106120246888" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106120258392.png" alt="image-20221106120258392" /></p>
+
+<h3 id="举例-80868088中断系统采向量中断式">举例-8086/8088中断系统（采⽤向量中断⽅式）</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106120820711.png" alt="image-20221106120820711" /></p>
+
+<h3 id="80868088的中断向量表">8086/8088的中断向量表</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106120849566.png" alt="image-20221106120849566" /></p>
+
+<h3 id="mips带异常处理的数据通路设计">MIPS带异常处理的数据通路设计</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106120906551.png" alt="image-20221106120906551" /></p>
+
+<p>Interrupt Modified Multicycle Datapath</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106121256020.png" alt="image-20221106121256020" /></p>
+
+<h3 id="带异常处理的控制器设计">带异常处理的控制器设计</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106121316827.png" alt="image-20221106121316827" /></p>
+
+<h3 id="interrupt-modified-fsm">Interrupt Modified FSM</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106121610143.png" alt="image-20221106121610143" /></p>
+
+<h3 id="trap-modified-multicycle-datapath">Trap Modified Multicycle Datapath</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106121911288.png" alt="image-20221106121911288" /></p>
+
+<h3 id="how-control-detects-two-traps">How Control Detects Two Traps</h3>
+
+<ul>
+  <li>未定义指令(RI) – 状态1检测到下⼀个状态没有定义，既没有相应的操作码
+• 所有未定义指令的下⼀个状态为新状态 10</li>
+  <li>算数运算溢出(Ov) – ALU溢出信号在状态6出现 (即不再有结果写⼊寄存器操作)</li>
+  <li>需要修正状态图
+• 挑战在于处理指令和引发异常的事件之间的交互， 以使控制逻辑保持⼩⽽快
+• 复杂的交互使控制单元成为硬件设计中最具挑战性的事情， 尤其是在流⽔线处理器中</li>
+</ul>
+
+<h3 id="trap-modified-fsm">Trap Modified FSM</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106123556239.png" alt="image-20221106123556239" /></p>
+
+<h1 id="例子多周期和单周期性能分析">例子：多周期和单周期性能分析</h1>
+
+<h3 id="多周期性能分析">多周期性能分析</h3>
+
+<ul>
+  <li>与单周期CPU对⽐， 分成了多个阶段
++ 时钟周期减少
+– High CPI每个指令所需周期数增加了</li>
+  <li>CPI 取决于指令
+• Branches / Jumps: 3 cycles
+• ALU: 4 cycles
+• Stores: 4 cycles
+• Loads: 5 cycles
+•CPI 算平均CPI， 取决于权重</li>
+  <li>⽐如:
+• 20% loads, 15% stores, 20% branches, 45% ALU
+CPI= 0.20 * 5 + 0.15 * 4 + 0.20 * 3 + 0.45 * 4 = 4.0</li>
+</ul>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106123637704.png" alt="image-20221106123637704" /></p>
+
+<h4 id="单周期">单周期</h4>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106123701056.png" alt="image-20221106123701056" /></p>
+
+<h3 id="单周期cpu性能分析举例">单周期CPU性能分析举例</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106123731237.png" alt="image-20221106123731237" /></p>
+
+<p>Example:
+⼀个程序有 100 billion 条指令， 在单周期CPU上执⾏:</p>
+
+<p>Execution Time   = number of instructions x CPI x Tc = (100 × 10^9)(1)(925 × 10^-12 s)= 92.5 seconds</p>
+
+<h4 id="多周期">多周期</h4>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106123859355.png" alt="image-20221106123859355" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106123951356.png" alt="image-20221106123951356" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106124048068.png" alt="image-20221106124048068" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-2/image-20221106124104129.png" alt="image-20221106124104129" /></p>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2022/10/24/4-1-Single-cycle-datapath/" data-toggle="tooltip" data-placement="top" title="Chapter4-1 单周期数据通路">
+                        Previous<br>
+                        <span>Chapter4-1 单周期数据通路</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2022/11/09/MIPS/" data-toggle="tooltip" data-placement="top" title="MIPS汇编语言指令分类及寻址模式">
+                        Next<br>
+                        <span>MIPS汇编语言指令分类及寻址模式</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+
+                <!--   gitalk       -->
+                <div class="comment">
+                <div id="gitalk-container"></div>
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+                <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+                <script>
+                var gitalk = new Gitalk({
+                    id: location.pathname,
+                    clientID: '0db4b4c6d83c061f6b30',
+                    clientSecret: 'e1651c09f1a49b2b4a544cd584d3e8a55454a48a',
+                    repo: 'BlogComment',
+                    owner: 'jaredddddd',
+                    admin: ['jaredddddd'], 
+                    labels: ['Gitalk'],
+                })
+                gitalk.render('gitalk-container')
+                </script> 
+                </div>
+
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0036" 
+                    href="/archive/?tag=Computer-Organization"
+                    title="Computer-Organization"
+                    rel="21">Computer-Organization</a>
+        
+                <a data-sort="0018" 
+                    href="/archive/?tag=NOTES"
+                    title="NOTES"
+                    rel="39">NOTES</a>
+        
+                <a data-sort="0041" 
+                    href="/archive/?tag=Project"
+                    title="Project"
+                    rel="16">Project</a>
+        
+                <a data-sort="0042" 
+                    href="/archive/?tag=AI"
+                    title="AI"
+                    rel="15">AI</a>
+        
+                <a data-sort="0048" 
+                    href="/archive/?tag=OS"
+                    title="OS"
+                    rel="9">OS</a>
+        
+                <a data-sort="0052" 
+                    href="/archive/?tag=ML"
+                    title="ML"
+                    rel="5">ML</a>
+        
+                <a data-sort="0053" 
+                    href="/archive/?tag=PatternRecognition"
+                    title="PatternRecognition"
+                    rel="4">PatternRecognition</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Blog"
+                    title="Blog"
+                    rel="3">Blog</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Distributed-System"
+                    title="Distributed-System"
+                    rel="3">Distributed-System</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=ANN"
+                    title="ANN"
+                    rel="2">ANN</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CPU%E8%AE%BE%E8%AE%A1"
+                    title="CPU设计"
+                    rel="2">CPU设计</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CompilationPrinciple"
+                    title="CompilationPrinciple"
+                    rel="2">CompilationPrinciple</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     TeX: {
+       equationNumbers: {
+         autoNumber: "AMS"
+       }
+     },
+     SVG: {
+       scale: 90
+     },
+     tex2jax: {
+       inlineMath: [ ['$','$'] ],
+       displayMath: [ ['$$','$$'] ],
+       processEscapes: true,
+     }
+   });
+ </script>
+ <script type="text/javascript"
+         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+
+.post-container {
+    background: #fcfbfb; /* 背景颜色 */
+    border-radius: 25px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    padding-top: 40px; /* 特别增加顶部内边距 */
+    margin-top: 20px; /* 添加顶部外边距 */
+    /* margin-left: 40px; */
+    /* width: 900px; */
+}
+
+
+/* 在宽屏幕设备上应用特定样式 */
+@media (min-width: 1024px) {
+  .post-container {
+    margin-left: 40px; /* 向左扩展 */
+    width: 900px; /* 设置宽度 */
+  }
+  .side-catalog{
+    width: 250px;
+  }
+}
+
+.post-container:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* 当鼠标悬停时增加阴影效果 */
+}
+
+.side-catalog {
+    background: #ffffff; /* 背景颜色 */
+    border-radius: 15px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    margin-left: 10pt;
+    /* width: 200px; */
+
+}
+
+
+
+.catalog-container {
+    /* ... 其他样式 ... */
+    display: none; /* 默认不显示catalog */
+    transition: all 0.3s ease; /* 过渡效果 */
+    margin-top: 20px; /* 添加顶部外边距 */
+}
+
+</style>
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; LvKouKou Blog 2025
+                    <br>
+                    <!--  删掉了作者Hux Blog
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                    -->
+                    <!-- 不蒜子 -->
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                    您是Blog的第<span id="busuanzi_value_site_uv"></span>个小伙伴 </br>
+                     <span id="busuanzi_container_page_pv">
+                        本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<!-- 自己添加的 -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TNVD6PR5TQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNVD6PR5TQ');
+</script>
+<!-- 自己添加的 -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        // a = P.find('h1,h2,h3,h4,h5,h6');
+        a = P.find('h1,h2,h3,h4');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<!--鼠标点击爱心动画-->
+<script type="text/javascript" src="/js/love.js"></script>
+</body>
+
+</html>

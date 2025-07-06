@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @LvKouKou 的个人博客，与你一起发现更大的世界 | 要做一个想环游世界的程序员">
+    <meta name="keywords" content="LvKouKou, jaredddddd, @jaredddddd, LvKouKou Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <link
+  rel="stylesheet"
+  href="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+/>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  defer="defer"
+></script>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  defer="defer"
+  onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
+></script>
+    <script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/mathtex-script-type.min.js"
+  defer="defer"
+></script>
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="Alpha-beta剪枝算法设计一个中国象棋博弈程序 - LvKouKou的博客 | LV Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="Alpha-beta剪枝算法设计一个中国象棋博弈程序
+
+">
+    
+    <meta property="article:published_time" content=" 2023-04-19T00:00:00Z">
+    
+    
+    <meta property="article:author" content="LvKouKou">
+    
+    
+    <meta property="article:tag" content="AI">
+    
+    <meta property="article:tag" content="Project">
+    
+    
+    <meta property="og:image" content="https://jaredddddd.github.io/img/LVKOUKOU.jpg">
+    <meta property="og:url" content="https://jaredddddd.github.io/2023/04/19/AI-Chess/">
+    <meta property="og:site_name" content="LvKouKou的博客 | LV Blog">
+
+    <title>Alpha-beta剪枝算法设计一个中国象棋博弈程序 - LvKouKou的博客 | LV Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jaredddddd.github.io/2023/04/19/AI-Chess/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* 打字机效果的样式 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #666 }
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid #666;
+            white-space: nowrap;
+            word-wrap: break-word;
+            letter-spacing: .1em;
+            width: fit-content;
+            margin: 0 auto;
+            animation: 
+                typing 2s steps(40, end), /* 打字机效果, 3s 完成打字, 每步40个字符 */
+                blink-caret .75s step-end infinite; /* 光标闪烁效果, 0.75s 完成一次闪烁  */
+        }
+
+        /* 添加包装容器样式 */
+        .typing-wrapper {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%; /* 确保不会超出父容器 */
+        }
+
+        /* 添加响应式样式 */
+        @media (max-width: 768px) {
+        .typing-effect {
+            font-size: 16px; /* 在手机上可以适当调整字体大小 */
+            letter-spacing: normal; /* 在手机上减小字间距 */
+        }
+    }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptions = document.getElementsByClassName('subheading');
+            if (descriptions.length > 0) {
+                const description = descriptions[0];
+                const text = description.textContent;
+                description.innerHTML = `<span class="typing-wrapper"><span class="typing-effect">${text}</span></span>`;
+            }
+        });
+    </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">LvKouKou Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/resume-home/">Resume</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/roadtrip/">On The Road</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="Searching...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!--//添加评论系统gitalk-->
+<link rel="stylesheet" href="../../../../css/gitalk.css">
+<script src="../../../../js/gitalk.min.js"></script>
+
+<!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=AI" title="AI">AI</a>
+                        
+                        <a class="tag" href="/archive/?tag=Project" title="Project">Project</a>
+                        
+                    </div>
+                    <h1>Alpha-beta剪枝算法设计一个中国象棋博弈程序</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by LvKouKou on April 19, 2023</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="alpha-beta剪枝算法设计一个中国象棋博弈程序">Alpha-beta剪枝算法设计一个中国象棋博弈程序</h1>
+
+<h2 id="一---实验题目">一、   实验题目</h2>
+
+<p>博弈树搜索，用Alpha-beta剪枝算法设计一个中国象棋博弈程序</p>
+
+<h2 id="二---实验内容">二、   实验内容</h2>
+
+<h3 id="1算法原理">1.算法原理</h3>
+
+<p>本次项目的UI是参考了网上的代码。重点分析alpha-beta剪枝算法，关于UI部分就不详细分析了。本次实验还加入了历史启发式函数增加搜索效率。</p>
+
+<hr />
+
+<h4 id="着法生成">着法生成</h4>
+
+<p>判断着法的合法性可分为以下几个步骤。
+(1) 判断棋子的移动是否在棋盘的范围之内，如果超出，一定不是合法的着法。
+(2) 根据行棋方的不同，判断着法是否是吃到己方棋子的着法，如果是，那么一定是不合法的着法。
+(3) 根据兵种的不同，判断棋子的走法是否符合中国象棋的规则，主要有以下几个方面：
+将、士是否走出九宫。
+象是否过河，象眼是否被堵。
+马是否蹩脚。
+炮要翻山吃子。
+兵过河前只能前进，过河后可以前进和左右移动。
+本文设计的着法生成主要采用棋盘扫描法：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="k">def</span> <span class="nf">get_put_down_postion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cur_chess</span><span class="p">):</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<hr />
+
+<h4 id="局面评估">局面评估</h4>
+
+<p>首先我们来看棋局的评估，能否对棋局有一个好的评估是这个算法很关键的一环。我们需要对棋局做出合适的评估，以确定最好的走步。每次估值都需要分开两方的棋子来进行估值。即算出程序方棋局的总体价值和对手方棋局的整体价值。==用<strong>程序方估值-对手方估值</strong>作为这个状态下的估值。如果这个估值大于0，说明程序方占优势；反之，说明对手方占优势。==</p>
+
+<p>本程序的棋局评估考虑一下两方面：</p>
+
+<ol>
+  <li>棋子价值</li>
+  <li>棋子位置分值</li>
+</ol>
+
+<p>棋子价值是依据不同棋子具有的不同的攻击力和防御能力，赋予其固定的分值。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>棋子</th>
+      <th>帅/将</th>
+      <th>车</th>
+      <th>炮</th>
+      <th>马</th>
+      <th>士</th>
+      <th>相/象</th>
+      <th>兵/卒</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>分值</td>
+      <td>6000</td>
+      <td>600</td>
+      <td>300</td>
+      <td>270</td>
+      <td>120</td>
+      <td>120</td>
+      <td>30</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>棋子在棋局的中真正价值，不仅与固定分值有关，其所在的位置也十分重要。</p>
+
+<p>例如，沉底炮、过河卒、以及车占士角等都是较好的棋子位置状态，而窝心马、将(帅)离开底线等则属较差的棋子位置状态。由于各类棋子都有自己特有的行棋方法，因此配备一张位置分值表，表中给出了不同棋子在不同位置上的分值。</p>
+
+<p>（具体位置分值表可见code文件夹中Value.py文件）</p>
+
+<hr />
+
+<h4 id="alpha-beta剪枝">alpha-beta剪枝</h4>
+
+<p>完成好估值后，就可以开始alpha-beta的剪枝算法了。首先确定博弈树的深度，通俗来说就是要让程序往后推演几步。当然推演的步数越多，越能找到一个好的走步，但是所需的时间也就越多。然后我们需要使用一个标记来表示当前是极大层还是在极小层，根据标记来计算当前节点的α或β。如果在极大层，我们需要获得它下面所有极小层的倒推值的极大值（实际上不是所有）；如果在极小层，就需要获得它下面所有极大层的倒推层的极小值（实际上不是所有）。这里就牵涉到了<strong>剪枝</strong>。以在极大层为例，如果当前MAX节点提供的倒推值α大于其前驱极小层MIN节点的β，那么说明这个MAX节点以下搜索提供的值不可能小于α，也就没有继续搜索的意义了，所以就可以直接结束这个MAX节点的搜索，这就是剪枝。</p>
+
+<p>假设α为下界，β为上界，对于α ≤ N ≤ β:</p>
+
+<p>若 α ≤ β 则N有解。(该节点还有继续计算的价值)</p>
+
+<p>若 α &gt; β 则N无解。(停止该节点剩余内容的计算，也不会再更新α、β值)</p>
+
+<p>α-β初始为负无穷到正无穷，算法过程中不断的缩小α-β范围。Max层增加本节点的α，Min层减小本节点的β。</p>
+
+<p>一个节点的初始α、β值来自于父节点。父节点如果还没有相应值，子节点的相应值则是初始的正负无穷。</p>
+
+<p>对于AI节点(Max层)，希望挑选子节点中的最大节点。所以会更新最小值α(因为每得到一个符合条件的更大的值时，以后的新值必须更大才会被选择)。新的最小值α来自于已经计算的子节点(中的最大值)。但最大不能大于于父节点的β。</p>
+
+<p>对于玩家方节点(Min层)，希望挑选子节点中的最小节点。所以会更新最大值β。新的最大值β来自于已经计算的子节点(中的最小值)。但最小不能小于父节点的α。</p>
+
+<p>何时剪枝的文字描述：</p>
+
+<ol>
+  <li>
+    <p>后辈极小节点的值≤祖先极大节点的值时，发生剪枝，称为α剪枝。</p>
+  </li>
+  <li>
+    <p>后辈极大节点的值≥祖先极小节点的值时，发生剪枝，称为β剪枝。</p>
+  </li>
+</ol>
+
+<p>这里发生剪枝的条件都是后辈跟祖先比较，不只是跟父节点比，只要有一个祖先满足剪枝条件就发生剪枝。</p>
+
+<p>具体来说，剪枝规则如下：</p>
+
+<ol>
+  <li>α 剪枝。若任一极小层节点的β值不大于它任一前驱极大层节点的α 值，即α （前驱层）≥β（后继层），则可以中止该极小层中这个MIN节点以下的搜索过程。这个MIN节点最终的倒推值就确定为这个β值。</li>
+  <li>β剪枝。若任一极大层节点的α 值不小于它任一前驱极小层节点的β值，即α （后继层）≥β（前驱层），则可以中止该极大层中这个MAX节点以下的搜索过程。这个MAX节点最终的倒推值就确定为这个α 值。</li>
+</ol>
+
+<p>具体到代码，则为：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="k">if</span> <span class="n">alpha</span> <span class="o">&gt;=</span> <span class="n">beta</span><span class="p">:</span>
+    <span class="k">break</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="2伪代码">2.伪代码</h3>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+</pre></td><td class="rouge-code"><pre><span class="err">输入：搜索深度</span> <span class="n">depth</span><span class="err">，</span> <span class="n">alpha</span><span class="err">，</span> <span class="n">beta</span><span class="err">；</span>
+<span class="err">输出：剪枝时的极大值</span> <span class="n">alpha</span> <span class="err">或极小值</span> <span class="n">beta</span><span class="err">。</span>
+<span class="n">alpha_beta</span><span class="p">(</span><span class="n">depth</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
+<span class="n">BEGIN</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">GameOver</span> <span class="n">or</span> <span class="n">depth</span><span class="err">≤</span><span class="mi">0</span> <span class="n">Then</span> <span class="cm">/*GameOver 判断棋局是否结束， dept≤0 则达到设置的搜索深度*/</span>
+<span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="p">{</span> <span class="n">Return</span><span class="p">(</span><span class="n">Evaluation</span><span class="p">)</span> <span class="p">}</span> <span class="cm">/*Evaluation 是棋局局面的估值*/</span>
+<span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="err">初始化极大值</span> <span class="n">alpha</span><span class="o">=</span> <span class="o">-</span><span class="n">INFINITY</span><span class="o">-</span><span class="mi">1</span> <span class="err">和极小值</span> <span class="n">beta</span><span class="o">=</span> <span class="n">INFINITY</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span> <span class="cm">/* INFINITY 代表无穷大*/</span>
+<span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="k">if</span> <span class="err">极大值结点</span> <span class="n">Then</span>
+<span class="p">(</span><span class="mi">5</span><span class="p">)</span> 	<span class="p">{</span><span class="err">生成当前局面的所有可行着法集</span> <span class="n">M</span><span class="err">；</span>
+<span class="p">(</span><span class="mi">6</span><span class="p">)</span> 	<span class="k">for</span> <span class="n">M</span> <span class="err">中的每一个着法</span> <span class="k">do</span>
+<span class="p">(</span><span class="mi">7</span><span class="p">)</span> 	<span class="p">{</span><span class="err">执行着法</span> <span class="n">Mi</span><span class="err">；</span>
+<span class="p">(</span><span class="mi">8</span><span class="p">)</span> 	<span class="n">value</span><span class="o">=</span> <span class="n">alpha_beta</span><span class="p">(</span><span class="n">depth</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">alpha</span><span class="p">,</span><span class="n">beta</span><span class="p">);</span> <span class="cm">/*递归搜索子节点 */</span>
+<span class="p">(</span><span class="mi">9</span><span class="p">)</span> 	<span class="err">撤销着法</span> <span class="n">Mi</span><span class="p">;</span>
+<span class="p">(</span><span class="mi">10</span><span class="p">)</span> 	<span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span><span class="n">alpha</span> <span class="n">Then</span>
+<span class="p">(</span><span class="mi">11</span><span class="p">)</span> 		<span class="p">{</span> <span class="n">alpha</span><span class="o">=</span> <span class="n">value</span><span class="p">;</span> <span class="cm">/*取极大值*/</span>
+<span class="p">(</span><span class="mi">12</span><span class="p">)</span> 		<span class="k">if</span> <span class="n">alpha</span> <span class="o">&gt;=</span> <span class="n">beta</span> <span class="n">Then</span>
+<span class="p">(</span><span class="mi">13</span><span class="p">)</span> 			<span class="k">return</span> <span class="n">beta</span><span class="p">;}</span> <span class="cm">/*beta 剪枝，抛弃后继节点*/</span>
+<span class="p">(</span><span class="mi">14</span><span class="p">)</span> 	<span class="n">End</span> <span class="k">for</span><span class="p">}</span>
+<span class="p">(</span><span class="mi">15</span><span class="p">)</span> 	<span class="k">return</span> <span class="n">alpha</span><span class="err">；</span> <span class="p">}</span> <span class="cm">/*返回极大值*/</span>
+<span class="p">(</span><span class="mi">16</span><span class="p">)</span> <span class="k">if</span> <span class="err">极小值结点</span> <span class="n">Then</span>
+<span class="p">(</span><span class="mi">17</span><span class="p">)</span> 	<span class="p">{</span><span class="err">生成当前局面的所有可行着法集</span> <span class="n">M</span><span class="err">；</span>
+<span class="p">(</span><span class="mi">18</span><span class="p">)</span> 	<span class="n">For</span> <span class="n">M</span> <span class="err">中的每一个着法</span> <span class="k">do</span>
+<span class="p">(</span><span class="mi">19</span><span class="p">)</span> 	<span class="p">{</span><span class="err">执行着法</span> <span class="n">Mi</span><span class="err">；</span>
+<span class="p">(</span><span class="mi">20</span><span class="p">)</span> 	<span class="n">value</span><span class="o">=</span> <span class="n">AlphaBeta_Search</span> <span class="p">(</span><span class="n">depth</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">alpha</span><span class="p">,</span><span class="n">beta</span><span class="p">);</span>
+<span class="p">(</span><span class="mi">21</span><span class="p">)</span> 	<span class="err">撤销着法</span> <span class="n">Mi</span><span class="p">;</span>
+<span class="p">(</span><span class="mi">22</span><span class="p">)</span> 	<span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="n">beta</span> <span class="n">Then</span>
+<span class="p">(</span><span class="mi">23</span><span class="p">)</span> 		<span class="p">{</span> <span class="n">beta</span><span class="o">=</span> <span class="n">value</span><span class="p">;</span> <span class="cm">/*取极小值*/</span>
+<span class="p">(</span><span class="mi">24</span><span class="p">)</span> 		<span class="k">if</span> <span class="n">beta</span> <span class="o">&lt;=</span> <span class="n">alpha</span> <span class="n">Then</span>
+<span class="p">(</span><span class="mi">25</span><span class="p">)</span> 			<span class="k">return</span> <span class="n">alpha</span><span class="p">;}</span> <span class="cm">/*alpha 剪枝，抛弃后继节点*/</span>
+<span class="p">(</span><span class="mi">26</span><span class="p">)</span> 	<span class="n">EndFor</span><span class="p">}</span>
+<span class="p">(</span><span class="mi">27</span><span class="p">)</span>	 <span class="k">return</span> <span class="n">beta</span><span class="p">;}</span>
+<span class="n">END</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>在搜索进行中，每个搜索节点的值都在与 alpha 和 beta 进行比较，如果某个着法的结果小于或等于 alpha，那么它就是很差的着法，应该将其抛弃。如果某个着法的结果大于或者等于 beta，那么整个节点废弃，因为对手不会希望走到这个局面，它会采用别的着法来避免达到这个局面。当某个着法的结果大于 alpha 并且小于 beta时，这个着法就是走棋一方可以考虑的着法。</p>
+
+<h3 id="3关键代码展示带注释">3.关键代码展示（带注释）</h3>
+
+<p>完全按照伪代码实现：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+</pre></td><td class="rouge-code"><pre><span class="k">def</span> <span class="nf">alpha_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span> <span class="c1"># alpha-beta剪枝，alpha是大可能下界，beta是最小可能上界
+</span>        <span class="c1">#偶数层AI持棋，取最大，奇数层玩家持棋，取最小
+</span>        <span class="n">current_player</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">max_depth</span> <span class="o">-</span> <span class="n">depth</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>  <span class="c1"># 当前轮到哪个玩家持棋，0代表黑方，1代表红方
+</span>        <span class="k">if</span> <span class="n">current_player</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">current_team</span> <span class="o">=</span> <span class="s">'r'</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">current_team</span> <span class="o">=</span> <span class="s">'b'</span> 
+        <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">board</span><span class="p">.</span><span class="n">judge_win</span><span class="p">(</span><span class="n">current_team</span><span class="p">):</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1000000</span>   
+        <span class="k">if</span> <span class="n">depth</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">evaluate</span><span class="p">()</span>
+        <span class="n">possible_moves</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">board</span><span class="p">.</span><span class="n">generate_move</span><span class="p">(</span><span class="n">current_player</span><span class="p">)</span> <span class="c1"># 返回所有能走的方法
+</span>        
+        <span class="k">if</span> <span class="n">current_player</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">move</span> <span class="ow">in</span> <span class="n">possible_moves</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">move</span><span class="p">:</span>
+                    <span class="n">temp</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">move</span><span class="p">)</span>
+                <span class="n">score</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">alpha_beta</span><span class="p">(</span><span class="n">depth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span> 
+                <span class="k">if</span> <span class="n">move</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="p">.</span><span class="n">undo_move</span><span class="p">(</span><span class="n">move</span><span class="p">,</span> <span class="n">temp</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">score</span> <span class="o">&gt;</span> <span class="n">alpha</span><span class="p">:</span>
+                    <span class="n">alpha</span> <span class="o">=</span> <span class="n">score</span>
+                    <span class="k">if</span> <span class="n">alpha</span> <span class="o">&gt;=</span> <span class="n">beta</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">beta</span>
+                    <span class="k">if</span> <span class="n">depth</span> <span class="o">==</span> <span class="bp">self</span><span class="p">.</span><span class="n">max_depth</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="p">.</span><span class="n">best_move</span> <span class="o">=</span> <span class="n">move</span>
+            <span class="k">return</span> <span class="n">alpha</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">move</span> <span class="ow">in</span> <span class="n">possible_moves</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">move</span><span class="p">:</span>
+                    <span class="n">temp</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">move</span><span class="p">)</span>
+                <span class="n">score</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">alpha_beta</span><span class="p">(</span><span class="n">depth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span> 
+                <span class="k">if</span> <span class="n">move</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="p">.</span><span class="n">undo_move</span><span class="p">(</span><span class="n">move</span><span class="p">,</span> <span class="n">temp</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">score</span> <span class="o">&lt;</span> <span class="n">beta</span><span class="p">:</span>
+                    <span class="n">beta</span> <span class="o">=</span> <span class="n">score</span>
+                    <span class="k">if</span> <span class="n">beta</span><span class="o">&lt;=</span><span class="n">alpha</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">alpha</span>
+                    <span class="k">if</span> <span class="n">depth</span> <span class="o">==</span> <span class="bp">self</span><span class="p">.</span><span class="n">max_depth</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="p">.</span><span class="n">best_move</span> <span class="o">=</span> <span class="n">move</span>
+            <span class="k">return</span> <span class="n">beta</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>但是可以发现其实有可以合并的地方，可以修改为以下代码:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+</pre></td><td class="rouge-code"><pre><span class="k">def</span> <span class="nf">alpha_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span> <span class="c1"># alpha-beta剪枝，alpha是大可能下界，beta是最小可能上界
+</span>    <span class="c1">#偶数层AI持棋，取最大，奇数层玩家持棋，取最小
+</span>    <span class="n">current_player</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">max_depth</span> <span class="o">-</span> <span class="n">depth</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>  <span class="c1"># 当前轮到哪个玩家持棋，0代表黑方，1代表红方
+</span>    <span class="k">if</span> <span class="n">current_player</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">current_team</span> <span class="o">=</span> <span class="s">'r'</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">current_team</span> <span class="o">=</span> <span class="s">'b'</span> 
+    <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">board</span><span class="p">.</span><span class="n">judge_win</span><span class="p">(</span><span class="n">current_team</span><span class="p">):</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1000000</span>   
+    <span class="k">if</span> <span class="n">depth</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">evaluate</span><span class="p">()</span>
+    <span class="n">possible_moves</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">board</span><span class="p">.</span><span class="n">generate_move</span><span class="p">(</span><span class="n">current_player</span><span class="p">)</span> <span class="c1"># 返回所有能走的方法
+</span>    <span class="k">for</span> <span class="n">move</span> <span class="ow">in</span> <span class="n">possible_moves</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">move</span><span class="p">:</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">move</span><span class="p">)</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">alpha_beta</span><span class="p">(</span><span class="n">depth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span> 
+        <span class="k">if</span> <span class="n">move</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">undo_move</span><span class="p">(</span><span class="n">move</span><span class="p">,</span> <span class="n">temp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">current_player</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">score</span> <span class="o">&gt;</span> <span class="n">alpha</span><span class="p">:</span>
+                <span class="n">alpha</span> <span class="o">=</span> <span class="n">score</span>
+                <span class="k">if</span> <span class="n">depth</span> <span class="o">==</span> <span class="bp">self</span><span class="p">.</span><span class="n">max_depth</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="p">.</span><span class="n">best_move</span> <span class="o">=</span> <span class="n">move</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span><span class="n">score</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">score</span> <span class="o">&lt;</span> <span class="n">beta</span><span class="p">:</span>
+                <span class="n">beta</span> <span class="o">=</span> <span class="n">score</span>
+                <span class="k">if</span> <span class="n">depth</span> <span class="o">==</span> <span class="bp">self</span><span class="p">.</span><span class="n">max_depth</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="p">.</span><span class="n">best_move</span> <span class="o">=</span> <span class="n">move</span>
+            <span class="n">beta</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span><span class="n">score</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">alpha</span> <span class="o">&gt;=</span> <span class="n">beta</span><span class="p">:</span>
+            <span class="k">break</span>
+    <span class="k">return</span> <span class="n">alpha</span> <span class="k">if</span> <span class="n">current_player</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">beta</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="4创新点优化如果有">4.创新点&amp;优化（如果有）</h3>
+
+<h4 id="启用历史启发式函数加速ai下棋速度">启用历史启发式函数加速AI下棋速度。</h4>
+
+<p>Alpha-Beta搜索算法的效率在很大程度上取决于搜索树的结构。如果搜索了没多久就能够进行“裁剪”，那么需要分析的工作量将大大减少，效率自然也就大大提高。为了保证Alpha-Beta搜索算法的效率，我们需要调整搜索结点的顺序，使得“裁剪”可以尽可能早地发生。为了调整搜索结点的顺序，我们可以根据部分已经搜索过的结果来进行历史启发式。在搜索的过程中，每当发现一个好的走法，就给该走法累加一个增量以记录其“历史得分”，多次被搜索并认为是好的走法的“历史得分”就会较高。对于即将搜索的结点，按照“历史得分”的高低对它们进行排序，保证较好的走法排在前面。这样Alpha-Beta搜索就可以尽可能早地进行“裁剪”，从而保证了搜索的效率。</p>
+
+<p>历史启发式函数的作用是通过排序所有可能的走法，使得搜索时优先考虑历史得分高的走法，从而减少搜索树的分支，提高搜索效率。因为在实际游戏中，很多棋局中有一些重要的走法，而这些走法通常会出现在历史得分高的走法中，所以通过历史启发式函数，我们可以更加有效地搜索到更优的棋局。</p>
+
+<p>理伦上，与电脑下棋的次数越多，那么它计算的速度就会更快，因为会将历史得分保存到本地的文件中，在每次棋局开始前先载入历史表，每次棋局结束后保存该局的历史表，那么多次训练后就可以增加搜索深度。</p>
+
+<hr />
+
+<p>History_Heuristic.py</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+</pre></td><td class="rouge-code"><pre><span class="kn">import</span> <span class="nn">pickle</span>
+
+<span class="c1"># 存放历史棋盘
+</span><span class="n">history_chessboard</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># 将历史启发表保存到文件中
+</span><span class="k">def</span> <span class="nf">save_history_table</span><span class="p">():</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">'history_table.pkl'</span><span class="p">,</span> <span class="s">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">pickle</span><span class="p">.</span><span class="n">dump</span><span class="p">(</span><span class="n">history_table</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+    <span class="c1"># print_history_table()
+</span>
+<span class="c1"># 从文件中读取历史启发表
+</span><span class="k">def</span> <span class="nf">load_history_table</span><span class="p">():</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">'history_table.pkl'</span><span class="p">,</span> <span class="s">'rb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pickle</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="c1"># 保存历史启发式的值
+</span><span class="n">history_table</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">9</span><span class="p">)]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+
+<span class="c1"># 根据历史启发式的值，对走法进行排序
+</span><span class="k">def</span> <span class="nf">sort_moves</span><span class="p">(</span><span class="n">moves</span><span class="p">):</span>
+    <span class="n">moves</span><span class="p">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">history_table</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">moves</span>
+
+<span class="c1"># 打印历史表
+</span><span class="k">def</span> <span class="nf">print_history_table</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">9</span><span class="p">):</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">history_table</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span> <span class="n">end</span><span class="o">=</span><span class="s">' '</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">()</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>加入历史启发式函数后的alpha_beta函数</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+</pre></td><td class="rouge-code"><pre><span class="c1">#加入历史启发式函数
+</span><span class="k">def</span> <span class="nf">alpha_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span> <span class="c1"># alpha-beta剪枝，alpha是大可能下界，beta是最小可能上界
+</span>    <span class="c1">#偶数层AI持棋，取最大，奇数层玩家持棋，取最小
+</span>    <span class="n">current_player</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">max_depth</span> <span class="o">-</span> <span class="n">depth</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>  <span class="c1"># 当前轮到哪个玩家持棋，0代表黑方，1代表红方
+</span>    <span class="k">if</span> <span class="n">current_player</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">current_team</span> <span class="o">=</span> <span class="s">'r'</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">current_team</span> <span class="o">=</span> <span class="s">'b'</span> 
+    <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">board</span><span class="p">.</span><span class="n">judge_win</span><span class="p">(</span><span class="n">current_team</span><span class="p">):</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1000000</span>   
+    <span class="k">if</span> <span class="n">depth</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">evaluate</span><span class="p">()</span>
+    <span class="n">possible_moves</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">board</span><span class="p">.</span><span class="n">generate_move</span><span class="p">(</span><span class="n">current_player</span><span class="p">)</span> <span class="c1"># 返回所有能走的方法
+</span>    <span class="c1"># 根据历史启发式的值，对走法进行排序
+</span>    <span class="n">sorted_moves</span> <span class="o">=</span> <span class="n">hh</span><span class="p">.</span><span class="n">sort_moves</span><span class="p">(</span><span class="n">possible_moves</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">move</span> <span class="ow">in</span> <span class="n">sorted_moves</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">move</span><span class="p">:</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">move</span><span class="p">)</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">alpha_beta</span><span class="p">(</span><span class="n">depth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span> 
+        <span class="k">if</span> <span class="n">move</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">undo_move</span><span class="p">(</span><span class="n">move</span><span class="p">,</span> <span class="n">temp</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">current_player</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">score</span> <span class="o">&gt;</span> <span class="n">alpha</span><span class="p">:</span>
+                <span class="n">alpha</span> <span class="o">=</span> <span class="n">score</span>
+                <span class="k">if</span> <span class="n">depth</span> <span class="o">==</span> <span class="bp">self</span><span class="p">.</span><span class="n">max_depth</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="p">.</span><span class="n">best_move</span> <span class="o">=</span> <span class="n">move</span>
+                <span class="n">hh</span><span class="p">.</span><span class="n">history_table</span><span class="p">[</span><span class="n">move</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">move</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+=</span> <span class="n">depth</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span><span class="n">score</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">score</span> <span class="o">&lt;</span> <span class="n">beta</span><span class="p">:</span>
+                <span class="n">beta</span> <span class="o">=</span> <span class="n">score</span>
+                <span class="k">if</span> <span class="n">depth</span> <span class="o">==</span> <span class="bp">self</span><span class="p">.</span><span class="n">max_depth</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="p">.</span><span class="n">best_move</span> <span class="o">=</span> <span class="n">move</span>
+                <span class="n">hh</span><span class="p">.</span><span class="n">history_table</span><span class="p">[</span><span class="n">move</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">move</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">-=</span> <span class="n">depth</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="n">beta</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span><span class="n">score</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">alpha</span> <span class="o">&gt;=</span> <span class="n">beta</span><span class="p">:</span>
+            <span class="k">break</span>
+    <span class="k">return</span> <span class="n">alpha</span> <span class="k">if</span> <span class="n">current_player</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">beta</span>    
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>同时还加入了悔棋、重新开始、认输的功能。</p>
+
+<h2 id="三---实验结果及分析">三、   实验结果及分析</h2>
+
+<h3 id="1实验结果展示示例">1.实验结果展示示例</h3>
+
+<p><img src="/img/in-post/AI/AI-Chess/image-20230418152121053.png" alt="image-20230418152121053" /></p>
+
+<p><img src="/img/in-post/AI/AI-Chess/image-20230419161108473.png" alt="image-20230419161108473" /></p>
+
+<p>为了使得象棋更具个人风格，我将红方的“帅”修改为自己的微信头像。为了方便观察电脑走步，移动后的棋子上会有红色方框。</p>
+
+<h3 id="2评测指标展示及分析">2.评测指标展示及分析</h3>
+
+<p>经过对弈，本象棋基本达到大多数人类水平，有几率可以通过天天象棋的人机对战的小白难度（人类对小白难度通过率为54.14%）</p>
+
+<h2 id="四---参考资料">四、   参考资料</h2>
+
+<p><a href="https://blog.csdn.net/weixin_43867940/article/details/111881002?spm=1001.2101.3001.6650.2&amp;utm_medium=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-2-111881002-blog-117669428.235^v28^pc_relevant_t0_download&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-2-111881002-blog-117669428.235^v28^pc_relevant_t0_download&amp;utm_relevant_index=4">棋子位置价值参考</a></p>
+
+<p><a href="http://ss.zhizhen.com/detail_38502727e7500f26c69991b8cb3a68fa6856ba6f7f1e6f371921b0a3ea255101928fa69a765a3d2da81eccc607d9dc06acdc7ea9dd7513ca7ae344660d63567a203d4a72a594e61d2e649a1359ac7012?&amp;apistrclassfy=0_18_17">棋子价值参考</a></p>
+
+<p><a href="https://blog.csdn.net/qq_38563206/article/details/127399241?spm=1001.2101.3001.6650.8&amp;utm_medium=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-8-127399241-blog-106321557.235%5Ev27%5Epc_relevant_default_base1&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-8-127399241-blog-106321557.235%5Ev27%5Epc_relevant_default_base1&amp;utm_relevant_index=9">UI设计参考</a></p>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2023/04/15/OS-Ch5/" data-toggle="tooltip" data-placement="top" title="Chapter5 Process scheduling">
+                        Previous<br>
+                        <span>Chapter5 Process scheduling</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2023/04/29/TSP/" data-toggle="tooltip" data-placement="top" title="使用模拟退火和遗传算法求解TSP问题">
+                        Next<br>
+                        <span>使用模拟退火和遗传算法求解TSP问题</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+
+                <!--   gitalk       -->
+                <div class="comment">
+                <div id="gitalk-container"></div>
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+                <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+                <script>
+                var gitalk = new Gitalk({
+                    id: location.pathname,
+                    clientID: '0db4b4c6d83c061f6b30',
+                    clientSecret: 'e1651c09f1a49b2b4a544cd584d3e8a55454a48a',
+                    repo: 'BlogComment',
+                    owner: 'jaredddddd',
+                    admin: ['jaredddddd'], 
+                    labels: ['Gitalk'],
+                })
+                gitalk.render('gitalk-container')
+                </script> 
+                </div>
+
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0036" 
+                    href="/archive/?tag=Computer-Organization"
+                    title="Computer-Organization"
+                    rel="21">Computer-Organization</a>
+        
+                <a data-sort="0018" 
+                    href="/archive/?tag=NOTES"
+                    title="NOTES"
+                    rel="39">NOTES</a>
+        
+                <a data-sort="0041" 
+                    href="/archive/?tag=Project"
+                    title="Project"
+                    rel="16">Project</a>
+        
+                <a data-sort="0042" 
+                    href="/archive/?tag=AI"
+                    title="AI"
+                    rel="15">AI</a>
+        
+                <a data-sort="0048" 
+                    href="/archive/?tag=OS"
+                    title="OS"
+                    rel="9">OS</a>
+        
+                <a data-sort="0052" 
+                    href="/archive/?tag=ML"
+                    title="ML"
+                    rel="5">ML</a>
+        
+                <a data-sort="0053" 
+                    href="/archive/?tag=PatternRecognition"
+                    title="PatternRecognition"
+                    rel="4">PatternRecognition</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Blog"
+                    title="Blog"
+                    rel="3">Blog</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Distributed-System"
+                    title="Distributed-System"
+                    rel="3">Distributed-System</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=ANN"
+                    title="ANN"
+                    rel="2">ANN</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CPU%E8%AE%BE%E8%AE%A1"
+                    title="CPU设计"
+                    rel="2">CPU设计</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CompilationPrinciple"
+                    title="CompilationPrinciple"
+                    rel="2">CompilationPrinciple</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     TeX: {
+       equationNumbers: {
+         autoNumber: "AMS"
+       }
+     },
+     SVG: {
+       scale: 90
+     },
+     tex2jax: {
+       inlineMath: [ ['$','$'] ],
+       displayMath: [ ['$$','$$'] ],
+       processEscapes: true,
+     }
+   });
+ </script>
+ <script type="text/javascript"
+         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+
+.post-container {
+    background: #fcfbfb; /* 背景颜色 */
+    border-radius: 25px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    padding-top: 40px; /* 特别增加顶部内边距 */
+    margin-top: 20px; /* 添加顶部外边距 */
+    /* margin-left: 40px; */
+    /* width: 900px; */
+}
+
+
+/* 在宽屏幕设备上应用特定样式 */
+@media (min-width: 1024px) {
+  .post-container {
+    margin-left: 40px; /* 向左扩展 */
+    width: 900px; /* 设置宽度 */
+  }
+  .side-catalog{
+    width: 250px;
+  }
+}
+
+.post-container:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* 当鼠标悬停时增加阴影效果 */
+}
+
+.side-catalog {
+    background: #ffffff; /* 背景颜色 */
+    border-radius: 15px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    margin-left: 10pt;
+    /* width: 200px; */
+
+}
+
+
+
+.catalog-container {
+    /* ... 其他样式 ... */
+    display: none; /* 默认不显示catalog */
+    transition: all 0.3s ease; /* 过渡效果 */
+    margin-top: 20px; /* 添加顶部外边距 */
+}
+
+</style>
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; LvKouKou Blog 2025
+                    <br>
+                    <!--  删掉了作者Hux Blog
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                    -->
+                    <!-- 不蒜子 -->
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                    您是Blog的第<span id="busuanzi_value_site_uv"></span>个小伙伴 </br>
+                     <span id="busuanzi_container_page_pv">
+                        本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<!-- 自己添加的 -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TNVD6PR5TQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNVD6PR5TQ');
+</script>
+<!-- 自己添加的 -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        // a = P.find('h1,h2,h3,h4,h5,h6');
+        a = P.find('h1,h2,h3,h4');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<!--鼠标点击爱心动画-->
+<script type="text/javascript" src="/js/love.js"></script>
+</body>
+
+</html>

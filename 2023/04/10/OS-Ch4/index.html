@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @LvKouKou 的个人博客，与你一起发现更大的世界 | 要做一个想环游世界的程序员">
+    <meta name="keywords" content="LvKouKou, jaredddddd, @jaredddddd, LvKouKou Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <link
+  rel="stylesheet"
+  href="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+/>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  defer="defer"
+></script>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  defer="defer"
+  onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
+></script>
+    <script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/mathtex-script-type.min.js"
+  defer="defer"
+></script>
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="Chapter4 Threads   - LvKouKou的博客 | LV Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="Threads
+
+">
+    
+    <meta property="article:published_time" content=" 2023-04-10T00:00:00Z">
+    
+    
+    <meta property="article:author" content="LvKouKou">
+    
+    
+    <meta property="article:tag" content="OS">
+    
+    <meta property="article:tag" content="NOTES">
+    
+    
+    <meta property="og:image" content="https://jaredddddd.github.io/img/LVKOUKOU.jpg">
+    <meta property="og:url" content="https://jaredddddd.github.io/2023/04/10/OS-Ch4/">
+    <meta property="og:site_name" content="LvKouKou的博客 | LV Blog">
+
+    <title>Chapter4 Threads   - LvKouKou的博客 | LV Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jaredddddd.github.io/2023/04/10/OS-Ch4/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* 打字机效果的样式 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #666 }
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid #666;
+            white-space: nowrap;
+            word-wrap: break-word;
+            letter-spacing: .1em;
+            width: fit-content;
+            margin: 0 auto;
+            animation: 
+                typing 2s steps(40, end), /* 打字机效果, 3s 完成打字, 每步40个字符 */
+                blink-caret .75s step-end infinite; /* 光标闪烁效果, 0.75s 完成一次闪烁  */
+        }
+
+        /* 添加包装容器样式 */
+        .typing-wrapper {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%; /* 确保不会超出父容器 */
+        }
+
+        /* 添加响应式样式 */
+        @media (max-width: 768px) {
+        .typing-effect {
+            font-size: 16px; /* 在手机上可以适当调整字体大小 */
+            letter-spacing: normal; /* 在手机上减小字间距 */
+        }
+    }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptions = document.getElementsByClassName('subheading');
+            if (descriptions.length > 0) {
+                const description = descriptions[0];
+                const text = description.textContent;
+                description.innerHTML = `<span class="typing-wrapper"><span class="typing-effect">${text}</span></span>`;
+            }
+        });
+    </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">LvKouKou Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/resume-home/">Resume</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/roadtrip/">On The Road</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="Searching...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!--//添加评论系统gitalk-->
+<link rel="stylesheet" href="../../../../css/gitalk.css">
+<script src="../../../../js/gitalk.min.js"></script>
+
+<!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=OS" title="OS">OS</a>
+                        
+                        <a class="tag" href="/archive/?tag=NOTES" title="NOTES">NOTES</a>
+                        
+                    </div>
+                    <h1>Chapter4 Threads  </h1>
+                    
+                    <h2 class="subheading">第四章 多线程编程！</h2>
+                    <span class="meta">Posted by LvKouKou on April 10, 2023</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="threads">Threads</h1>
+
+<h1 id="objectives">Objectives</h1>
+
+<ul>
+  <li>To introduce the notion of a thread—a fundamental unit of CPUutilization that forms the basis of multithreaded computer systems</li>
+  <li>To discuss the APIs for the Pthreads, Windows, and Java threadlibraries</li>
+  <li>To explore several strategies that provide implicit threading</li>
+  <li>To examine issues related to multithreaded programming</li>
+  <li>
+    <p>To cover operating system support for threads in Windows and Linux</p>
+  </li>
+  <li>介绍线程的概念 - CPU利用率的基本单位，构成多线程计算机系统的基础</li>
+  <li>讨论 Pthreads、Windows 和 Java 线程库的 API</li>
+  <li>探索提供隐式线程的几种策略</li>
+  <li>检查与多线程编程相关的问题</li>
+  <li>涵盖操作系统对Windows和Linux中线程的支持</li>
+</ul>
+
+<h1 id="processthread的概念区分">Process/Thread的概念区分</h1>
+
+<ul>
+  <li>
+    <p><strong>Resource ownership</strong> - process includes a virtual address space to hold the process image</p>
+  </li>
+  <li>
+    <p><strong>Scheduling/execution</strong>- follows an execution path that may be interleaved with other processes</p>
+  </li>
+</ul>
+
+<p><strong>These two characteristics</strong> are treated independently by the operating system</p>
+
+<p>Separate two ideas:</p>
+
+<ul>
+  <li>
+    <p><strong>Process</strong>: Ownership of memory, files, other resources</p>
+  </li>
+  <li>
+    <p><strong>Thread</strong>: Unit of execution we use to dispatch</p>
+  </li>
+</ul>
+
+<p>在上一章中我们认为进程有两个特点：</p>
+
+<ul>
+  <li>
+    <p>资源所有权 - 进程包括用于保存进程映像的虚拟地址空间</p>
+  </li>
+  <li>
+    <p>调度/执行 - 遵循可能与其他进程交错的执行路径</p>
+  </li>
+</ul>
+
+<p>这两个特征由操作系统独立处理</p>
+
+<p>在本章中我们分开两个想法：</p>
+
+<ul>
+  <li>
+    <p>进程：内存、文件和其他资源的所有权</p>
+  </li>
+  <li>
+    <p>线程：我们用来调度的执行单元</p>
+  </li>
+</ul>
+
+<p><strong>Process</strong>–Resource ownership</p>
+
+<ul>
+  <li>
+    <p>Have a virtual address space which holds the process image</p>
+  </li>
+  <li>
+    <p>Protected access to processors, other processes, files, and I/O resources</p>
+  </li>
+</ul>
+
+<p><strong>Thread</strong>–Scheduling/Execution</p>
+
+<ul>
+  <li>An execution state (running, ready, etc.)</li>
+  <li>Saved thread context when not running</li>
+  <li>Some per-thread static storage for local variables</li>
+  <li>Access to the memory and resources of its process</li>
+</ul>
+
+<p>流程–资源所有权</p>
+
+<ul>
+  <li>
+    <p>具有保存进程映像的虚拟地址空间</p>
+  </li>
+  <li>
+    <p>对处理器、其他进程、文件和 I/O 资源的受保护访问</p>
+  </li>
+</ul>
+
+<p>线程–调度/执行</p>
+
+<ul>
+  <li>
+    <p>执行状态（正在运行、就绪等）</p>
+  </li>
+  <li>
+    <p>未运行时保存的线程上下文</p>
+  </li>
+  <li>
+    <p>局部变量的一些每线程静态存储</p>
+  </li>
+  <li>
+    <p>访问其进程的内存和资源</p>
+  </li>
+</ul>
+
+<h1 id="1-概述">1. 概述</h1>
+
+<p>Operating system supports multiple threads of execution within a single process</p>
+
+<p>操作系统支持单个进程中的多个执行线程</p>
+
+<p>每个线程是CPU使用的一个基本单元;它包括线程ID、程序计数器、寄存器组和堆栈。<strong>它与同一进程的其他线程共享代码段、数据段和其他操作系统资源</strong>，如打开文件和信号。</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch4.assets/image-20230410093204069.png" alt="image-20230410093204069" style="zoom:150%;" /></p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch4.assets/image-20230410092911146.png" alt="image-20230410092911146" style="zoom:50%;" /></p>
+
+<h2 id="11-motivation">1.1 Motivation</h2>
+
+<p>Most modern applications are multithreaded</p>
+
+<p>Threads run within application</p>
+
+<p>Multiple tasks with the application can be implemented by separate threads</p>
+
+<ul>
+  <li>Update display</li>
+  <li>Fetch data</li>
+  <li>Spell checking</li>
+  <li>Answer a network request</li>
+</ul>
+
+<p>Process creation is heavy-weight while thread creation is light-weight</p>
+
+<p>Can simplify code, increase efficiency</p>
+
+<p>Kernels are generally multithreaded</p>
+
+<p>大多数现代应用程序都是多线程的</p>
+
+<p>线程在应用程序中运行</p>
+
+<p>应用程序的多个任务可以由单独的线程实现</p>
+
+<ul>
+  <li>更新显示</li>
+  <li>获取数据</li>
+  <li>拼写检查</li>
+  <li>应答网络请求</li>
+</ul>
+
+<p>进程创建重量级，线程创建量级轻量级</p>
+
+<p>可以简化代码，提高效率</p>
+
+<p>内核通常是多线程的</p>
+
+<h2 id="12-benefits">1.2 Benefits</h2>
+
+<ul>
+  <li>
+    <p><strong>Responsiveness</strong> – may allow continued execution if part of process is blocked, especially important for user interfaces</p>
+  </li>
+  <li>
+    <p>Resource Sharing – threads share resources of process, easier than shared memory or message passing</p>
+  </li>
+  <li>
+    <p><strong>Economy</strong> – cheaper than process creation, thread switching lower overhead than context switching</p>
+  </li>
+  <li>
+    <p>Scalability – process can take advantage of multiprocessor architectures</p>
+  </li>
+  <li>
+    <p><strong>响应能力</strong>——如果部分进程被阻塞，可能允许继续执行，这对用户界面尤其重要</p>
+  </li>
+  <li>
+    <p>资源共享——<strong>线程共享进程资源</strong>，比共享内存或消息传递更容易，进程只能通过如共享内存和消息传递之类的技术共享资源。这些技术应由程序员显式地安排。不过，线程默认<strong>共享它们所属进程的内存和资源</strong>。代码和数据共享的优点是:它允许一个应用程序在同一地址空间内有多个不同活动线程</p>
+  </li>
+  <li>
+    <p><strong>经济</strong>——比进程创建更便宜，线程切换比上下文切换开销更低</p>
+  </li>
+  <li>
+    <p><strong>可扩展性</strong>——进程可以利用多处理器架构</p>
+  </li>
+</ul>
+
+<h1 id="2-multicore-programming--多核编程">2. Multicore Programming  多核编程</h1>
+
+<p>对于单核系统，<strong>并发</strong>仅仅意味着线程随着时间推移交错执行(图4-3)，因为处理核只能同一时间执行单个线程。不过，对于多核系统，并发表示线程能够并行运行，因为系统可以为每个核分配一个单独线程(图4-4)。</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch4.assets/image-20230410154921112.png" alt="image-20230410154921112" /></p>
+
+<h2 id="21-挑战">2.1 挑战</h2>
+
+<p>Multicore or multiprocessor systems putting pressure on programmers, challenges include:</p>
+
+<ul>
+  <li>Dividing activities</li>
+  <li>Balance</li>
+  <li>Data splitting</li>
+  <li>Data dependency</li>
+  <li>Testing and debugging</li>
+</ul>
+
+<p>Parallelism implies a system can perform more than one task simultaneously</p>
+
+<p>Concurrency supports more than one task making progress</p>
+
+<ul>
+  <li>Single processor / core, scheduler providing concurrency</li>
+</ul>
+
+<p>Types of parallelism</p>
+
+<ul>
+  <li>Data parallelism – distributes subsets of the same data across multiple cores, same operation on each</li>
+  <li>Task parallelism – distributing threads across cores, each thread performing unique operation</li>
+</ul>
+
+<p>As of threads grows, so does architectural support for threading</p>
+
+<ul>
+  <li>CPUs have cores as well as hardware threads</li>
+  <li>Consider Oracle SPARC T4 with 8 cores, and 8 hardware threads per core</li>
+</ul>
+
+<p>多核或多处理器系统给程序员带来了压力，挑战包括：</p>
+
+<ul>
+  <li>划分活动（识别任务）</li>
+  <li>平衡</li>
+  <li>数据拆分</li>
+  <li>数据依赖性</li>
+  <li>测试和调试</li>
+</ul>
+
+<p>并行性意味着系统可以同时执行多个任务</p>
+
+<p>并发支持多个任务取得进展</p>
+
+<ul>
+  <li>单处理器/内核，提供并发的调度程序</li>
+</ul>
+
+<h2 id="22-并行类型">2.2 并行类型</h2>
+
+<p>并行的类型</p>
+
+<ul>
+  <li>数据并行性 – 将相同数据的子集分布在多个内核上，在每个内核上执行<strong>相同的操作</strong></li>
+  <li>任务并行性 – 跨内核分配线程，每个线程执行独特的操作</li>
+</ul>
+
+<p>随着线程的增长，线程的体系结构支持也在增长</p>
+
+<ul>
+  <li>CPU具有内核和硬件线程</li>
+  <li>考虑具有 8 个内核和每个内核 8 个硬件线程的 Oracle SPARC T4</li>
+</ul>
+
+<h1 id="3-多线程模型">3. 多线程模型</h1>
+
+<p>有两种不同的方法来提供线程支持：User Threads and Kernel Threads</p>
+
+<ul>
+  <li>User threads - management done by user-level threads library</li>
+  <li>Three primary thread libraries:
+    <ul>
+      <li>POSIX Pthreads</li>
+      <li>Windows threads</li>
+      <li>Java threads</li>
+    </ul>
+  </li>
+  <li>Kernel threads - Supported by the Kernel</li>
+  <li>Examples – virtually all general purpose operating systems, including:
+    <ul>
+      <li>Windows</li>
+      <li>Solaris</li>
+      <li>Linux</li>
+      <li>Tru64 UNIX</li>
+      <li>Mac OS X</li>
+    </ul>
+  </li>
+  <li><strong>用户线程 - 由用户级线程库完成管理</strong></li>
+  <li>三个主要线程库：
+    <ul>
+      <li>POSIX Pthreads</li>
+      <li>Windows threads</li>
+      <li>Java threads</li>
+    </ul>
+  </li>
+  <li><strong>内核线程 - 内核支持</strong></li>
+  <li>示例 – 几乎所有通用操作系统，包括：
+    <ul>
+      <li>Windows</li>
+      <li>Solaris</li>
+      <li>Linux</li>
+      <li>Tru64 UNIX</li>
+      <li>Mac OS X</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch4.assets/image-20230410155617938.png" alt="image-20230410155617938" /></p>
+
+<p>内核进程就是去ready队列中排队，获得CPU时间后将时间分配给用户线程的。</p>
+
+<p>用户线程和内核线程之间必然存在某种关系，我们研究3种常用的关系：</p>
+
+<ul>
+  <li>Many-to-One</li>
+  <li>One-to-One</li>
+  <li>Many-to-Many</li>
+</ul>
+
+<h2 id="31-多对一">3.1 多对一</h2>
+
+<ul>
+  <li>Many user-level threads mapped to single kernel thread</li>
+  <li>One thread blocking causes all to block</li>
+  <li>Multiple threads may not run in parallel on muticore system because only one may be in kernel at a time</li>
+  <li>Few systems currently use this model</li>
+  <li>Examples:
+    <ul>
+      <li>Solaris Green Threads</li>
+      <li>GNU Portable Threads</li>
+    </ul>
+  </li>
+  <li>许多用户级线程映射到单个内核线程</li>
+  <li>一个线程阻塞导致所有阻塞</li>
+  <li>因为一次只有一个线程可能位于内核中，所以多个线程可能无法在多核系统上并行运行，</li>
+  <li>目前很少有系统使用此模型</li>
+  <li>例子：</li>
+  <li>索拉里斯绿线
+    <ul>
+      <li>GNU可移植线程</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="32-一对一">3.2 一对一</h2>
+
+<p>该模型在一个线程执行阻塞系调用时，能够允许另一个线程继续执行，所以它提供了比多对一模型更好的并发功能;它也允多个线程并行运行在多处理器系统上。<strong>这种模型的唯一缺点是</strong>，创建一个用户线程就要创建一相应的内核线程。由于创建内核线程的开销会影响应用程序的性能，所以这种模型的大多数9现限制了系统支持的线程数量。</p>
+
+<ul>
+  <li>Each user-level thread maps to kernel thread</li>
+  <li>Creating a user-level thread creates a kernel thread</li>
+  <li>More concurrency than many-to-one</li>
+  <li>Number of threads per process sometimes restricted due to overhead</li>
+  <li>Examples
+    <ul>
+      <li>Windows</li>
+      <li>Linux</li>
+      <li>Solaris 9 and later</li>
+    </ul>
+  </li>
+  <li>每个用户级线程映射到内核线程</li>
+  <li>创建用户级线程会创建内核线程</li>
+  <li>比多对一更并发</li>
+  <li>每个进程的线程数有时由于开销而受到限制</li>
+  <li>例子</li>
+  <li>Windows
+    <ul>
+      <li>Linux</li>
+      <li>Solaris 9 及更高版本</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch4.assets/image-20230410160355292.png" alt="image-20230410160355292" /></p>
+
+<h2 id="33-多对多">3.3 多对多</h2>
+
+<p>开发人员可以创建任意多的用户线程，并且相应内核线程能在多处理器系统上并发执行。而且，当一个线程执行阻塞系统调用时，内核可以调度另一个线程来执行。</p>
+
+<ul>
+  <li>Allows many user level threads to be mapped to many kernel threads</li>
+  <li>
+    <p>Allows the operating system to create a sufficient number of kernel threads</p>
+  </li>
+  <li>Examples
+    <ul>
+      <li>Solaris prior to version 9</li>
+      <li>Windows with the ThreadFiber package</li>
+    </ul>
+  </li>
+  <li>允许将许多用户级线程映射到许多内核线程</li>
+  <li>允许操作系统创建足够数量的内核线程</li>
+  <li>
+    <p>例子</p>
+
+    <ul>
+      <li>版本 9 之前的 Solaris</li>
+      <li>带有ThreadFiber软件包的Windows。</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="331-双层模型">3.3.1 双层模型</h3>
+
+<p>多对多模型的一种变种仍然多路复用多个用户级线程到同样数量或更少数量的内核线程，但也允许绑定某个用户线程到一个内核线程。这个变种，有时称为<strong>双层模型(tow-level model)</strong>(图48)。<strong>优点是可以保证关键线程不会受到其他线程影响而阻塞（一对一），保证关键线程的正常运行</strong>。</p>
+
+<ul>
+  <li>Similar to M:M, except that it allows a user thread to be bound to kernel thread</li>
+  <li>Examples
+    <ul>
+      <li>IRIX</li>
+      <li>HP-UX</li>
+      <li>Tru64 UNIX</li>
+      <li>Solaris 8 and earlier</li>
+    </ul>
+  </li>
+  <li>与M：M类似，不同之处在于它允许用户线程绑定到内核线程</li>
+  <li>例子</li>
+  <li>IRIX
+    <ul>
+      <li>HP-UX</li>
+      <li>Tru64 UNIX</li>
+      <li>Solaris 8 and earlier</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch4.assets/image-20230410161343444.png" alt="image-20230410161343444" /></p>
+
+<hr />
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch4.assets/image-20230410161415939.png" alt="image-20230410161415939" /></p>
+
+<p>注意看，b、c图中进程不是在running状态，但是线程处于running状态。</p>
+
+<p>这是因为用户线程是都用户级线程库管理的，可以在任意时候处于running状态，但不一定真的在running。因为CPU时间需要有内核线程来分配，只有分配了CPU时间且处于running状态的用户线程才真正在running。</p>
+
+<h1 id="4-thread-libraries--线程库">4. Thread Libraries  线程库</h1>
+
+<p>Thread library provides programmer with API for creating and managing threads</p>
+
+<p>Two primary ways of implementing</p>
+
+<ul>
+  <li>Library entirely in user space</li>
+  <li>Kernel-level library supported by the OS</li>
+</ul>
+
+<p><strong>线程库为程序员提供了创建和管理线程的 API</strong></p>
+
+<p>两种主要的实现线程库的方式</p>
+
+<ul>
+  <li>1、线程库完全在用户空间</li>
+  <li>
+    <p>2、操作系统支持的内核级库</p>
+  </li>
+  <li>第一种方法是，在用户空间中提供一个没有内核支持的库。这种库的所有代码和数据结构都位于用户空间。这意味着，调<strong>用库内的一个函数只是导致了用户空间内的一个本地函数的调用，而不是系统调用。</strong></li>
+  <li>第二种方法是，实现由操作系统直接支持的内核级的一个库。对于这种情况，库内的代码和数据结构位于内核空间。<strong>调用库中的一个 API函数通常会导致对内核的系统调用。</strong></li>
+</ul>
+
+<p>目前使用的三种主要线程库是:POSIX Pthreads、Windows、Java。</p>
+
+<ul>
+  <li>
+    <p>Pthreads作为POSIX标准的扩展，可以提供用户级或内核级的库。</p>
+  </li>
+  <li>
+    <p>Windows 线程库是用于 Windows操作系统的内核级线程库。</p>
+  </li>
+  <li>
+    <p>Java 线程 API允许线程在 Java 程序中直接创建和管理。</p>
+  </li>
+</ul>
+
+<p>然而，由于大多数JVM实例运行在宿主操作系统之上，Java 线程API通常采用宿主系统的线程库来实现。这意味着在 Windows 系统上，Java 线程通常采用 Windows API来实现，而在UNIX和Linux系统中采用Pthreads来实现</p>
+
+<h1 id="5-implicit-threading--隐式多线程">5. Implicit Threading  隐式多线程</h1>
+
+<p>随着多核处理的日益增多，出现了拥有数百甚至数千线程的应用程序。设计这样的应用程序不是一个简单的事情:程序员不仅处理之前所列的挑战，而且还要面对其他的困难这些困难，与程序正确性有关，将在第6章和第7章中加以讨论。
+针对解决这些困难并且更好支持设计多线程程序，有一种方法是将多线程的创建与管理交给编译器和运行时库来完成。这种策略称为隐式线程(implicit threading)，是一种流行趋势。在这节中，为了利用多核，我们探讨了三种可供选择的、基于隐式线程的、多线程程序的设计方法。</p>
+
+<ul>
+  <li>Growing in popularity as numbers of threads increase, program correctness more difficult with explicit threads</li>
+  <li>Creation and management of threads done by compilers and run-time libraries rather than programmers</li>
+  <li>Three methods explored
+    <ul>
+      <li>Thread Pools</li>
+      <li>OpenMP</li>
+      <li>Grand Central Dispatch</li>
+    </ul>
+  </li>
+  <li>
+    <p>Other methods include Microsoft Threading Building Blocks (TBB), java.util.concurrent package</p>
+  </li>
+  <li>随着线程数量的增加而越来越受欢迎，显式线程使程序正确性变得更加困难</li>
+  <li>隐式线程：由编译器和运行时库而不是程序员完成线程的创建和管理</li>
+  <li>探索了三种方法
+    <ul>
+      <li>线程池</li>
+      <li>OpenMP</li>
+      <li>大中央调度</li>
+    </ul>
+  </li>
+  <li>其他方法包括 Microsoft Threading Building Blocks (TBB)、java.util.concurrent 包</li>
+</ul>
+
+<h2 id="51-thread-pools--线程池">5.1 Thread Pools  线程池</h2>
+
+<p>线程池的主要思想是:在进程开始时创建一定数量的线程，并加到池中以等待工作。当服务器收到请求时，它会唤醒池内的一个线程(如果有可用线程)，并将需要服务的请求传递给它。一旦线程完成了服务，它会返回到池中再等待工作。如果池内没有可用线程，那么服务器会等待，直到有空线程为止。</p>
+
+<p>即服务器先一次性创建大量的线程，下次需要线程时不用创建线程，直接在线程库中选一个。</p>
+
+<p>Create a number of threads in a pool where they await work Advantages:</p>
+
+<ul>
+  <li>Usually slightly faster to service a request with an existing thread than create a new thread</li>
+  <li>Allows the number of threads in the application(s) to be bound to the size of the pool</li>
+  <li>Separating task to be performed from mechanics of creating task allows different strategies for running task
+    <ul>
+      <li>i.e.Tasks could be scheduled to run periodically</li>
+    </ul>
+  </li>
+  <li>Windows API supports thread pools:</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>DWORD WINAPI PoolFunction(AVOID Param) {
+/*
+* this function runs as a separate thread.
+*/
+}
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>在等待工作的池中创建多个线程 优点：</p>
+
+<ul>
+  <li>使用现有线程处理请求通常比创建新线程稍快</li>
+  <li>允许将应用程序中的线程数绑定到池的大小</li>
+  <li>将要执行的任务与创建任务的机制分开，允许运行任务的不同策略
+    <ul>
+      <li>即任务可以安排为定期运行</li>
+    </ul>
+  </li>
+  <li>Windows API 支持线程池：</li>
+</ul>
+
+<h3 id="52-openmp">5.2 OpenMP</h3>
+
+<h3 id="53-grand-central-dispatch-大中央调度">5.3 Grand Central Dispatch 大中央调度</h3>
+
+<h1 id="6-多线程问题">6. 多线程问题</h1>
+
+<ul>
+  <li>Semantics of fork() and exec() system calls</li>
+  <li>Signal handling
+    <ul>
+      <li>Synchronous and asynchronous</li>
+    </ul>
+  </li>
+  <li>Thread cancellation of target thread
+    <ul>
+      <li>Asynchronous or deferred</li>
+    </ul>
+  </li>
+  <li>Thread-local storage</li>
+  <li>
+    <p>Scheduler Activations</p>
+  </li>
+  <li>fork（） 和 exec（） 系统调用的语义</li>
+  <li>信号处理
+    <ul>
+      <li>同步和异步</li>
+    </ul>
+  </li>
+  <li>目标线程的线程取消
+    <ul>
+      <li>异步或延迟</li>
+    </ul>
+  </li>
+  <li>线程本地存储</li>
+  <li>调度程序激活</li>
+</ul>
+
+<h2 id="61-系统调用-fork-和-exec">6.1 系统调用 fork（） 和 exec（）</h2>
+
+<h2 id="62-信号处理">6.2 信号处理</h2>
+
+<h2 id="63-线程撤销">6.3 线程撤销</h2>
+
+<h2 id="64-线程本地存储">6.4 线程本地存储</h2>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2023/03/27/AI-15Puzzle/" data-toggle="tooltip" data-placement="top" title="使用A* 与IDA* 算法解决15-Puzzle问题">
+                        Previous<br>
+                        <span>使用A* 与IDA* 算法解决15-Puzzle问题</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2023/04/15/OS-Ch5/" data-toggle="tooltip" data-placement="top" title="Chapter5 Process scheduling">
+                        Next<br>
+                        <span>Chapter5 Process scheduling</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+
+                <!--   gitalk       -->
+                <div class="comment">
+                <div id="gitalk-container"></div>
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+                <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+                <script>
+                var gitalk = new Gitalk({
+                    id: location.pathname,
+                    clientID: '0db4b4c6d83c061f6b30',
+                    clientSecret: 'e1651c09f1a49b2b4a544cd584d3e8a55454a48a',
+                    repo: 'BlogComment',
+                    owner: 'jaredddddd',
+                    admin: ['jaredddddd'], 
+                    labels: ['Gitalk'],
+                })
+                gitalk.render('gitalk-container')
+                </script> 
+                </div>
+
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0036" 
+                    href="/archive/?tag=Computer-Organization"
+                    title="Computer-Organization"
+                    rel="21">Computer-Organization</a>
+        
+                <a data-sort="0018" 
+                    href="/archive/?tag=NOTES"
+                    title="NOTES"
+                    rel="39">NOTES</a>
+        
+                <a data-sort="0041" 
+                    href="/archive/?tag=Project"
+                    title="Project"
+                    rel="16">Project</a>
+        
+                <a data-sort="0042" 
+                    href="/archive/?tag=AI"
+                    title="AI"
+                    rel="15">AI</a>
+        
+                <a data-sort="0048" 
+                    href="/archive/?tag=OS"
+                    title="OS"
+                    rel="9">OS</a>
+        
+                <a data-sort="0052" 
+                    href="/archive/?tag=ML"
+                    title="ML"
+                    rel="5">ML</a>
+        
+                <a data-sort="0053" 
+                    href="/archive/?tag=PatternRecognition"
+                    title="PatternRecognition"
+                    rel="4">PatternRecognition</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Blog"
+                    title="Blog"
+                    rel="3">Blog</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Distributed-System"
+                    title="Distributed-System"
+                    rel="3">Distributed-System</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=ANN"
+                    title="ANN"
+                    rel="2">ANN</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CPU%E8%AE%BE%E8%AE%A1"
+                    title="CPU设计"
+                    rel="2">CPU设计</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CompilationPrinciple"
+                    title="CompilationPrinciple"
+                    rel="2">CompilationPrinciple</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     TeX: {
+       equationNumbers: {
+         autoNumber: "AMS"
+       }
+     },
+     SVG: {
+       scale: 90
+     },
+     tex2jax: {
+       inlineMath: [ ['$','$'] ],
+       displayMath: [ ['$$','$$'] ],
+       processEscapes: true,
+     }
+   });
+ </script>
+ <script type="text/javascript"
+         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+
+.post-container {
+    background: #fcfbfb; /* 背景颜色 */
+    border-radius: 25px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    padding-top: 40px; /* 特别增加顶部内边距 */
+    margin-top: 20px; /* 添加顶部外边距 */
+    /* margin-left: 40px; */
+    /* width: 900px; */
+}
+
+
+/* 在宽屏幕设备上应用特定样式 */
+@media (min-width: 1024px) {
+  .post-container {
+    margin-left: 40px; /* 向左扩展 */
+    width: 900px; /* 设置宽度 */
+  }
+  .side-catalog{
+    width: 250px;
+  }
+}
+
+.post-container:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* 当鼠标悬停时增加阴影效果 */
+}
+
+.side-catalog {
+    background: #ffffff; /* 背景颜色 */
+    border-radius: 15px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    margin-left: 10pt;
+    /* width: 200px; */
+
+}
+
+
+
+.catalog-container {
+    /* ... 其他样式 ... */
+    display: none; /* 默认不显示catalog */
+    transition: all 0.3s ease; /* 过渡效果 */
+    margin-top: 20px; /* 添加顶部外边距 */
+}
+
+</style>
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; LvKouKou Blog 2025
+                    <br>
+                    <!--  删掉了作者Hux Blog
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                    -->
+                    <!-- 不蒜子 -->
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                    您是Blog的第<span id="busuanzi_value_site_uv"></span>个小伙伴 </br>
+                     <span id="busuanzi_container_page_pv">
+                        本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<!-- 自己添加的 -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TNVD6PR5TQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNVD6PR5TQ');
+</script>
+<!-- 自己添加的 -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        // a = P.find('h1,h2,h3,h4,h5,h6');
+        a = P.find('h1,h2,h3,h4');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<!--鼠标点击爱心动画-->
+<script type="text/javascript" src="/js/love.js"></script>
+</body>
+
+</html>

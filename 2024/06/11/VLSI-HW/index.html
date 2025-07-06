@@ -1,0 +1,2322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @LvKouKou 的个人博客，与你一起发现更大的世界 | 要做一个想环游世界的程序员">
+    <meta name="keywords" content="LvKouKou, jaredddddd, @jaredddddd, LvKouKou Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <link
+  rel="stylesheet"
+  href="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+/>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  defer="defer"
+></script>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  defer="defer"
+  onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
+></script>
+    <script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/mathtex-script-type.min.js"
+  defer="defer"
+></script>
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="VLSI作业及知识点复习 - LvKouKou的博客 | LV Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="
+  
+    Q5：标注工作状态，要标出横轴纵轴坐标点吗？
+
+    A：助教回复：不用，这种题只是提醒大家回去看课件
+  
+
+
+">
+    
+    <meta property="article:published_time" content=" 2024-06-11T00:00:00Z">
+    
+    
+    <meta property="article:author" content="LvKouKou">
+    
+    
+    <meta property="article:tag" content="VLSI">
+    
+    <meta property="article:tag" content="NOTES">
+    
+    
+    <meta property="og:image" content="https://jaredddddd.github.io/img/LVKOUKOU.jpg">
+    <meta property="og:url" content="https://jaredddddd.github.io/2024/06/11/VLSI-HW/">
+    <meta property="og:site_name" content="LvKouKou的博客 | LV Blog">
+
+    <title>VLSI作业及知识点复习 - LvKouKou的博客 | LV Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jaredddddd.github.io/2024/06/11/VLSI-HW/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* 打字机效果的样式 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #666 }
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid #666;
+            white-space: nowrap;
+            word-wrap: break-word;
+            letter-spacing: .1em;
+            width: fit-content;
+            margin: 0 auto;
+            animation: 
+                typing 2s steps(40, end), /* 打字机效果, 3s 完成打字, 每步40个字符 */
+                blink-caret .75s step-end infinite; /* 光标闪烁效果, 0.75s 完成一次闪烁  */
+        }
+
+        /* 添加包装容器样式 */
+        .typing-wrapper {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%; /* 确保不会超出父容器 */
+        }
+
+        /* 添加响应式样式 */
+        @media (max-width: 768px) {
+        .typing-effect {
+            font-size: 16px; /* 在手机上可以适当调整字体大小 */
+            letter-spacing: normal; /* 在手机上减小字间距 */
+        }
+    }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptions = document.getElementsByClassName('subheading');
+            if (descriptions.length > 0) {
+                const description = descriptions[0];
+                const text = description.textContent;
+                description.innerHTML = `<span class="typing-wrapper"><span class="typing-effect">${text}</span></span>`;
+            }
+        });
+    </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">LvKouKou Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/resume-home/">Resume</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/roadtrip/">On The Road</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="Searching...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!--//添加评论系统gitalk-->
+<link rel="stylesheet" href="../../../../css/gitalk.css">
+<script src="../../../../js/gitalk.min.js"></script>
+
+<!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=VLSI" title="VLSI">VLSI</a>
+                        
+                        <a class="tag" href="/archive/?tag=NOTES" title="NOTES">NOTES</a>
+                        
+                    </div>
+                    <h1>VLSI作业及知识点复习</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by LvKouKou on June 11, 2024</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<ol>
+  <li>
+    <p><del>Q5：标注工作状态，要标出横轴纵轴坐标点吗？</del></p>
+
+    <p>A：助教回复：不用，这种题只是提醒大家回去看课件</p>
+  </li>
+</ol>
+
+<hr />
+
+<ol>
+  <li>
+    <p><del>Q7：晶体管的尺寸比例?</del></p>
+
+    <p>Answer：β = 2</p>
+  </li>
+</ol>
+
+<hr />
+
+<ol>
+  <li>
+    <p><del>Q8(c)：疑问：PPT中$C_{d0}$对应这里的什么</del></p>
+
+    <p>A:$C_{d0}$是单位晶体管的电容，所以题目中标准反相器的$C_{par0}=3C_{d0}$</p>
+  </li>
+</ol>
+
+<hr />
+
+<ol>
+  <li>Q19：如何判断电路逻辑(如果不是互补的话)and如何判断是不是静态</li>
+</ol>
+
+<hr />
+
+<ol>
+  <li>Q20(b)</li>
+</ol>
+
+<hr />
+
+<ol>
+  <li>
+    <p><del>PPT4.2-P12的$C_{GD}$是什么</del></p>
+
+    <p>A:接地电容</p>
+  </li>
+</ol>
+
+<hr />
+
+<ol>
+  <li>
+    <p><del>PPT5.2-P7&amp;P9的电容的计算</del></p>
+
+    <p>A:分为$C_{in}$和$C_{par}$，前者只跟输入有关，后者只跟直接连接的有关</p>
+  </li>
+</ol>
+
+<hr />
+
+<ol>
+  <li>
+    <p><del>PPT5.2P12：为什么电容分为Cpar和CL，为什么只有后一个的R变为R/S</del></p>
+
+    <p>可见PPT6.1-P5的解释</p>
+  </li>
+</ol>
+
+<hr />
+
+<ol>
+  <li>
+    <p><del>PPT6.1-P10：如何计算出的Cpar = 12 Cpar0</del></p>
+
+    <p>A:见7的解释，懂了$C_{par}$的计算也就懂了</p>
+  </li>
+</ol>
+
+<hr />
+
+<ol>
+  <li>PPT6.1-P11.改变size是什么意思</li>
+</ol>
+
+<hr />
+
+<ol>
+  <li><del>PPT6.2-P14页电容的计算</del></li>
+</ol>
+
+<hr />
+
+<ol>
+  <li>
+    <p><del>Q：是不是PUN和PDN中的等效电阻都为R0，所以计算tp的时候电阻就是R0了？</del></p>
+
+    <p>A：我理解了一下应该是标准反相器是这样的，但是如果size不是的话就要根据size来看（可以看一下PPT6.1-P12的例子）</p>
+  </li>
+</ol>
+
+<p>还没做</p>
+
+<blockquote>
+  <p>19：Q19：如何判断电路逻辑(如果不是互补的话)and如何判断是不是静态</p>
+
+</blockquote>
+
+<h1 id="一-集成电路简介">一、 集成电路简介</h1>
+
+<ol>
+  <li>
+    <p>请写出布尔函数 𝐹(𝑥, 𝑦, 𝑧) = $𝑥𝑦 + \overline z$ 的真值表</p>
+  </li>
+  <li>
+    <p>请结合以下真值表回答问题：</p>
+
+    <p>a) 请写出能够表示布尔函数 𝐹(𝑥, 𝑦, 𝑧) 的表达式（可尝试使用 SOP (Sum Of Products) 的表达  ）。</p>
+
+    <p>b) 请写出能够表示布尔函数 𝐺(𝑥, 𝑦, 𝑧) 的表达式。</p>
+  </li>
+  <li>
+    <p>请写出以下电路中，输出 F 的逻辑表达式：</p>
+  </li>
+</ol>
+
+<p><img src="/img/in-post/VLSI/123.jpg" alt="123" style="zoom: 67%;" /></p>
+
+<h1 id="二mosfet-工作原理">二、MOSFET 工作原理</h1>
+
+<h2 id="题目4">题目4</h2>
+
+<p>4、请回答下列问题：</p>
+
+<blockquote>
+  <p>此类型题目的目的为知识回顾，please don’t panic，考试中不会出现复杂知识点以及公式的默写</p>
+</blockquote>
+
+<h3 id="a-请画出作为四端器件的-nmos-和-pmos-晶体管的电路符号并在图中标注出这些端口">a) 请画出作为四端器件的 NMOS 和 PMOS 晶体管的电路符号，并在图中标注出这些端口。</h3>
+
+<p><img src="/img/in-post/VLSI/4.jpg" alt="4" /></p>
+
+<h3 id="b-请写出-mosfet-的各工作模式以及对应的电压和电流关系">b) 请写出 MOSFET 的各工作模式以及对应的电压和电流关系。</h3>
+
+<blockquote>
+  <p>PPT 2.1-MOS工作原理和PPT2.2-大尺寸 MOSFET IV 模型</p>
+</blockquote>
+
+<hr />
+
+<p>MOSFET它有三种基本工作模式：截止模式、饱和模式和线性模式。</p>
+
+<ol>
+  <li><strong>截止模式（Cutoff Mode）</strong>
+    <ul>
+      <li>电压关系：栅极-源极电压$ V_{GS} $小于阈值电压$ V_{th} $。</li>
+      <li>电流关系：漏极电流$ I_D $接近于零，因为通道没有形成，MOSFET处于关闭状态。</li>
+    </ul>
+  </li>
+  <li><strong>饱和模式（Saturation Mode）</strong>
+    <ul>
+      <li>电压关系：栅极-源极电压$ V_{GS} $大于阈值电压$ V_{th} $，且漏极-源极电压$ V_{DS} $大于$ V_{GS} - V_{th} $。</li>
+    </ul>
+  </li>
+</ol>
+
+<ul>
+  <li>
+    <p>电流关系：MOSFET处于导通状态，漏极电流$ I_D $与栅极-源极电压$ V_{GS} $有关，与$V_{DS}$无关，受饱和电压$ V_{DS} $限制，即$ V_{DS} $接近于$ V_{GS} - V_{th} $时，$ I_D $不再随$ V_{GS} $增加而增加。</p>
+
+    <blockquote>
+      <p>电流关系在PPT2.2P9</p>
+    </blockquote>
+  </li>
+</ul>
+
+<ol>
+  <li>
+    <p><strong>线性/欧姆模式（Ohmic or Linear Mode）</strong></p>
+
+    <ul>
+      <li>电压关系：栅极-源极电压$ V_{GS} $大于阈值电压$ V_{th} $，但漏极-源极电压$ V_{DS} $小于$ V_{GS} - V_{th} $。</li>
+      <li>电流关系：MOSFET处于线性导通状态，漏极电流$ I_D $与漏极-源极电压$ V_{DS} $成正比，且$ I_D $随$ V_{DS} $线性增加。</li>
+    </ul>
+  </li>
+</ol>
+
+<blockquote>
+  <p>辅助理解：</p>
+
+  <p>MOSFET（金属-氧化物-半导体场效应晶体管）根据栅源电压 $ V_{GS} $ 和漏源电压 $ V_{DS} $ 的不同，可以工作在不同的模式下。以下是MOSFET的主要工作模式以及它们对应的电压和电流关系：</p>
+
+  <h4 id="截止区cut-off-region"><strong>截止区（Cut-off Region）</strong></h4>
+
+  <p><strong>条件</strong>：</p>
+
+  <ul>
+    <li>$ V_{GS} &lt; V_{TH} $，其中 $ V_{TH} $ 是阈值电压。</li>
+  </ul>
+
+  <p><strong>描述</strong>：</p>
+
+  <ul>
+    <li>在这个区域，栅源电压不足以在栅极和源极之间的沟道中形成足够的载流子浓度，导致沟道不导电。</li>
+    <li>因此，没有电流从漏极流向源极，即 $ I_D \approx 0 $。</li>
+  </ul>
+
+  <h4 id="欧姆区ohmic-region或线性区linear-region"><strong>欧姆区（Ohmic Region）或线性区（Linear Region）</strong></h4>
+
+  <p><strong>条件</strong>：</p>
+
+  <ul>
+    <li>$ V_{GS} &gt; V_{TH} $</li>
+    <li>$ V_{DS} $ 很小，不足以引起饱和。</li>
+  </ul>
+
+  <p><strong>描述</strong>：</p>
+
+  <ul>
+    <li>当 $ V_{DS} $ 较小时，MOSFET的行为类似于一个受控的线性电阻。</li>
+    <li>漏极电流 $ I_D $ 与 $ V_{DS} $ 成正比，类似于欧姆定律 $ I = \frac{V}{R} $。</li>
+  </ul>
+
+  <h4 id="饱和区saturation-region或恒流区constant-current-region"><strong>饱和区（Saturation Region）或恒流区（Constant Current Region）</strong></h4>
+
+  <p><strong>条件</strong>：</p>
+
+  <ul>
+    <li>$ V_{GS} &gt; V_{TH} $</li>
+    <li>$ V_{DS} $ 足够大以至于 $ V_{DS} &gt; V_{GS} - V_{TH} $</li>
+  </ul>
+
+  <p><strong>描述</strong>：</p>
+
+  <ul>
+    <li><strong>在饱和区，$ V_{DS} $ 对 $ I_D $ 的影响很小，电流几乎只依赖于 $ V_{GS} $。</strong></li>
+    <li>这个区域的电流由以下公式给出：
+$ I_D = K_n (V_{GS} - V_{TH})^2 \left(1 + \lambda V_{DS}\right) $
+其中，$ K_n $ 是一个常数，$ \lambda $ 是沟道长度调制因子。</li>
+    <li>电流与 $ V_{GS} $ 的关系是非线性的。</li>
+  </ul>
+</blockquote>
+
+<h4 id="参考资料">参考资料</h4>
+
+<blockquote>
+  <p>PPT2.2 P10</p>
+
+  <p><img src="/img/in-post/VLSI/image-20240521113113071.png" alt="image-20240521113113071" style="zoom:50%;" /></p>
+</blockquote>
+
+<h3 id="c-请解释速度饱和效应并简要分析其对晶体管工作的影响">c) 请解释速度饱和效应并简要分析其对晶体管工作的影响。</h3>
+
+<blockquote>
+  <p>PPT 2.3-纳米级 MOSFET IV 模型</p>
+</blockquote>
+
+<p>速度饱和效应（Velocity Saturation Effect）是指在半导体器件中，特别是在金属氧化物半导体场效应晶体管（MOSFET）中，当沟道电场强度增大到一定程度时，载流子（电子或空穴）的漂移速度不再随着电场强度的增加而增加的现象。这个现象通常发生在高电场下，载流子达到其最大漂移速度，此时速度不再增加，因此称为速度饱和。</p>
+
+<blockquote>
+  <p>在PPT2.3 P5</p>
+</blockquote>
+
+<p>分析<strong>速度饱和效应</strong>对晶体管工作的影响：</p>
+
+<ol>
+  <li>
+    <p>==<strong>晶体管速度</strong>：<strong>速度饱和效应限制了晶体管的开关速度。在高速开关操作中，晶体管需要快速地从关闭状态切换到导通状态，速度饱和会限制载流子的移动速度，从而影响晶体管的开关速度。</strong>==</p>
+  </li>
+  <li>
+    <p><strong>功耗</strong>：在速度饱和状态下，晶体管的功耗会受到影响。由于速度不再增加，晶体管的导通电阻增加，导致功耗上升。</p>
+  </li>
+  <li>
+    <p><strong>热效应</strong>：速度饱和状态下，晶体管中的电流密度增加，可能导致局部过热，影响晶体管的稳定性和寿命。</p>
+  </li>
+  <li>
+    <p><strong>晶体管性能</strong>：速度饱和效应会影响晶体管的性能，包括增益、线性度和噪声性能。在设计高频放大器和高速数字电路时，需要考虑速度饱和效应对晶体管性能的影响。</p>
+  </li>
+  <li>
+    <p><strong>设计挑战</strong>：速度饱和效应给晶体管的设计带来了挑战。设计者需要在晶体管尺寸、材料和结构上做出优化，以减少速度饱和效应对晶体管性能的负面影响。</p>
+  </li>
+  <li>
+    <p><strong>短沟道效应</strong>：在现代深亚微米工艺中，晶体管的沟道长度越来越短，速度饱和效应更加显著。这要求设计者在设计过程中更加注意短沟道效应和速度饱和效应的相互作用。</p>
+  </li>
+</ol>
+
+<h1 id="三cmos-反相器-vtc-特性分析">三、CMOS 反相器 VTC 特性分析</h1>
+
+<h2 id="题目5">题目5</h2>
+
+<blockquote>
+  <p>PPT3.2-CMOS反相器的VTC</p>
+</blockquote>
+
+<p>5、请画出一个反相器的 VTC 的大致形状，并在图中标注出不同的工作状态。</p>
+
+<p>从第四题的（b）中我们知道MOSFET一共有3种工作状态：截止模式（Off）、饱和模式（Sat）和线性模式（Lin），</p>
+
+<p>根据P5中内容可知，NMOS从左到有：Off-&gt;Sat-&gt;Lin</p>
+
+<p>P6中可知，PMOS从左到右有：Lin-&gt;Sat-&gt;Off</p>
+
+<p>综合上述信息，结合PPT3.2 P4和P8中图片，可以分为5个区域：</p>
+
+<p><img src="/img/in-post/VLSI/5.jpg" alt="5" /></p>
+
+<p>在五个区域中中间三个BCD是NMOS和PMOS都导通的状态，虽然A和E区间比较小，但大多数时间内都是处于A和E这样只有一个导通的状态。</p>
+
+<hr />
+
+<h4 id="参考资料-1">参考资料</h4>
+
+<blockquote>
+  <p>且PPT3.2-P4中有(注意红字部分)：
+<img src="/img/in-post/VLSI/image-20240521131442563.png" alt="image-20240521131442563" style="zoom:50%;" /></p>
+</blockquote>
+
+<blockquote>
+  <p>PPT3.2-P7&amp;P8</p>
+
+  <div style="display: flex;">
+    <div style="flex: 50%; padding: 5px;">
+        <img src="/img/in-post/VLSI/image-20240521115304879.png" alt="Image 1" style="width:100%" />
+        <p style="text-align: center;">P8</p>
+    </div>
+    <div style="flex: 50%; padding: 5px;">
+        <img src="/img/in-post/VLSI/image-20240521132746968.png" alt="Image 2" style="width:100%" />
+        <p style="text-align: center;">P7</p>
+    </div>
+</div>
+</blockquote>
+
+<h2 id="题目6">题目6</h2>
+
+<blockquote>
+  <p>PPT3.3</p>
+</blockquote>
+
+<p>6.、对于噪声容限（Noise Margin）：</p>
+
+<h3 id="a-请解释噪声以及噪声容限的定义">a) 请解释噪声以及噪声容限的定义。</h3>
+
+<p><strong>噪声</strong>是指在逻辑节点上我们不期望出现的电压或电流改变（PPT3.3-P4）。</p>
+
+<p><strong>噪声容限</strong>是指一个系统或电路能够容忍的最大噪声水平，同时仍能正确地处理或传输信号。它通常用来衡量系统对噪声的鲁棒性。噪声容限越高，系统对噪声的抵抗能力越强，能够在更差的环境中稳定工作。（PPT3.3-P12）</p>
+
+<h3 id="b-给定一个反相器的-vtc-图如何得到其噪声容限请举例说明">b) 给定一个反相器的 VTC 图，如何得到其噪声容限？请举例说明。</h3>
+
+<p>Noise Margin Low（NML）和Noise Margin High（NMH）：</p>
+
+\[NM_L = v_{IL}-v_{OL} \\
+
+NM_H =v_{OH} - v_{IH}\]
+
+<p>例如：（例子来自<a href="https://zhuanlan.zhihu.com/p/457900170">VLSI：Noise Margin (噪声容限) - 知乎 (zhihu.com)</a>）</p>
+
+<p><img src="/img/in-post/VLSI/v2-32e2b75aceef88bcae0e3d0c4123e189_r.jpg" alt="img" style="zoom:67%;" /></p>
+
+<p>VTC如上图所示。$ v_{IL}$ 和 $v_{IH}$ 分别为：</p>
+
+\[v_{IL}=0.3v_{DD} \\
+
+v_{IH}=0.7v_{DD}\]
+
+<p>根据定义可得：</p>
+
+\[NM_L=0.3v_{DD}-0v_{DD} =0.3v_{DD} \\
+NM_H=v_{DD}-0.7v_{DD}=0.3v_{DD}\]
+
+<hr />
+
+<h4 id="参考资料-2">参考资料</h4>
+
+<blockquote>
+  <p>PPT3.3-P12
+<img src="/img/in-post/VLSI/image-20240521162421959.png" alt="image-20240521162421959" style="zoom: 67%;" /></p>
+
+  <p>本章还有一个知识点：判断好的VTC曲线和坏的VTC曲线P14</p>
+
+  <p><img src="/img/in-post/VLSI/image-20240521170020306.png" alt="image-20240521170020306" /></p>
+
+  <table>
+    <tbody>
+      <tr>
+        <td>可参考[数字集成电路</td>
+        <td>CMOS反相器 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/597370910)</td>
+      </tr>
+    </tbody>
+  </table>
+</blockquote>
+
+<h1 id="四cmos-反相器延时与功耗分析">四、CMOS 反相器延时与功耗分析</h1>
+
+<h2 id="题目7">题目7</h2>
+
+<p>7、对于静态 CMOS 反相器：</p>
+
+<h3 id="a-请画出一个标准反相器的内部构造图并标注出晶体管的尺寸比例">a) 请画出一个标准反相器的内部构造图，并标注出晶体管的尺寸比例。</h3>
+
+<p><img src="/img/in-post/VLSI/image-20240522000537992.png" alt="image-20240522000537992" style="zoom: 25%;" /></p>
+
+<hr />
+
+<h4 id="参考资料-3">参考资料</h4>
+
+<blockquote>
+  <p>PPT4.1 P4，同时PPT4.2P11规定了标准反相器PMOS/NMOS的尺寸比例 $β =\frac{W_p}{W_n}$=2
+<img src="/img/in-post/VLSI/image-20240521171233494.png" alt="image-20240521171233494" /></p>
+</blockquote>
+
+<h3 id="b-请分析反相器的尺寸变化对电阻电容以及延时的影响">b) 请分析反相器的尺寸变化对电阻，电容以及延时的影响。</h3>
+
+<ol>
+  <li><strong>电阻的影响</strong>：
+    <ul>
+      <li>反相器中的电阻主要由晶体管的基极-发射极电阻（$R_{BE}$）和电路中的其他电阻决定。</li>
+      <li>当反相器尺寸增大时，晶体管的尺寸也会增大，这可能导致基极-发射极电阻降低，因为电阻与导体的横截面积成反比。</li>
+      <li>增大尺寸还可能增加晶体管的电流承载能力，从而减少电阻对电流的影响。</li>
+    </ul>
+  </li>
+  <li><strong>电容的影响</strong>：
+    <ul>
+      <li>反相器的电容主要由晶体管的寄生电容、互连线电容以及电路板的电容组成。</li>
+      <li>尺寸增大通常意味着晶体管的面积增大，这可能导致寄生电容增加，因为电容与导体的面积成正比。</li>
+      <li>互连线的电容也可能随着尺寸的增大而增加，尤其是如果互连线的长度和宽度都增加的话。</li>
+    </ul>
+  </li>
+  <li><strong>延时的影响</strong>：
+    <ul>
+      <li>反相器的延时主要取决于信号在电路中传播所需的时间，这与电路的电容和电阻有关。</li>
+      <li>电阻的减小可以减少信号在电路中的传播时间，从而减少延时。</li>
+      <li>电容的增加会增加电路的充电和放电时间，从而增加延时。</li>
+      <li>总体上，尺寸的增大可能导致电容的增加对延时的影响大于电阻减小的影响，因此总体延时可能会增加。</li>
+    </ul>
+  </li>
+</ol>
+
+<p>所以可以总结为3点</p>
+
+<ul>
+  <li>反相器的电阻与尺寸成反比，即如果尺寸扩大$S$倍，则电阻变为原来的$\frac{1}{S}$倍</li>
+  <li>反相器的电容与尺寸成正比，即如果尺寸扩大$S$倍，则电容变为原来的$S$倍</li>
+  <li>反相器扩大$S$倍，延时计算公式如下，可以看到延时会减小，会不断接近 $0.69R_{on}C_{par,g}$</li>
+</ul>
+
+\[t_p=0.69\frac{R_{on}}{S}(C_{par,g}*S+C_L)=0.69R_{on}(C_{par,g}+\frac{C_L}{S})\]
+
+<h1 id="五静态-cmos-逻辑门设计与优化">五、静态 CMOS 逻辑门设计与优化</h1>
+
+<h2 id="题目8">题目8</h2>
+
+<p>8、请根据下述逻辑表达式回答问题：</p>
+
+\[Out=\overline{D+A(B+C)}\]
+
+<h3 id="a-请设计完成能实现该逻辑功能的静态-cmos-逻辑门">a) 请设计完成能实现该逻辑功能的静态 CMOS 逻辑门。</h3>
+
+<p><img src="/img/in-post/VLSI/image-20240522154148001.png" alt="image-20240522154148001" style="zoom: 33%;" /></p>
+
+<h3 id="b-请写出逻辑门延时的计算方法不包括中间电容">b) 请写出逻辑门延时的计算方法（不包括中间电容）。</h3>
+
+<blockquote>
+  <p>PPT5.2，5.3中加入了对中间电容的考虑</p>
+</blockquote>
+
+\[\boxed{t_{p1}=(t_{pHL,1}+t_{pLH,1})/2=0.69\cdot(R_{on,PUN1}+R_{on,PDN1})/2\cdot(C_{par,g}+C_L)}\]
+
+<p>这里的<strong>R是PUN和PDN的等效电阻的平均</strong>，需要通过具体的电路实现进行计算，<strong>C还是这一级的寄生电容$C_{par,g}$和下一级的gate电容$C_L$之和</strong></p>
+
+<hr />
+
+<h4 id="参考资料-4">参考资料：</h4>
+
+<blockquote>
+  <p>PPT4.2-P9和PPT5.2-P4</p>
+
+  <div style="display: flex;">
+    <div style="flex: 50%; padding: 5px;">
+        <img src="/img/in-post/VLSI/image-20240521181812144.png" alt="Image 1" style="width:100%" />
+        <p style="text-align: center;">(a)PPT4.2-P9</p>
+    </div>
+    <div style="flex: 50%; padding: 5px;">
+        <img src="/img/in-post/VLSI/image-20240522155416410-17163713377591.png" alt="Image 2" style="width:100%" />
+        <p style="text-align: center;">(b)PPT5.2-P4</p>
+    </div>
+</div>
+
+</blockquote>
+
+<h3 id="c-设负载电容为-c_l标准反相器的输入电容和寄生电容分别为-c_g0-和-c_par0请计算-a-中得到的逻辑门的传播延时">c) 设负载电容为 $C_L$，标准反相器的输入电容和寄生电容分别为 $C_{g,0}$ 和 $C_{par,0}$，请计算 a) 中得到的逻辑门的传播延时。</h3>
+
+<blockquote>
+  <p>这题也就是PPT5.2-P10的例子，疑问：PPT中$C_{d0}$对应这里的什么?我猜d0对应par0
+answer：这里根据上下文应该是$C_{par,0}=3C_{d0}$，要根据上下文来看，有的地方$C_{par,0}=C_{d0}$，例如24、25、26、27</p>
+</blockquote>
+
+<p>先算<strong>电阻</strong>：</p>
+
+<p>注意到此时PUN是由BC串联后与A并联再与D串联，我们<strong>从外到内</strong>分别进行分析，</p>
+
+<p>首先是D与其他的串联，我们让他们各占R0/2，则D的尺寸比例为4倍（因为POMS原本就是2倍，这里只是将POMS的尺寸变大2被），进一步再分解到并联电路，可以知道A的电阻为R0/2，尺寸比例为4倍。</p>
+
+<p>再到BC串联电路，可以让他们各占R0/4的电阻，则尺寸比例都为8倍</p>
+
+<hr />
+
+<p>同样对于PDN，他是由BC并联后与A串联再与D并联，所以D的电阻为R0，尺寸比例为1，让A与BC的并联电路各占R0/2的电阻，A的尺寸比例为2倍，BC的电阻也为R0/2，尺寸比例为2倍</p>
+
+<hr />
+
+<p>对于PUN和PDN，电路的<strong>电容</strong>分为寄生电容和下一级的gate电容。</p>
+
+<p>其中寄生电容都为两个NMOS和一个PMOS的寄生电容，由于PMOS的尺寸比例为4，NMOS的尺寸比例分别为1和2，所以电路的寄生电容，7$C_{d0}$，最坏情况下PUN和PDN的电阻都为R0</p>
+
+<hr />
+
+<p>所以可以计算出PUN和PDN的时延都为$0.69R0(7C_{d0}+C_L)$，所以总时延是$t_p=\frac{t_{pLH}+t_{pHL}}{2}=0.69R0(7C_{d0}+C_L)$</p>
+
+<p>由于这里是标准反相器，所以$C_{par,0}=3C_{d0}$，所以$t_p==0.69R0(\frac{7}{3}C_{par,0}+C_L)$</p>
+
+<h2 id="题目9">题目9</h2>
+
+<p>9、对于一个 2 输入的异或（XOR）门，请回答下列问题：</p>
+
+<h3 id="a-请写出它的真值表并使用-sop-sum-of-product-的方法写出它的逻辑表达式">a) 请写出它的真值表，并使用 SOP (Sum Of Product) 的方法写出它的逻辑表达式。</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">X</th>
+      <th style="text-align: center">Y</th>
+      <th style="text-align: center">F</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">1</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: center">0</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1</td>
+      <td style="text-align: center">0</td>
+      <td style="text-align: center">1</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">0</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: center">1</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">0</td>
+      <td style="text-align: center">0</td>
+      <td style="text-align: center">0</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<p>根据F=1时可以写出以下逻辑表达式：</p>
+
+\[F = X\overline Y + \overline X Y = \overline{( \overline X+Y)\cdot(X+ \overline Y)}\]
+
+<h3 id="b-设负载电容为-c_l标准反相器的输入电容和寄生电容分别为-c_g0-和-c_par0请计算它的传播延时">b) 设负载电容为 $C_L$，标准反相器的输入电容和寄生电容分别为 $C_{g,0}$ 和 $C_{par,0}$，请计算它的传播延时。</h3>
+
+<blockquote>
+  <p>首先画出CMOS电路图，可参考PPT5.1-P12</p>
+
+  <p>易错点：看清是标准反相器的寄生电容是$C_{par,0}=3C_{d0}$，$C_{d0}$是单位晶体管的电容</p>
+</blockquote>
+
+<p><img src="/img/in-post/VLSI/image-20240617125842826.png" alt="image-20240617125842826" style="zoom:33%;" /></p>
+
+<p>根据公式(PPT5-P4)</p>
+
+\[\boxed{t_{p1}=(t_{pHL,1}+t_{pLH,1})/2=0.69\cdot(R_{on,PUN1}+R_{on,PDN1})/2\cdot(C_{par,g}+C_L)}\]
+
+<h3 id="c-对于该门的两个输入-a-与-b假设-p_a113p_b112请计算该门的切换功耗">c) 对于该门的两个输入 A 与 B，假设 $P_{A=1}$=1/3，$P_{B=1}$=1/2，请计算该门的切换功耗。</h3>
+
+<blockquote>
+  <p>根据PPT5.2-P16</p>
+</blockquote>
+
+<p>由计算公式</p>
+
+\[\boxed{P_{av g}=\alpha_{0\to1}\cdot C_{L}\cdot V_{DD}^{2}\cdot f_{clock}}\]
+
+<p>其中</p>
+
+\[P_{F=0}=P_{A=1} \cdot P_{B=1}+P_{A=0} \cdot P_{B=0}=1/6 +2/6 = 3/6=1/2\\
+P_{F=1}=P_{A=1} \cdot P_{B=0}+P_{A=0} \cdot P_{B=1}=1/6 +2/6 = 3/6=1/2 \\
+所以\\
+\alpha=P_{F=0}\cdot P_{F=1}=1/4\\\]
+
+<p>故</p>
+
+\[P = 1/4\cdot C_{L}\cdot V_{DD}^{2}\cdot f_{clock}\]
+
+<h2 id="题目10">题目10</h2>
+
+<p>10、对于一个 2 输入的同或（XNOR）门，请回答下列问题：</p>
+
+<h3 id="a-请设计出能完成其功能的静态-cmos-逻辑门">a) 请设计出能完成其功能的静态 CMOS 逻辑门。</h3>
+
+<p>同或门在异或门基础上加一个反相器即可，参考第九题设计，可得：</p>
+
+<p><img src="/img/in-post/VLSI/image-20240522232355300.png" alt="image-20240522232355300" style="zoom:33%;" /></p>
+
+<h3 id="b-对于该门的两个输入-a-与-b假设-p_a113p_b112请计算该门的切换功耗">b) 对于该门的两个输入 A 与 B，假设 $P_{A=1}$=1/3，$P_{B=1}$=1/2，请计算该门的切换功耗。</h3>
+
+<p>由计算公式</p>
+
+\[\boxed{P_{av g}=\alpha_{0\to1}\cdot C_{L}\cdot V_{DD}^{2}\cdot f_{clock}}\]
+
+<p>其中</p>
+
+\[P_{F=1}=P_{A=1} \cdot P_{B=1}+P_{A=0} \cdot P_{B=0}=1/6 +2/6 = 3/6=1/2\\
+P_{F=0}=P_{A=1} \cdot P_{B=0}+P_{A=0} \cdot P_{B=1}=1/6 +2/6 = 3/6=1/2 \\
+所以\\
+\alpha=P_{F=0}\cdot P_{F=1}=1/4\\\]
+
+<p>故</p>
+
+\[P = 1/4\cdot C_{L}\cdot V_{DD}^{2}\cdot f_{clock}\]
+
+<h2 id="题目11">题目11</h2>
+
+<p>11、请根据下列逻辑表达式回答问题：</p>
+
+\[𝑂𝑢𝑡 = (𝐴\overline{𝐵} + 𝐶)𝐷\]
+
+<h3 id="a-请设计完成能实现该逻辑功能的静态-cmos-逻辑门-1">a) 请设计完成能实现该逻辑功能的静态 CMOS 逻辑门。</h3>
+
+<p><img src="/img/in-post/VLSI/image-20240709171839006.png" alt="image-20240709171839006" style="zoom: 33%;" /></p>
+
+<h3 id="b-请使用与-a不同的方案实现同样具有逻辑功能的静态-cmos-逻辑门">b) 请使用与 a)不同的方案实现同样具有逻辑功能的静态 CMOS 逻辑门。</h3>
+
+<p><img src="/img/in-post/VLSI/image-20240522234438665.png" alt="image-20240522234438665" style="zoom: 25%;" /></p>
+
+<h2 id="题目12">题目12</h2>
+
+<p>12、下图是一个 2 输入的同或（XNOR）门的符号表示，请回答下列问题：</p>
+
+<p><img src="/img/in-post/VLSI/image-20240521172422515.png" alt="image-20240521172422515" style="zoom:67%;" /></p>
+
+<h3 id="a-请写出它的真值表以及逻辑表达式">a) 请写出它的真值表以及逻辑表达式。</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">X</th>
+      <th style="text-align: center">Y</th>
+      <th style="text-align: center">F</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">1</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: center">1</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1</td>
+      <td style="text-align: center">0</td>
+      <td style="text-align: center">0</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">0</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: center">0</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">0</td>
+      <td style="text-align: center">0</td>
+      <td style="text-align: center">1</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>根据XOP，得</p>
+
+\[F = ( \overline X+Y)\cdot(X+ \overline Y) = = \overline{X\overline Y + \overline X Y }\]
+
+<h3 id="b-请使用静态-cmos-电路实现该逻辑门">b) 请使用静态 CMOS 电路实现该逻辑门。</h3>
+
+<p>同或门得静态 CMOS 电路在10(a)中已经实现：
+<img src="/img/in-post/VLSI/image-20240522232355300.png" alt="image-20240522232355300" style="zoom:33%;" /></p>
+
+<h2 id="题目13">题目13</h2>
+
+<p>13、对于多输入的异或（XOR）门该如何工作，向来众说纷纭。有人将其称为 “奇数功能或门”，即当奇数个输入为高电平时，其输出为高电平。请回答 下列问题：</p>
+
+<h3 id="a-请写出使用以上定义实现的-3-输入-xor-门的真值表并设计出能实现其逻辑功能的静态-cmos-电路">a) 请写出使用以上定义实现的 3 输入 XOR 门的真值表并设计出能实现其逻辑功能的静态 CMOS 电路。</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>输入A</th>
+      <th>输入B</th>
+      <th>输入C</th>
+      <th>输出</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>逻辑表达式为：</p>
+
+\[F=\mathrm{ABC}+\mathrm{A\bar B \bar C}+{\mathrm{\bar AB\bar C}}+{\mathrm{\bar A\bar BC}}\]
+
+<p>所以电路为：</p>
+
+<p><img src="/img/in-post/VLSI/13.jpg" alt="13" style="zoom:33%;" /></p>
+
+<h3 id="b-你认同这种定义吗你认为多输入的-xor-门应该实现什么样的逻辑功能">b) 你认同这种定义吗？你认为多输入的 XOR 门应该实现什么样的逻辑功能？</h3>
+
+<p>我认同将多输入的异或门定义为“奇数功能或门”。这种定义在实际应用中是有意义的，并且能够保持异或逻辑的一致性，可以用于检测奇偶校验或实现某些特定加密算法时。</p>
+
+<h2 id="题目14">题目14</h2>
+
+<p>14、（数字逻辑相关）请回答下列问题：</p>
+
+<h3 id="a-什么是逻辑运算的最小完全集">a) 什么是逻辑运算的最小完全集？</h3>
+
+<p>逻辑运算的最小完全集是指一组逻辑运算符，这组运算符能够通过组合来实现其他所有逻辑运算。</p>
+
+<h3 id="b-与或非是一个最小完全集吗与非或非呢">b) {与，或，非}是一个最小完全集吗？{与非，或非}呢？</h3>
+
+<ul>
+  <li>
+    <p>集合{与，或，非}是布尔代数中的一个最小完全集。</p>
+  </li>
+  <li>
+    <p>集合 {与非，或非}同样是一个最小完全集。NAND和NOR门是通用的逻辑门，因为它们可以组合起来实现布尔代数中的任何其他逻辑运算。</p>
+  </li>
+</ul>
+
+<p>因此，无论是 {与，或，非} 还是 {与非，或非}，它们都是布尔代数中的最小完全集。</p>
+
+<blockquote>
+  <p>答案：</p>
+
+  <p>如{与，或，非}是完全集，<strong>但不是最小的</strong>，比方与和非就可以构造出或，因此{与，非}可以是一个完全集。</p>
+
+  <p>{或非，与非}<strong>也不是最小完全集</strong>， 2输入的或非门一端接低可以构造出非，之后可以构造出与非。证明是否完全集与证是否NP问题的推理类似，只需找一个参照物求证等价即可。</p>
+</blockquote>
+
+<h3 id="c-请使用-nand-门与-nor-门实现-andor-与-inv-门再使用-and-or-与-inv-门实现-nand-门与-nor-门2-输入">c) 请使用 NAND 门与 NOR 门实现 AND，OR 与 INV 门，再使用 AND， OR 与 INV 门实现 NAND 门与 NOR 门（2 输入）。</h3>
+
+<p>我们可以通过组合 NAND 门和 NOR 门来实现 AND、OR 和 INV（反相）门，然后使用这些基本的 AND、OR 和 INV 门来实现 NAND 和 NOR 门。</p>
+
+<hr />
+
+<p>首先，使用 NAND 门实现 AND 门：
+$ \text{AND}(A, B) = \neg (\text{NAND}(A, B)) = \text{INV}(\text{NAND}(A, B)) =\text{NAND}(\text{NAND}(A, B),\text{NAND}(A, B))$
+这里，我们首先使用 NAND 门得到 A 和 B 的 NAND 结果，然后通过 INV 门（即 NAND 门的输出再通过一个 NAND 门）来实现 AND 门的功能。</p>
+
+<hr />
+
+<p>接下来，使用 NAND 门实现 OR 门：
+$ \text{OR}(A, B) = \text{INV}(\text{NAND}(A, \text{INV}(B))) =\text{NAND}(\text{NAND}(A, \text{INV}(B)),\text{NAND}(A, \text{INV}(B)))$
+这里，我们首先通过 NAND 门实现一个 INV 门，然后对 B 进行反相，再与 A 进行 NAND 操作，最后通过 INV 门来实现 OR 门的功能。</p>
+
+<hr />
+
+<p>最后，使用 NAND 门实现 INV 门：
+$ \text{INV}(A) = \text{NAND}(A, A) $
+这里，我们通过将输入 A 与自身进行 NAND 操作来实现 INV 门的功能。</p>
+
+<hr />
+
+<p>现在，使用 AND、OR 和 INV 门来实现 NAND 门：
+$ \text{NAND}(A, B) = \neg (A \land B) = \text{INV}(\text{AND}(A, B)) $
+这里，我们首先使用 AND 门得到 A 和 B 的 AND 结果，然后通过 INV 门来实现 NAND 门的功能。</p>
+
+<hr />
+
+<p>接着，使用 AND、OR 和 INV 门来实现 NOR 门：
+$ \text{NOR}(A, B) = \neg (A \lor B) = \text{INV}(\text{OR}(A, B)) $
+这里，我们首先使用 OR 门得到 A 和 B 的 OR 结果，然后通过 INV 门来实现 NOR 门的功能。</p>
+
+<p><img src="/img/in-post/VLSI/image-20240709203349973.png" alt="image-20240709203349973" /></p>
+
+<h2 id="题目15">题目15</h2>
+
+<p>15、请根据下述逻辑表达式回答问题：</p>
+
+\[𝑂𝑢𝑡 = \overline{𝐴𝐵𝐶 + \overline A𝐵 + 𝐵\overline C + 𝐴𝐶 }\]
+
+<h3 id="a-该表达式能否进一步化简请写出化简后的表达式">a) 该表达式能否进一步化简？请写出化简后的表达式。</h3>
+
+\[𝑂𝑢𝑡 = \overline{𝐴𝐵𝐶 + \overline A𝐵 + 𝐵\overline C + 𝐴𝐶 }\\
+= \overline{𝐴𝐶(B+1) + \overline A𝐵 + 𝐵\overline C  }\\
+=\overline{𝐴𝐶 + \overline A𝐵 + 𝐵\overline C  }\\
+=(\overline A+\overline C)(A+\overline B)(\overline B+C)\\
+=\overline A\space \overline BC + A\overline B \space \overline C +\overline A\space \overline B +\overline B\space \overline C\\
+=\overline B(\overline AC+ A\overline C+ \overline A + \overline C )\\
+=\overline B( \overline A + \overline C)\]
+
+<h3 id="b-根据原表达式或者-a-中得到的结果实现对应的静态-cmos-逻辑门">b) 根据原表达式或者 a) 中得到的结果，实现对应的静态 CMOS 逻辑门。</h3>
+
+<p><img src="/img/in-post/VLSI/image-20240523100412734.png" alt="image-20240523100412734" style="zoom:33%;" /></p>
+
+<h2 id="题目16">题目16</h2>
+
+<p>16、请结合以下真值表回答问题：</p>
+
+<p><img src="/img/in-post/VLSI/image-20240521172650333.png" alt="image-20240521172650333" /></p>
+
+<h3 id="a-请根据真值表写出对应的逻辑表达式">a) 请根据真值表写出对应的逻辑表达式。</h3>
+
+<p>根据SOP，可得：</p>
+
+\[Y=A\overline B + AB=A(\overline B+B)=A\]
+
+<h3 id="b-请根据逻辑表达式实现对应的静态-cmos-电路">b) 请根据逻辑表达式实现对应的静态 CMOS 电路。</h3>
+
+<p><img src="/img/in-post/VLSI/image-20240523100423562.png" alt="image-20240523100423562" /></p>
+
+<h2 id="题目17">题目17</h2>
+
+<p>17、对于一个 4 输入的 NAND 门：</p>
+
+<h3 id="a-请写出其逻辑表达式">a) 请写出其逻辑表达式。</h3>
+
+\[out = \overline{ABCD}\]
+
+<h3 id="b-使用互补-cmos-设计将其实现需要多少个-nmos-晶体管">b) 使用互补 CMOS 设计将其实现，需要多少个 NMOS 晶体管？</h3>
+
+<blockquote>
+  <p>互补CMOS设计是一种集成电路的设计方法，它结合了n-type MOSFET（NMOS）和p-type MOSFET（PMOS）两种类型的金属氧化物半导体场效应晶体管，利用它们的互补特性来构建数字逻辑门和其他电路。这种设计方法的基础在于，NMOS晶体管在高电平时导通（作为“开”开关），而PMOS晶体管在低电平时导通（作为“关”开关）。通过巧妙地安排NMOS和PMOS晶体管，互补CMOS电路能够实现低功耗、高速度和良好的噪声抑制能力。</p>
+
+  <p>在互补CMOS逻辑门中，通常会有两个主要部分：一个称为<strong>下拉网络（Pull-Down Network, PDN）</strong>，主要由NMOS晶体管组成，负责在适当条件下将输出拉至低电平；另一个是<strong>上拉网络（Pull-Up Network, PUN）</strong>，主要由PMOS晶体管构成，用于在其他条件下保持或拉高输出到高电平。这样的设计使得在逻辑门没有切换状态时（即保持状态），不论是高电平还是低电平，总有一组晶体管处于截止状态，从而几乎不消耗电流，大大降低了静态功耗。</p>
+
+</blockquote>
+
+<p>需要4个NMOS晶体管</p>
+
+<p><img src="/img/in-post/VLSI/image-20240523100440918.png" alt="image-20240523100440918" style="zoom:33%;" /></p>
+
+<h2 id="题目18">题目18</h2>
+
+<p>18、请解释静态 CMOS 电路中为什么使用 PMOS 晶体管实现 PUN 部分，使用 NMOS 实现 PDN 部分？若是互相替换会导致什么后果？</p>
+
+<hr />
+
+<p>在静态CMOS电路中，使用PMOS晶体管实现上拉网络(PUN)部分，而使用NMOS晶体管实现下拉网络(PDN)部分，这是基于它们的电气特性和互补工作的原理，简单而言，是因为NMOS在PDN可实现强0但PMOS只可以实现弱0，相反，PMOS在PUN可以实现强1但NMOS只可以实现弱1（具体分析可见下面）：</p>
+
+<ol>
+  <li><strong>电气特性匹配</strong>：
+    <ul>
+      <li><strong>PMOS晶体管</strong>在栅极施加低电平时导通，允许电流从源极流至漏极，这非常适合用于上拉网络，因为它可以在输入为逻辑低时（即PMOS的栅极为高电平）关闭，而在输入为逻辑高时（栅极为低电平）打开，从而拉高输出到Vdd（电源电压）。</li>
+      <li><strong>NMOS晶体管</strong>则在栅极高电平时导通，允许从漏极到源极的电流流动，这适用于下拉网络，因为它能在输入为逻辑高时关闭，输入为逻辑低时打开，将输出拉低至地（GND）。</li>
+    </ul>
+  </li>
+  <li><strong>互补工作原理</strong>：这种配置确保了无论电路处于何种逻辑状态，总有至少一组晶体管（NMOS或PMOS）处于截止状态，从而极大地减少了漏电流，实现了低功耗特性。当输出不需要改变时，电路不会消耗显著的静态电流，这是“静态”一词的由来。</li>
+</ol>
+
+<p>如果将PMOS和NMOS在CMOS电路中的角色互换，会导致以下后果：</p>
+
+<ul>
+  <li><strong>功耗增加</strong>：由于NMOS作为上拉网络时，其导通电阻相对较高，相比于PMOS作为上拉时，会需要更大的驱动电流来维持高电平输出，导致功耗增加。</li>
+  <li><strong>性能下降</strong>：NMOS作为上拉时，由于其驱动能力较弱，可能会导致上升沿变缓，同样，PMOS作为下拉时也会使下降沿变慢，这会降低电路的整体速度。</li>
+</ul>
+
+<h4 id="参考资料-强弱pun和pdn的分析">参考资料-强弱PUN和PDN的分析</h4>
+
+<blockquote>
+  <p>更详细解释可见PPT5.1-P12《强弱PUN和PDN》：</p>
+</blockquote>
+
+<p>之前我们讲要将<strong>NMOS用在接地的PDN中，将PMOS用在接电源的PUN中</strong>，这是有原因的</p>
+
+<ul>
+  <li>
+    <p>当NMOS用在PDN时，由于对于NMOS，VDS&gt;=0，所以Source接地，Drain接output的负载电容，由于VGS始终为Vdd&gt;Vtn，所以它始终导通，负载电容可以一直放电到输出电压为0，也就是他可以实现一个<strong>strong 0</strong></p>
+  </li>
+  <li>
+    <p>当NMOS用在PUN时，由于对于NMOS，VDS&gt;=0，所以Source接output的负载电容，Drain接VDD，由于电源对负载电容进行充电，输出端端的电压逐渐增大，VGS对应减小，当它小于Vtn时，不再有导电沟道，NMOS断开，因此，输出端只能充电到VDD-Vtn，它只能实现一个<strong>弱1</strong></p>
+  </li>
+  <li>
+    <p>当PMOS用在PDN时，由于对于PMOS，VDS&lt;=0，所以Drain接地，Source接output的负载电容，由于随着负载电容放电，输出端的电压逐渐减小，VGS的绝对值对应减小，当它小于Vtp的绝对值时，不再有导电沟道，PMOS断开，因此，输出端只能放电到Vtp的绝对值，它只能实现一个<strong>弱0</strong></p>
+  </li>
+  <li>
+    <p>当PMOS用在PUN时，由于对于PMOS，VDS&lt;=0，所以Drain接output的负载电容，Source接VDD，由于VGS的绝对值始终为Vdd&gt;Vtp的绝对值，所以它始终导通，负载电容可以一直充电到输出电压为Vdd，也就是他可以实现一个<strong>strong 1</strong></p>
+  </li>
+</ul>
+
+<p>这就是我们将NMOS用在接地的PDN中，将PMOS用在接电源的PUN中的原因</p>
+
+<h2 id="题目19">题目19</h2>
+
+<p>19、请结合下图回答问题：</p>
+
+<p><img src="/img/in-post/VLSI/image-20240521172723582.png" alt="image-20240521172723582" style="zoom: 50%;" /></p>
+
+<p>a) 图中的电路实现了什么样的逻辑功能？请写出其逻辑表达式。</p>
+
+<p>可以看出上半部分逻辑表达式是：</p>
+
+\[(\overline A+\overline B)\overline C + \overline A\space \overline B\]
+
+<p>可以看出下半部分逻辑表达式是：</p>
+
+\[\overline {(A+B)C + AB}=(\overline A \space \overline B+\overline C)(\overline A+\overline B)\]
+
+<p>由于</p>
+
+<p>b) 这是一个静态 CMOS 电路吗？为什么？</p>
+
+<p>这是一个静态电路，电路图中无电容存储效应来保存信息。</p>
+
+<h2 id="题目20">题目20</h2>
+
+<p>20、请结合下图回答问题：</p>
+
+<p><img src="/img/in-post/VLSI/image-20240521172754388.png" alt="image-20240521172754388" style="zoom:50%;" /></p>
+
+<h3 id="a-该图中的-cmos-电路实现了什么样的逻辑功能请写出其逻辑表达式">a) 该图中的 CMOS 电路实现了什么样的逻辑功能？请写出其逻辑表达式。</h3>
+
+<p>根据互补CMOS电路，可得
+\(Y = \overline{ABC} = \overline A +\overline B+ \overline C\)</p>
+
+<h3 id="b-假设该电路之前的状态为a_10a_21a_31请写出稳定时电路中-几个电容的充放电状态这时候如果-a_1的状态由-0-变为-1电容中的-电荷会发生什么样的变化">b) 假设该电路之前的状态为：$A_1$=0，$A_2$=1，$A_3$=1，请写出稳定时电路中 几个电容的充放电状态。这时候如果 $A_1$的状态由 0 变为 1，电容中的 电荷会发生什么样的变化？</h3>
+
+<blockquote>
+  <ul>
+    <li><strong>NMOS晶体管</strong>：当其栅极（gate）相对于源极（source）的电压高于阈值电压（即栅极电压为高电平）时，NMOS晶体管导通，允许电流从漏极（drain）流向源极。因此，是高电平导通。</li>
+    <li><strong>PMOS晶体管</strong>：与NMOS相反，当栅极电压低于源极电压，即栅极电压为低电平时，PMOS晶体管导通，允许电流从源极流向漏极。因此，是低电平导通。</li>
+  </ul>
+
+  <p>所以可以理解为：</p>
+
+  <ul>
+    <li>PMOS晶体管在<strong>输入为0（低电平）</strong>时导通。</li>
+    <li>NMOS晶体管在<strong>输入为1（高电平）</strong>时导通。</li>
+  </ul>
+</blockquote>
+
+<p>PMOS电路时低电平导通，NMOS是高电平导通，所以PMOS中输入0是导通，NMOS中输入1是导通</p>
+
+<p>刚开始稳定时C1、C2和CL都是充电状态，A1变为1后，上半部分电路都不导通，所以C1、C2和CL变为放电状态。</p>
+
+<h3 id="c-结合-b-中的情况如果输入中只有-a_1-会频繁地发生变化该电路的设计可能会导致什么问题能否进行优化">c) 结合 b) 中的情况，如果输入中只有 $A_1$ 会频繁地发生变化，该电路的设计可能会导致什么问题？能否进行优化？</h3>
+
+<blockquote>
+  <p>PPT5.3-P10 《重排序》</p>
+</blockquote>
+
+<p>假如A1经常发生电平切换，而其他输入不经常发生电平切换。那么当A1对应最远离output的NMOS时，它从0-&gt;1切换时，由于C1、C2在上一状态都都进行了充电，所以它们在这一时刻都会放电来贡献时延。</p>
+
+<p>优化方法：把它放在最接近output的位置时，当它从0-&gt;1切换时，由于C1、C2在上一状态都都进行了放电，所以它们在这一时刻不会贡献时延。</p>
+
+<h1 id="六logical-efforts-分析方法介绍与应用">六、Logical Efforts 分析方法介绍与应用</h1>
+
+<h2 id="题目21">题目21</h2>
+
+<p>21、（基础回顾）对于下图所示的静态 CMOS 逻辑门，请回答：</p>
+
+<p><img src="/img/in-post/VLSI/image-20240521172931274.png" alt="image-20240521172931274" style="zoom:67%;" /></p>
+
+<h3 id="a-如何计算它的传播延时请写出其传播延时的计算公式">a) 如何计算它的传播延时？请写出其传播延时的计算公式。</h3>
+
+\[\boxed{t_{p1}=(t_{pHL,1}+t_{pLH,1})/2=0.69\cdot(R_{on,PUN1}+R_{on,PDN1})/2\cdot(C_{par,g}+C_L)}\]
+
+<h3 id="b-图中的-c_in1gc_pargc_l-各代表了什么">b) 图中的$ C_{in1,g}$、$C_{par,g}$，$C_L$ 各代表了什么？</h3>
+
+<ul>
+  <li>$ C_{in1,g}$是这一级的输入电容（gate电容）</li>
+  <li>
+    <p>$C_{par,g}$是这一级的寄生电容</p>
+  </li>
+  <li>$C_L$是下一级的gate电容</li>
+</ul>
+
+<h3 id="c-如果将该门中所有晶体管的尺寸增大或缩小-s-倍会对它的等效电阻-和电容造成什么样的影响">c) 如果将该门中所有晶体管的尺寸增大或缩小 S 倍，会对它的等效电阻 和电容造成什么样的影响？</h3>
+
+<blockquote>
+  <p>PPT5.20-P11，分析CMOS 逻辑电路的self-loading effect时有讲</p>
+</blockquote>
+
+<p>如果尺寸都变大S倍，那么</p>
+
+<ul>
+  <li>$R_{on}-&gt;\frac{R_{on}}{S}$</li>
+  <li>$C_{par}-&gt;C_{par}\cdot S$</li>
+  <li>$C_{in}-&gt;C_{in}\cdot S$</li>
+  <li>$C_{L}-&gt;C_{L}$</li>
+</ul>
+
+<h2 id="题目22">题目22</h2>
+
+<p>22、（Gate Sizing）假设一个标准反相器的等效电阻为$ R_{INV}$，PMOS 的 W/L=2， NMOS 的 W/L=1，输入电容（input capacitance）为 $C_{in,INV}$，寄生电容 （parasitic capacitance）为$ C_{par,INV}$。同时假设负载电容为 $C_L$，请回答下列问题：</p>
+
+<h3 id="d-对于一个-2-输入的-nand-门请使用静态-cmos-方法将其实现为其分配合适的尺寸使得其等效电阻等于-r_inv并计算它的传播延时">d) 对于一个 2 输入的 NAND 门，请使用静态 CMOS 方法将其实现，为其分配合适的尺寸使得其等效电阻等于 $R_{INV}$，并计算它的传播延时。</h3>
+
+<blockquote>
+  <p>PPT6.1-P7&amp;P10(P7中是标准NAND，P10中是S=2)，计算在PPT5.2-P8</p>
+</blockquote>
+
+<p>对于2输入NAND门，</p>
+
+<p><img src="/img/in-post/VLSI/22-b.jpg" alt="22-b" /></p>
+
+<p>e) 对于一个 2 输入的 NOR 门，请使用静态 CMOS 方法将其实现，为其分配合适的尺寸使得其等效电阻等于 $R_{INV}$，并计算它的传播延时。</p>
+
+<blockquote>
+  <p>PPT5.2-P9</p>
+</blockquote>
+
+<p><img src="/img/in-post/VLSI/22-a.jpg" alt="22-a" /></p>
+
+<p>f) 对于一个 2 输入的 XOR 门，请使用静态 CMOS 方法将其实现，为其分配合适的尺寸使得其等效电阻等于 $R_{INV}$，并计算它的传播延时。</p>
+
+<blockquote>
+  <p>完全是第9题(b)</p>
+</blockquote>
+
+<p><img src="/img/in-post/VLSI/image-20240617125842826.png" alt="image-20240617125842826" style="zoom:33%;" /></p>
+
+<h2 id="题目23">题目23</h2>
+
+<p>23、（Logical Effort）下图是一个多级组合逻辑电路的示例，请回答以下问题：</p>
+
+<p><img src="/img/in-post/VLSI/image-20240521173321244.png" alt="image-20240521173321244" style="zoom:80%;" /></p>
+
+<h3 id="g-如何计算多级组合逻辑电路的传播延时请用自己的语言描述大致计算流程">g) 如何计算多级组合逻辑电路的传播延时？请用自己的语言描述大致计算流程。</h3>
+
+<blockquote>
+  <p>PPT6.1</p>
+</blockquote>
+
+<ol>
+  <li>
+    <p><strong>确定电路结构</strong>：首先，需要了解电路的具体结构，包括各个逻辑门的类型（如与门、或门、非门等）以及它们是如何连接的。</p>
+  </li>
+  <li>
+    <p><strong>识别关键路径</strong>：在电路中，<strong>关键路径是指信号传播时间最长的路径</strong>。这通常是从输入端到输出端经过的一系列逻辑门。识别关键路径有助于确定整个电路的传播延时。</p>
+  </li>
+  <li>
+    <p><strong>计算单个逻辑门的延时</strong>：对于电路中的每一个逻辑门，需要知道其延时。使用下面公式计算
+\(\boxed{t_{p1}=(t_{pHL,1}+t_{pLH,1})/2=0.69\cdot(R_{on,PUN1}+R_{on,PDN1})/2\cdot(C_{par,gate}+C_L)}\)</p>
+  </li>
+  <li>
+    <p><strong>累加延时</strong>：沿着关键路径，将每个逻辑门的延时相加。如果电路中存在并行路径，需要考虑最慢的路径，因为信号需要通过所有路径才能到达最终的输出。</p>
+  </li>
+</ol>
+
+<h3 id="h-如何使用-logical-effort-方法计算多级组合逻辑电路的传播延时请推导出其计算公式">h) 如何使用 Logical Effort 方法计算多级组合逻辑电路的传播延时？请推导出其计算公式。</h3>
+
+<blockquote>
+  <p>PPT6.2</p>
+</blockquote>
+
+<p>首先由传播时延计算公式：</p>
+
+\[t_{p1}=(t_{pHL,1}+t_{pLH,1})/2=0.69\cdot(R_{on,PUN1}+R_{on,PDN1})/2\cdot(C_{par,g}+C_L)\]
+
+<p>如果所有输入都是标准反相器，那么有(其中因为 Logical Effort 方法都是要变为标准反向器，所以输入的(in,gate)即为INV)</p>
+
+\[t_{p,gate}=0.69\cdot R_{on,INV}\cdot(C_{par,gate}+C_L)\]
+
+<p>将受到逻辑功能影响的部分$C_{in,par}$提取出来，得到：</p>
+
+\[t_{p,gate}=0.69\cdot R_{gate}\cdot C_{in,gate}\cdot(\frac{C_{par,gate}}{C_{in,gate}}+\frac{C_{L}}{C_{in,gate}})\]
+
+<p>令</p>
+
+<ul>
+  <li>$\tau_{gate}=0.69\cdot R_{gate}\cdot C_{in,gate}$</li>
+  <li>$\gamma_{gate}=\frac{C_{par,gate}}{C_{in,gate}}$</li>
+  <li>$Fan-out=\frac{C_{L}}{C_{in,gate}}$</li>
+</ul>
+
+<p>所以有上式中两边同除$\tau_{INV}$：</p>
+
+\[\frac{t_{p,gate}}{\tau_{INV}}=\frac{\tau_{gate}}{\tau_{INV}}(\gamma_{gate}+\frac{C_{load,gate}}{C_{in,gate}})\]
+
+<p>其中$\tau_{\mathrm{INV}}=0.69\cdot R_{\mathrm{INV}}\cdot C_{\mathrm{in,INV}}$</p>
+
+<p>分析可知</p>
+
+<ul>
+  <li>
+    <p>放大S倍，$\tau$ 不变( RC不随size变化，因为电阻R变小成R/S，C变大成SC，相乘后刚好抵消)</p>
+  </li>
+  <li>
+    <p>$\gamma$也不随S变化而变化（因为$C_{par}$和$C_{in}$会变大S被，相除后抵消）</p>
+  </li>
+  <li>
+    <p>Fan-out会发生变化（因为$C_L$不会因为上一级的size变化而变化，$C_L$是下一级的输入电容，受到下一级size影响）</p>
+  </li>
+</ul>
+
+<p>化为通用形式：</p>
+
+\[d=g\cdot(\gamma_{gate}+h)=p+g\cdot h\]
+
+<p>其中</p>
+
+<ul>
+  <li>逻辑努力Logical effect ：$g=\frac{R_{gate}\cdot C_{in,gate}}{R_{INV}\cdot C_{in,INV}}$</li>
+  <li>电气扇出Electrical Fan-out：$h=\frac{C_{load}}{C_{in,gate}}$</li>
+  <li>寄生延时/本征延时Parasitic Delay/Intrinsic  Delay：$ p=\frac{R_{gate} \cdot C_{par,gate}}{R_{INV} \cdot C_{par,INV}} \cdot \gamma_{INV}, \gamma_{<em>{INV}}=\frac{C</em>{<em>{par,INV}}}{C</em>{_{in,INV}}} $</li>
+</ul>
+
+<p>也就是$p=\frac{R_{gate} \cdot C_{par,gate}}{R_{INV} \cdot C_{in,INV}}$</p>
+
+<p>==要注意这里推导d的公式时左右都除了$\tau_{INV}$，所以最后求时间t的时候要用$t_p=d\cdot \tau_{INT}$==</p>
+
+<hr />
+
+<h3 id="i-logical-effort-方法中的电气扇出-h逻辑努力-g-和本征延时-pintrinsic--delayparasitic-delay代表了什么内涵请写出它们的计算方法以及你对它们的理解">i) Logical Effort 方法中的电气扇出 h，逻辑努力 g 和本征延时 p（Intrinsic  Delay/Parasitic Delay）代表了什么内涵？请写出它们的计算方法以及你对它们的理解。</h3>
+
+<p>下面是Logical Effort方法中的电气扇出 $ h $、逻辑努力 $ g $ 和本征延时 $ p $ 的定义、计算方法以及理解：</p>
+
+<ol>
+  <li>
+    <p><strong>电气扇出 $ h $</strong>：</p>
+
+    <ul>
+      <li><strong>定义</strong>：电气扇出 $ h $ 表示一个逻辑门可以驱动的负载电容 $ C_{load} $ 与该逻辑门输入电容 $ C_{in,gate} $ 的比值。表示一个逻辑门的输出驱动其他逻辑门输入的能力。也就是==<strong>电气扇出$h$表示一个逻辑门在保持指定延时下能驱动的等效反相器的数量，它考虑了门的输出驱动能力和负载的实际影响</strong>==。</li>
+      <li><strong>计算方法</strong>：$ h = \frac{C_{load}}{C_{in,gate}} $</li>
+      <li><strong>理解</strong>：这个参数决定了逻辑门可以驱动多少个后续逻辑门的输入。电气扇出越大，逻辑门可以驱动的负载就越多，但同时也会增加电路的延迟。</li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>逻辑努力 $ g $</strong>：</p>
+
+    <ul>
+      <li><strong>定义</strong>：逻辑努力 $ g $ 用于衡量一个逻辑门相对于理想反相器（INV）的复杂度，是一个无量纲的量。它与逻辑门的逻辑功能和结构有关。</li>
+      <li><strong>计算方法</strong>：$ g = \frac{R_{gate} \cdot C_{in,gate}}{R_{INV} \cdot C_{in,INV}} $，这里，$ R_{gate} $ 和 $ C_{in,gate} $ 分别是逻辑门的等效电阻和输入电容，而 $ R_{INV} $ 和 $ C_{in,INV} $ 是理想反相器的等效电阻和输入电容。</li>
+      <li><strong>理解</strong>：==<strong>逻辑努力用来衡量一个逻辑门与反相器（通常逻辑努力为1）相比，在理想情况下驱动相同负载时所需的额外努力或“强度”</strong>==。它反映了门的复杂度对延迟的影响。也可以说逻辑努力反映了逻辑门的复杂性。逻辑努力越大，逻辑门的逻辑功能越复杂，其传播延时也越大。</li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>本征延时 $ p $</strong>：</p>
+
+    <ul>
+      <li><strong>定义</strong>：==<strong>本征延时 $ p $ 是指在没有负载的情况下，逻辑门从输入变化到输出稳定所需的时间。</strong>==它代表了逻辑门内部的固有延时，与外部负载无关。</li>
+      <li>
+        <p><strong>计算方法</strong>：：$ p = \frac{R_{gate} \cdot C_{par,gate}}{R_{INV} \cdot C_{par,INV}} \cdot \gamma_{INV} $，其中 $ \gamma_{INV} = \frac{C_{par,INV}}{C_{in,INV}} $。</p>
+
+        <p>也就是$p=\frac{R_{gate} \cdot C_{par,gate}}{R_{INV} \cdot C_{in,INV}}$
+本征延时 $ p $ 通常由制造工艺决定，可以通过工艺参数和逻辑门的设计来确定。对于一个理想反相器，本征延时 $ p_{inv} $ 可以视为1，作为参考。</p>
+      </li>
+      <li><strong>理解</strong>：寄生延时（本征延时）$ p $ 是指逻辑门内部由于寄生电容和电阻引起的延时。这里，$ R_{gate} $ 和 $ C_{par,gate} $ 分别是逻辑门的等效电阻和寄生电容，而 $ R_{INV} $ 和 $ C_{par,INV} $ 是理想反相器的等效电阻和寄生电容。$ \gamma_{INV} $ 是理想反相器的逻辑努力，它反映了反相器的内部复杂度。寄生延时 $ p $ 与逻辑门的内部复杂度和理想反相器的内部复杂度有关。可以这样理解：本征延时是指理论上最小可能的门延迟，它决定了在没有外部负载影响下逻辑门能够多快地响应输入变化，仅反映门内部的固有延迟，包括由于电容充电和MOS管的开关行为造成的延迟。设计时需要考虑本征延时来确保电路能够满足性能要求。</li>
+    </ul>
+  </li>
+</ol>
+
+<p><strong>以上三个参数只有电气扇出$h$与gate size有关，其他两个都与gate size无关（PPT6.2-P11）</strong></p>
+
+<p>这些参数——本征延时 $p$、逻辑努力 $g$ 和电气扇出 $h$ 之间存在密切的相互关系，它们共同描述了CMOS逻辑门电路的性能和延迟特性。下面是它们之间关系的概述(PPT6.2-P12有图像描述逻辑努力的意义)</p>
+
+<ol>
+  <li>
+    <p><strong>本征延时 $p$</strong> 与 <strong>逻辑努力 $g$</strong> 和 <strong>电气扇出 $h$</strong> 的结合，可以用来计算实际的门延迟 $d$。根据Logical Effort方法的基本公式，一个逻辑门的总延迟 $d$ 可以表达为：
+\(d=g\cdot(\gamma_{gate}+h)=p+g\cdot h\)
+其中，第一部分 $p$ 是门的固有延迟贡献，第二部分 $g\cdot h$ 描述了因驱动额外负载（超过单位电容 $C_{inv}$）而增加的延迟。</p>
+  </li>
+  <li>
+    <p><strong>逻辑努力 $g$</strong> 和 <strong>电气扇出 $h$</strong> 之间的平衡对于优化设计至关重要。逻辑努力较高的门（更复杂的逻辑功能）自然具有更大的延迟倾向，但通过设计具有较高电气扇出的电路，即增强其驱动负载的能力，可以在一定程度上补偿这种延迟。</p>
+  </li>
+  <li>
+    <p>当一个门的电气扇出 $h$ 大于1时，表示该门有能力在不显著增加延迟的情况下驱动更多的负载（相对于一个单位反相器）。相反，如果 $h &lt; 1$，则表明门的驱动能力不足以有效处理其指定的负载，导致延迟增加。</p>
+  </li>
+</ol>
+
+<hr />
+
+<h3 id="j-请补充下表的内容计算逻辑努力-g">j) 请补充下表的内容（计算逻辑努力 g）：</h3>
+
+<blockquote>
+  <p>PPT6.2-P16有完整表格，推导在P15，难点在于计算等效电容</p>
+</blockquote>
+
+<p>乘法器这里推导有点难了，直接看PPT往里填，其他推导（下图来自PPT6.2-P15，XOR和XNOR在第九题和第十题画过）：</p>
+
+<p><img src="/img/in-post/VLSI/sidahda.jpg" alt="sidahda" /></p>
+
+<div style="display: flex;">
+    <div style="flex: 70%; padding: 5px;">
+        <img src="/img/in-post/VLSI/image-20240523113740999.png" alt="Image 1" style="width:100%" />
+    </div>
+    <div style="flex: 50%; padding: 5px;">
+        <img src="/img/in-post/VLSI/XOR.jpg" alt="Image 2" style="width:100%" />
+    </div>
+</div>
+
+<p>由上图根据公式</p>
+
+\[g=\frac{R_{gate}\cdot C_{in,gate}}{R_{INV}\cdot C_{in,INV}}\]
+
+<p>这里是标准门电路，等效电阻要求是$R_0$，也就是标准反相器的电阻$R_{INV}$，所以计算电容比值即可（要注意的是这里不是标准反相器的寄生电容$C_{par0}$而是标准反相器的输入电容$C_{in,INV}$）</p>
+
+<blockquote>
+  <p>tip：寄生电容$C_{par0}$和输入电容$C_{in}$（也用$C_{gate}$或$C_{g}$表示）的使用</p>
+
+  <ul>
+    <li>在计算逻辑努力时：g和h用输入电容，p使用寄生电容</li>
+    <li>计算时延时：需要用到寄生电容和下一级的输入电容</li>
+  </ul>
+</blockquote>
+
+<p>标准反相器的逻辑努力是1</p>
+
+<p><img src="/img/in-post/VLSI/g.jpg" alt="g" /></p>
+
+<h3 id="k-请补充下表内容计算本征延时-p">k) 请补充下表内容（计算本征延时 p）</h3>
+
+<blockquote>
+  <p>同样PPT6.2-P16有完整表格，推导在P15，难点在于计算等效电容</p>
+</blockquote>
+
+<p>根据计算公式</p>
+
+\[p = \frac{R_{gate} \cdot C_{par,gate}}{R_{INV} \cdot C_{par,INV}} \cdot \gamma_{INV} ，其中  \gamma_{INV} = \frac{C_{par,INV}}{C_{in,INV}} \\
+也就是p=\frac{R_{gate} \cdot C_{par,gate}}{R_{INV} \cdot C_{in,INV}}\]
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">类型</th>
+      <th style="text-align: center">Intrinsic Delay/Parasitic Delay(p)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">INV</td>
+      <td style="text-align: center">1</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">n-input NAND</td>
+      <td style="text-align: center">$np_{inv}=n\times1=n$</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">n-input NOR</td>
+      <td style="text-align: center">$np_{inv}=n\times1=n$</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">n-way multiplexer</td>
+      <td style="text-align: center">$2np_{inv}=2n\times1=2n$</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">XOR, XNOR</td>
+      <td style="text-align: center">$n2^{n-1}p_{inv}=n2^{n-1}\times1=n2^{n-1}$</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="题目24">题目24</h2>
+
+<p>24、（反相器链）设标准反相器的等效电阻为 $R_{INV}$，请计算出下图所示的反相器链的传播延时。</p>
+
+<blockquote>
+  <p>可参考PPT6.2-P17</p>
+</blockquote>
+
+<p><img src="/img/in-post/VLSI/image-20240521173541765.png" alt="image-20240521173541765" style="zoom:80%;" /></p>
+
+<p>根据逻辑努力法，</p>
+
+\[D=\sum g_ih_i + \sum p_i\]
+
+<p>对于反相器，p=1，g=1，有$C_{par,0}=C_{d0}$，那么只需要计算h即可（前面我们在第23(c)也分析得出了g和p都跟size无关，只有h与size有关）,根据公式（$C_{load}$也就是下一个门的输入）：</p>
+
+\[h=\frac{C_{load}}{C_{in,gate}}\]
+
+<p>对于stage1：</p>
+
+\[C_{in,1}=(10+5)=15\\
+C_{load,1}=C_{in,2}=(6+3)=9\\
+h_1 = \frac{3}{5}\]
+
+<p>对于stage2：</p>
+
+\[C_{in,2}=(6+3)=9\\
+C_{load,2}=C_{in,3}=(16+8)=24\\
+h_1 = \frac{8}{3}\]
+
+<p>对于stage3：</p>
+
+\[C_{in,3}=(16+8)=24\\
+C_{load,3}=C_{in,4}=(4+2)=6\\
+h_1 = \frac{2}{8}=\frac{1}{4}\]
+
+<p>对于stage4：</p>
+
+\[C_{in,4}=(4+2)=6\\
+C_{load,4}=C_{L}=30\\
+h_1 = \frac{30}{6}=5\]
+
+<p>则</p>
+
+\[D=\frac{3}{5}+\frac{8}{3}+\frac{1}{4}+5+4 = \frac{751}{60}\]
+
+<p>则</p>
+
+\[t_p=0.69 R_{INV}*3C_{par,0}*D =0.69* R_{INV}*\frac{751}{20}\\=0.69* R_{INV}*37.55=25.9095R_{INV}\]
+
+<h2 id="题目25">题目25</h2>
+
+<p>25、（传播延时）“提出问题往往比解决问题更重要”，对于下图所示例题，如果只给出所有门的 $W_P:W_N$，能否计算出正确结果？如果只给出 S，能否计算？如果只给出反相器的构造信息，能否计算？请根据图中的条件使用<strong>传统方法</strong>计算该电路的传播延时。</p>
+
+<blockquote>
+  <p>PPT6.1-P13</p>
+</blockquote>
+
+<p><img src="/img/in-post/VLSI/image-20240521173616065.png" alt="image-20240521173616065" /></p>
+
+<ul>
+  <li>如果只给出所有门的 $W_P:W_N$（没有化到最简），那么可以计算出$h$，所以可以计算传播时延</li>
+  <li>如果只给出S（且知道元件符号），那么可以计算出$h$，所以可以计算传播时延</li>
+  <li>如果只给出反相器的构造信息（也就是没有size信息），那么不可以计算出$h$，所以不可以计算传播时延</li>
+</ul>
+
+<p>传统方法：</p>
+
+<p><img src="/img/in-post/VLSI/25.jpg" alt="25" /></p>
+
+<h2 id="题目26">题目26</h2>
+
+<p>请使用逻辑努力（Logical effort）方法计算上图中的例题。</p>
+
+<blockquote>
+  <p>PPT6.2-P18</p>
+</blockquote>
+
+<p><img src="/img/in-post/VLSI/26.jpg" alt="26" /></p>
+
+<h2 id="题目27">题目27</h2>
+
+<p>对于下图所示电路，请计算出当传播延迟最小时，每一级电路的晶体管尺寸大小（假设对于单位宽度晶体管，$C_g$=1，$C_{par}$=1）。</p>
+
+<p><img src="/img/in-post/VLSI/image-20240521173656592.png" alt="image-20240521173656592" /></p>
+
+<p><img src="/img/in-post/VLSI/27.jpg" alt="27" /></p>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2024/06/09/HW2-PCA-LDA/" data-toggle="tooltip" data-placement="top" title="基于PCA/LDA和KNN的人脸识别">
+                        Previous<br>
+                        <span>基于PCA/LDA和KNN的人脸识别</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2024/06/18/HW3-mixmatch-fixmatch/" data-toggle="tooltip" data-placement="top" title="半监督图像分类">
+                        Next<br>
+                        <span>半监督图像分类</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+
+                <!--   gitalk       -->
+                <div class="comment">
+                <div id="gitalk-container"></div>
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+                <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+                <script>
+                var gitalk = new Gitalk({
+                    id: location.pathname,
+                    clientID: '0db4b4c6d83c061f6b30',
+                    clientSecret: 'e1651c09f1a49b2b4a544cd584d3e8a55454a48a',
+                    repo: 'BlogComment',
+                    owner: 'jaredddddd',
+                    admin: ['jaredddddd'], 
+                    labels: ['Gitalk'],
+                })
+                gitalk.render('gitalk-container')
+                </script> 
+                </div>
+
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0036" 
+                    href="/archive/?tag=Computer-Organization"
+                    title="Computer-Organization"
+                    rel="21">Computer-Organization</a>
+        
+                <a data-sort="0018" 
+                    href="/archive/?tag=NOTES"
+                    title="NOTES"
+                    rel="39">NOTES</a>
+        
+                <a data-sort="0041" 
+                    href="/archive/?tag=Project"
+                    title="Project"
+                    rel="16">Project</a>
+        
+                <a data-sort="0042" 
+                    href="/archive/?tag=AI"
+                    title="AI"
+                    rel="15">AI</a>
+        
+                <a data-sort="0048" 
+                    href="/archive/?tag=OS"
+                    title="OS"
+                    rel="9">OS</a>
+        
+                <a data-sort="0052" 
+                    href="/archive/?tag=ML"
+                    title="ML"
+                    rel="5">ML</a>
+        
+                <a data-sort="0053" 
+                    href="/archive/?tag=PatternRecognition"
+                    title="PatternRecognition"
+                    rel="4">PatternRecognition</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Blog"
+                    title="Blog"
+                    rel="3">Blog</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Distributed-System"
+                    title="Distributed-System"
+                    rel="3">Distributed-System</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=ANN"
+                    title="ANN"
+                    rel="2">ANN</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CPU%E8%AE%BE%E8%AE%A1"
+                    title="CPU设计"
+                    rel="2">CPU设计</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CompilationPrinciple"
+                    title="CompilationPrinciple"
+                    rel="2">CompilationPrinciple</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     TeX: {
+       equationNumbers: {
+         autoNumber: "AMS"
+       }
+     },
+     SVG: {
+       scale: 90
+     },
+     tex2jax: {
+       inlineMath: [ ['$','$'] ],
+       displayMath: [ ['$$','$$'] ],
+       processEscapes: true,
+     }
+   });
+ </script>
+ <script type="text/javascript"
+         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+
+.post-container {
+    background: #fcfbfb; /* 背景颜色 */
+    border-radius: 25px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    padding-top: 40px; /* 特别增加顶部内边距 */
+    margin-top: 20px; /* 添加顶部外边距 */
+    /* margin-left: 40px; */
+    /* width: 900px; */
+}
+
+
+/* 在宽屏幕设备上应用特定样式 */
+@media (min-width: 1024px) {
+  .post-container {
+    margin-left: 40px; /* 向左扩展 */
+    width: 900px; /* 设置宽度 */
+  }
+  .side-catalog{
+    width: 250px;
+  }
+}
+
+.post-container:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* 当鼠标悬停时增加阴影效果 */
+}
+
+.side-catalog {
+    background: #ffffff; /* 背景颜色 */
+    border-radius: 15px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    margin-left: 10pt;
+    /* width: 200px; */
+
+}
+
+
+
+.catalog-container {
+    /* ... 其他样式 ... */
+    display: none; /* 默认不显示catalog */
+    transition: all 0.3s ease; /* 过渡效果 */
+    margin-top: 20px; /* 添加顶部外边距 */
+}
+
+</style>
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; LvKouKou Blog 2025
+                    <br>
+                    <!--  删掉了作者Hux Blog
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                    -->
+                    <!-- 不蒜子 -->
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                    您是Blog的第<span id="busuanzi_value_site_uv"></span>个小伙伴 </br>
+                     <span id="busuanzi_container_page_pv">
+                        本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<!-- 自己添加的 -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TNVD6PR5TQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNVD6PR5TQ');
+</script>
+<!-- 自己添加的 -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        // a = P.find('h1,h2,h3,h4,h5,h6');
+        a = P.find('h1,h2,h3,h4');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<!--鼠标点击爱心动画-->
+<script type="text/javascript" src="/js/love.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @LvKouKou 的个人博客，与你一起发现更大的世界 | 要做一个想环游世界的程序员">
+    <meta name="keywords" content="LvKouKou, jaredddddd, @jaredddddd, LvKouKou Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <link
+  rel="stylesheet"
+  href="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+/>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  defer="defer"
+></script>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  defer="defer"
+  onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
+></script>
+    <script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/mathtex-script-type.min.js"
+  defer="defer"
+></script>
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="Chapter3-2-3 浮点数及其运算 - LvKouKou的博客 | LV Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="3-2-3 浮点数及其运算
+
+">
+    
+    <meta property="article:published_time" content=" 2022-10-18T00:00:00Z">
+    
+    
+    <meta property="article:author" content="LvKouKou">
+    
+    
+    <meta property="article:tag" content="Computer-Organization">
+    
+    <meta property="article:tag" content="NOTES">
+    
+    
+    <meta property="og:image" content="https://jaredddddd.github.io/img/LVKOUKOU.jpg">
+    <meta property="og:url" content="https://jaredddddd.github.io/2022/10/18/3-2-3-Float/">
+    <meta property="og:site_name" content="LvKouKou的博客 | LV Blog">
+
+    <title>Chapter3-2-3 浮点数及其运算 - LvKouKou的博客 | LV Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jaredddddd.github.io/2022/10/18/3-2-3-Float/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* 打字机效果的样式 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #666 }
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid #666;
+            white-space: nowrap;
+            word-wrap: break-word;
+            letter-spacing: .1em;
+            width: fit-content;
+            margin: 0 auto;
+            animation: 
+                typing 2s steps(40, end), /* 打字机效果, 3s 完成打字, 每步40个字符 */
+                blink-caret .75s step-end infinite; /* 光标闪烁效果, 0.75s 完成一次闪烁  */
+        }
+
+        /* 添加包装容器样式 */
+        .typing-wrapper {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%; /* 确保不会超出父容器 */
+        }
+
+        /* 添加响应式样式 */
+        @media (max-width: 768px) {
+        .typing-effect {
+            font-size: 16px; /* 在手机上可以适当调整字体大小 */
+            letter-spacing: normal; /* 在手机上减小字间距 */
+        }
+    }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptions = document.getElementsByClassName('subheading');
+            if (descriptions.length > 0) {
+                const description = descriptions[0];
+                const text = description.textContent;
+                description.innerHTML = `<span class="typing-wrapper"><span class="typing-effect">${text}</span></span>`;
+            }
+        });
+    </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">LvKouKou Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/resume-home/">Resume</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/roadtrip/">On The Road</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="Searching...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!--//添加评论系统gitalk-->
+<link rel="stylesheet" href="../../../../css/gitalk.css">
+<script src="../../../../js/gitalk.min.js"></script>
+
+<!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=Computer-Organization" title="Computer-Organization">Computer-Organization</a>
+                        
+                        <a class="tag" href="/archive/?tag=NOTES" title="NOTES">NOTES</a>
+                        
+                    </div>
+                    <h1>Chapter3-2-3 浮点数及其运算</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by LvKouKou on October 18, 2022</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="3-2-3-浮点数及其运算">3-2-3 浮点数及其运算</h1>
+
+<p>参考文章：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>https://blog.csdn.net/weixin_58165485/article/details/123235367?ops_request_misc=&amp;request_id=&amp;biz_id=102&amp;utm_term=%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%95%B0%E8%88%8D%E5%85%A5%E7%9A%84%E5%81%B6%E6%95%B0%E6%B3%95%E5%88%99&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-1-123235367.142^v56^new_blog_pos_by_title,201^v3^control_1&amp;spm=1018.2226.3001.4187
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>n bits 我们可以表示数的范围?
+Unsigned:0-2<sup>n</sup>-1
+Signed: -2 <sup>n-1</sup>-2<sup>n-1</sup> - 1</p>
+
+<p>浮点数相关笔记在</p>
+
+<p>## 浮点表示</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/3-2-3/image-20221016232019476-1667632366784.png" alt="image-20221016232019476" style="zoom:80%;" /></p>
+
+<h3 id="规格化的值">规格化的值</h3>
+
+<p>当<strong>阶码域不全为0并且不全为1时</strong>，表示该数值为规格化的值</p>
+
+<p>对于规格化的值，在得到<em>s</em>, E, M之后还需要进行一些处理才能放进内存：</p>
+
+<p>✨<strong><em>规则1：</em></strong></p>
+
+<p>前面已经提到，E是阶码并且要可以表示负值，存放在<em>exp</em>字段，但是E在标准中为<strong>无符号数</strong>，这说明它不能表示负数且可表示的范围为0~255。那么对于E为负值的情况如何处理呢？</p>
+
+<blockquote>
+  <p>这里引入<strong>偏置 (<em>Bias</em>)</strong> 的概念。</p>
+
+  <p>IEEE 754规定，存入内存时E的真实值必须再加上一个中间数，对于8位的E，这个中间数是127；对于11位的E，这个中间数是1023。这里的127和1023就是<em>Bias</em>。也就是说，指数的值是 E= <em>exp - Bias</em>，即阶码减偏置</p>
+
+  <p>例如：2^10的E是10，所以保存成32位浮点数时，必须保存成exp=10+127=137，即10001001。此时内存中的exp中存的是10001001。</p>
+</blockquote>
+
+<p>✨<strong><em>规则2</em></strong></p>
+
+<p>同样的，M存放在小数字段 <em>f</em> 中，我们知道，当一个小数化为二进制小数后所得到的M总是一个介于1~2之间的值，形式为1. xxxxx</p>
+
+<blockquote>
+  <p>因此在存数据时，考虑省略小数点前面的1（取数据的时候可以直接在前面添上），可以节省一位的存储空间，能让小数点后的数据多保存一位，提高数据的精度。</p>
+
+  <p>例如，M=1.01101，存到 <em>f</em> 中去的数据为01101，M = <strong>1</strong> + <em>f</em></p>
+</blockquote>
+
+<p>最小到-126是因为阶码只能是0000 0001，即为1，转为实际指数之后即为1 - 127 = -126</p>
+
+<p>在计算机中储存的exp不是实际指数，转化为十进制的时候要先将指数转化为实际指数</p>
+
+<p>实际指数=指数-127，E=exp-bias</p>
+
+<p><strong>指数</strong>：（注意这里的F只有尾数，即1.m中的m部分）</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/3-2-3/image-20221016232522878-1667632368681.png" alt="image-20221016232522878" /></p>
+
+<p><strong>实际指数</strong></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/3-2-3/image-20221016232507539-1667632377772.png" alt="image-20221016232507539" /></p>
+
+<p>例子：</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/3-2-3/image-20221016234837823-1667632378955.png" alt="image-20221016234837823" /></p>
+
+<h3 id="非规格化数">非规格化数</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/3-2-3/image-20221016233138178-1667632380278.png" alt="image-20221016233138178" /></p>
+
+<p>✨<strong><em>规则1</em></strong></p>
+
+<blockquote>
+  <p>当exp为全0时，此时的E = 1- <em>Bias</em>，也就是说1-127=-126（或者1-1023=-1022）即为真实值</p>
+
+  <p><strong>补充：</strong>使指数的值为 1-<em>Bias</em>=-126 仍而不是简单的 -<em>Bias</em> 似乎是违反直觉的。在后面我们会知道，这种方式提供了一种从非规格化值平滑转换到规格化值的方法</p>
+</blockquote>
+
+<p>✨<strong><em>规则2</em></strong></p>
+
+<blockquote>
+  <p><strong>有效数字M不再加上第一位的1，而是还原为0.xxxxxx的小数</strong>，即M = <em>f ，</em>也就是小数字段的值, 不包含隐含的开头的1</p>
+
+  <p>实际上，如M = 1.01101，在exp = 00000000时，存进去的是101101而不是01101</p>
+</blockquote>
+
+<p>==也就是说非规范化的数默认格式是：(-1)<sup>s</sup>×0.aa…a ×2<sup>-126</sup>==</p>
+
+<p>例子：</p>
+
+<p>Q:给定计算机单精度浮点表示数0x80600000, 它表示的数是什么?</p>
+
+<p>A：  写成⼆进制形式:  1 00000000 11000000000000000000000</p>
+
+<p>​		负数， 指数0， 尾数⾮零， 是⾮规格化数:</p>
+
+<p>​		=(-1)<sup>s</sup>×0.aa…a ×2<sup>-126</sup>
+​		=(-1)<sup>1</sup>×0.11 ×2<sup>-126</sup>
+​		=-1.1 ×2<sup>-127</sup></p>
+
+<p>最⼤的正⾮规格化数为0.111111111111111111111112 × 2<sup>-126</sup></p>
+
+<p>所有正⾮规格化数在0和0.111111111111111111111112 × 2<sup>-126</sup>之间。</p>
+
+<h2 id="浮点数表示范围">浮点数表示范围</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/3-2-3/image-20221016233801101-1667632382297.png" alt="image-20221016233801101" /></p>
+
+<p>单精度浮点数最小正数（规格化）：</p>
+
+<p>阶码为0000 0001，则实际指数=指数（阶码）- 127，即为-126   尾数000…000，即为1.000…000</p>
+
+<p>故为1.0 × 2<sup>-126</sup></p>
+
+<p>单精度浮点数最大正数（规格化）：</p>
+
+<p>阶码为1111 1110，则实际指数=指数（阶码）- 127，即为254-127=127   尾数111…111，即为1.111…111≈2.0</p>
+
+<p>故为2.0 × 2<sup>127</sup></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/3-2-3/image-20221016234737372-1667632383852.png" alt="image-20221016234737372" /></p>
+
+<h2 id="浮点数精度">浮点数精度</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/3-2-3/image-20221016234758438-1667632385116.png" alt="image-20221016234758438" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/3-2-3/image-20221016234931828-1667632386942.png" alt="image-20221016234931828" /></p>
+
+<h2 id="浮点数的加减法">浮点数的加减法</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/3-2-3/image-20221016235005591-1667632388825.png" alt="image-20221016235005591" /></p>
+
+<p>十进制例子：</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/3-2-3/image-20221016235052300-1667632390445.png" alt="image-20221016235052300" style="zoom:80%;" /></p>
+
+<p>二进制例子：</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/3-2-3/image-20221016235107607-1667632391809.png" alt="image-20221016235107607" style="zoom:80%;" /></p>
+
+<h2 id="浮点数乘法">浮点数乘法</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/3-2-3/image-20221016235249542-1667632393057.png" alt="image-20221016235249542" /></p>
+
+<p>例子1：
+                   <img src="/img/in-post/ComputerOrganizationNotes/3-2-3/image-20221016235316688-1667632394922.png" alt="image-20221016235316688" style="zoom:80%;" /></p>
+
+<p>例子2：</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/3-2-3/image-20221016235357017-1667632396363.png" alt="image-20221016235357017" style="zoom:80%;" /></p>
+
+<h2 id="浮点数除法">浮点数除法</h2>
+
+<p>Division– Brief</p>
+
+<ul>
+  <li>Subtraction of exponents</li>
+  <li>Division of the significants</li>
+  <li>Normalisation</li>
+  <li>Runding</li>
+  <li>Sign</li>
+</ul>
+
+<h2 id="accurate-arithmetic">Accurate Arithmetic</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/3-2-3/image-20221016235847220-1667632397748.png" alt="image-20221016235847220" /></p>
+
+<ul>
+  <li>保护位(Guard Digits): 在浮点数中间计算中， 在尾数中右边多保留两位， 第⼀位为保护位， 第⼆位为舍⼊位。</li>
+  <li>舍⼊位(Round Digits)： 规格化后有效尾数⼤⼩的右边还有⼀些⾮零数字， 这个数据就需要舍⼊。⼀个舍⼊数字必须被进位到保护位的右边， 因⽽在规格化左移之后， 根据舍⼊位的数值， 可以对该结果进⾏舍⼊处理</li>
+  <li>粘位（Sticky Bit） ：为进⼀步改进舍⼊处理的结果， 在舍⼊数字右边的附加位。为了更⾼的准确性， 当舍⼊数字为 B/2 时（aaaa.bbbbb100）， 需要⼀个粘位，即如果有在舍⼊数字的尾部有任何1位丢失， 则置为1。(粘位：舍入位后有数则粘位为1，否则为0)</li>
+</ul>
+
+<p>在运算完舍入用过GRS之后，就要舍弃掉GRS，运算后的值认为GRS为000。例子如下：</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/3-2-3/image-20221021090135452-1667632112246-1667632399337.png" alt="image-20221021090135452" style="zoom: 50%;" /></p>
+
+<h3 id="ieee-754-round-modes">IEEE 754 round modes</h3>
+
+<p>IEEE标准:
+四种舍⼊⽅式：</p>
+
+<ol>
+  <li>舍⼊成 正⽆穷⼤</li>
+  <li>舍⼊成 负⽆穷⼤</li>
+  <li>舍⼊成 零</li>
+  <li>舍⼊成 最接近的数:</li>
+</ol>
+
+<p>舍⼊成 最接近的数（省缺）</p>
+
+<ul>
+  <li>舍⼊数字 &lt; B/2， 那么 截去 （B数值⼤⼩）;&gt;B/2， 那么 舍⼊;= B/2， 那么 舍⼊成最近的偶数数字</li>
+</ul>
+
+<h3 id="四舍五入方法中的偶数法则">四舍五入方法中的偶数法则</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/3-2-3/image-20221017000237592-1667632113975-1667632401233.png" alt="image-20221017000237592" style="zoom:80%;" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/3-2-3/image-20221017000256782-1667632115516-1667632353057.png" alt="image-20221017000256782" style="zoom:80%;" /></p>
+
+<p>实际保留位数之后，多保留了三位，GRS，偶数法则用于处理GRS刚好占一半时（即100），使得实际位数的最后一位为偶数（认为0属于偶数），而在二进制中，只有1和0，所以偶数法则即看最后一位：0舍1入。</p>
+
+<p>只有aaaaaa.bbbbbbbb100形式的时候需要用到偶数法则，因为此时刚好是剩余数的1/2</p>
+
+<p>如10.11100，0.11已经是3/4了，剩下1/4，而后面的0.00100刚好是1/8，刚好是剩余数的1/2，也就是十进制中aaa.bbb5的形式。因此要用舍入的偶数法则</p>
+
+<p>只要用了一次进位后，那么得出的值的GRS对应的就是000</p>
+
+<h2 id="并行性和计算机算法-关联性">并行性和计算机算法： 关联性</h2>
+
+<p>if x + (y+ z) = (x + y) + z.</p>
+
+<ul>
+  <li>
+    <p>x = -1.5<sub>ten</sub> x 10<sup>38</sup>, y= 1.5<sub>ten</sub> X 1038, and z = 1.0</p>
+  </li>
+  <li>
+    <p>x + (y + z) = 0.0</p>
+  </li>
+  <li>
+    <p>(x+y) + z = 1.0 因为计算机表示浮点数的位数是有限的。</p>
+  </li>
+</ul>
+
+<h3 id="浮点数异常">浮点数异常</h3>
+<p>1.0 不等于 10*0.1 (Why?)
+ex. 1.0 * 10.0 == 10.0 but, 0.1 * 10.0 != 1.0
+⼗进制的 0.1 == 1/16 + 1/32 + 1/256 + 1/512 + 1/4096 + … ==
+0.0 0011 0011 0011 0011 0011 …
+对⽐⼗进制的1/3 是循环⼩数0.333333…
+如果⼩数点后⾯位数有限， 那么 3 * 1/3 != 1</p>
+
+<p>例子：</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/3-2-3/image-20221021090626275-1667632117773-1667632351007.png" alt="image-20221021090626275" style="zoom: 33%;" /></p>
+
+<h2 id="mips里的浮点数指令fp">MIPS里的浮点数指令FP</h2>
+
+<ul>
+  <li>FP 硬件是协处理器(Copprocessor)
+    <ul>
+      <li>扩展 ISA 的辅助处理器</li>
+    </ul>
+  </li>
+  <li>独⽴的 FP 寄存器组
+    <ul>
+      <li>32个 单精度: f0, f1, … f31</li>
+      <li><strong>配对组成双精度浮点数的寄存器: f0/f</strong>1, f2/f3, …
+        <ul>
+          <li>MIP 第 2 版 ISA ⽀持 32 × 64 位 FP reg</li>
+          <li>FP 指令只在浮点数寄存器组操作（即<strong>浮点数运算只用浮点寄存器</strong>）</li>
+        </ul>
+      </li>
+      <li>程序通常不对 FP 数据执⾏整数操作， 反之亦然</li>
+      <li>更多的寄存器对减少代码⼤⼩有冲击</li>
+    </ul>
+  </li>
+  <li>FP 内存取load 和内存写指令</li>
+  <li>lwc1, ldc1, swc1, sdc1
+    <ul>
+      <li>e.g., ldc1 f8, 32(sp)</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/3-2-3/image-20221021091600812-1667632119620-1667632348861.png" alt="image-20221021091600812" /></p>
+
+<h3 id="fp-instructions-in-mips">FP Instructions in MIPS</h3>
+
+<ul>
+  <li><strong>Single-precision arithmetic</strong>
+    <ul>
+      <li>add.s, sub.s, mul.s, div.s
+        <ul>
+          <li>e.g., add.s $0, f1, f6</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><strong>Double-precision arithmetic</strong>
+    <ul>
+      <li>add.d, sub.d, mul.d, div.d
+        <ul>
+          <li>e.g., mul.d f4, f4, f6</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><strong>Single- and double-precision comparison</strong>
+    <ul>
+      <li>c.xx.s, c.xx.d (xx is eq, lt, le, …)</li>
+      <li>Sets or clears FP condition-code bit
+        <ul>
+          <li>e.g. c.lt.s f3, f4</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><strong>Branch on FP condition code true or false</strong>
+    <ul>
+      <li>bc1t, bc1f
+        <ul>
+          <li>e.g., bc1t TargetLabel</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p>即加上<code class="language-plaintext highlighter-rouge">.s</code>变成单精度指令，加上<code class="language-plaintext highlighter-rouge">.d</code>变成双精度</p>
+
+<h2 id="总结">总结</h2>
+
+<ul>
+  <li>数字本身并没有内在含义: 操作确定它们是 ASCII字符， 还是整数、 浮点数。</li>
+  <li>除法和乘法可以使⽤相同的硬件: 在MIPS处理器中的<strong>Hi（余数和乘积的高位） &amp; Lo（商和乘积低位） 寄存器</strong></li>
+  <li>浮点数的处理基本上沿⽤科学计数法的⼿算⽅法， 对尾数的⼤⼩的处理使⽤乘法和除法的整数算法</li>
+</ul>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2022/10/18/3-2-2-DIvision/" data-toggle="tooltip" data-placement="top" title="Chapter3-2-2  DIvision">
+                        Previous<br>
+                        <span>Chapter3-2-2  DIvision</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2022/10/24/4-1-Single-cycle-datapath/" data-toggle="tooltip" data-placement="top" title="Chapter4-1 单周期数据通路">
+                        Next<br>
+                        <span>Chapter4-1 单周期数据通路</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+
+                <!--   gitalk       -->
+                <div class="comment">
+                <div id="gitalk-container"></div>
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+                <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+                <script>
+                var gitalk = new Gitalk({
+                    id: location.pathname,
+                    clientID: '0db4b4c6d83c061f6b30',
+                    clientSecret: 'e1651c09f1a49b2b4a544cd584d3e8a55454a48a',
+                    repo: 'BlogComment',
+                    owner: 'jaredddddd',
+                    admin: ['jaredddddd'], 
+                    labels: ['Gitalk'],
+                })
+                gitalk.render('gitalk-container')
+                </script> 
+                </div>
+
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0036" 
+                    href="/archive/?tag=Computer-Organization"
+                    title="Computer-Organization"
+                    rel="21">Computer-Organization</a>
+        
+                <a data-sort="0018" 
+                    href="/archive/?tag=NOTES"
+                    title="NOTES"
+                    rel="39">NOTES</a>
+        
+                <a data-sort="0041" 
+                    href="/archive/?tag=Project"
+                    title="Project"
+                    rel="16">Project</a>
+        
+                <a data-sort="0042" 
+                    href="/archive/?tag=AI"
+                    title="AI"
+                    rel="15">AI</a>
+        
+                <a data-sort="0048" 
+                    href="/archive/?tag=OS"
+                    title="OS"
+                    rel="9">OS</a>
+        
+                <a data-sort="0052" 
+                    href="/archive/?tag=ML"
+                    title="ML"
+                    rel="5">ML</a>
+        
+                <a data-sort="0053" 
+                    href="/archive/?tag=PatternRecognition"
+                    title="PatternRecognition"
+                    rel="4">PatternRecognition</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Blog"
+                    title="Blog"
+                    rel="3">Blog</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Distributed-System"
+                    title="Distributed-System"
+                    rel="3">Distributed-System</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=ANN"
+                    title="ANN"
+                    rel="2">ANN</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CPU%E8%AE%BE%E8%AE%A1"
+                    title="CPU设计"
+                    rel="2">CPU设计</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CompilationPrinciple"
+                    title="CompilationPrinciple"
+                    rel="2">CompilationPrinciple</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     TeX: {
+       equationNumbers: {
+         autoNumber: "AMS"
+       }
+     },
+     SVG: {
+       scale: 90
+     },
+     tex2jax: {
+       inlineMath: [ ['$','$'] ],
+       displayMath: [ ['$$','$$'] ],
+       processEscapes: true,
+     }
+   });
+ </script>
+ <script type="text/javascript"
+         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+
+.post-container {
+    background: #fcfbfb; /* 背景颜色 */
+    border-radius: 25px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    padding-top: 40px; /* 特别增加顶部内边距 */
+    margin-top: 20px; /* 添加顶部外边距 */
+    /* margin-left: 40px; */
+    /* width: 900px; */
+}
+
+
+/* 在宽屏幕设备上应用特定样式 */
+@media (min-width: 1024px) {
+  .post-container {
+    margin-left: 40px; /* 向左扩展 */
+    width: 900px; /* 设置宽度 */
+  }
+  .side-catalog{
+    width: 250px;
+  }
+}
+
+.post-container:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* 当鼠标悬停时增加阴影效果 */
+}
+
+.side-catalog {
+    background: #ffffff; /* 背景颜色 */
+    border-radius: 15px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    margin-left: 10pt;
+    /* width: 200px; */
+
+}
+
+
+
+.catalog-container {
+    /* ... 其他样式 ... */
+    display: none; /* 默认不显示catalog */
+    transition: all 0.3s ease; /* 过渡效果 */
+    margin-top: 20px; /* 添加顶部外边距 */
+}
+
+</style>
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; LvKouKou Blog 2025
+                    <br>
+                    <!--  删掉了作者Hux Blog
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                    -->
+                    <!-- 不蒜子 -->
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                    您是Blog的第<span id="busuanzi_value_site_uv"></span>个小伙伴 </br>
+                     <span id="busuanzi_container_page_pv">
+                        本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<!-- 自己添加的 -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TNVD6PR5TQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNVD6PR5TQ');
+</script>
+<!-- 自己添加的 -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        // a = P.find('h1,h2,h3,h4,h5,h6');
+        a = P.find('h1,h2,h3,h4');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<!--鼠标点击爱心动画-->
+<script type="text/javascript" src="/js/love.js"></script>
+</body>
+
+</html>

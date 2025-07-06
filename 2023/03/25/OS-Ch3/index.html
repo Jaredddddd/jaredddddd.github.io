@@ -1,0 +1,2279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @LvKouKou 的个人博客，与你一起发现更大的世界 | 要做一个想环游世界的程序员">
+    <meta name="keywords" content="LvKouKou, jaredddddd, @jaredddddd, LvKouKou Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <link
+  rel="stylesheet"
+  href="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+/>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  defer="defer"
+></script>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  defer="defer"
+  onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
+></script>
+    <script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/mathtex-script-type.min.js"
+  defer="defer"
+></script>
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="Chapter3 Processes - LvKouKou的博客 | LV Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="Processes
+
+">
+    
+    <meta property="article:published_time" content=" 2023-03-25T00:00:00Z">
+    
+    
+    <meta property="article:author" content="LvKouKou">
+    
+    
+    <meta property="article:tag" content="OS">
+    
+    <meta property="article:tag" content="NOTES">
+    
+    
+    <meta property="og:image" content="https://jaredddddd.github.io/img/LVKOUKOU.jpg">
+    <meta property="og:url" content="https://jaredddddd.github.io/2023/03/25/OS-Ch3/">
+    <meta property="og:site_name" content="LvKouKou的博客 | LV Blog">
+
+    <title>Chapter3 Processes - LvKouKou的博客 | LV Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jaredddddd.github.io/2023/03/25/OS-Ch3/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* 打字机效果的样式 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #666 }
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid #666;
+            white-space: nowrap;
+            word-wrap: break-word;
+            letter-spacing: .1em;
+            width: fit-content;
+            margin: 0 auto;
+            animation: 
+                typing 2s steps(40, end), /* 打字机效果, 3s 完成打字, 每步40个字符 */
+                blink-caret .75s step-end infinite; /* 光标闪烁效果, 0.75s 完成一次闪烁  */
+        }
+
+        /* 添加包装容器样式 */
+        .typing-wrapper {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%; /* 确保不会超出父容器 */
+        }
+
+        /* 添加响应式样式 */
+        @media (max-width: 768px) {
+        .typing-effect {
+            font-size: 16px; /* 在手机上可以适当调整字体大小 */
+            letter-spacing: normal; /* 在手机上减小字间距 */
+        }
+    }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptions = document.getElementsByClassName('subheading');
+            if (descriptions.length > 0) {
+                const description = descriptions[0];
+                const text = description.textContent;
+                description.innerHTML = `<span class="typing-wrapper"><span class="typing-effect">${text}</span></span>`;
+            }
+        });
+    </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">LvKouKou Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/resume-home/">Resume</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/roadtrip/">On The Road</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="Searching...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!--//添加评论系统gitalk-->
+<link rel="stylesheet" href="../../../../css/gitalk.css">
+<script src="../../../../js/gitalk.min.js"></script>
+
+<!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=OS" title="OS">OS</a>
+                        
+                        <a class="tag" href="/archive/?tag=NOTES" title="NOTES">NOTES</a>
+                        
+                    </div>
+                    <h1>Chapter3 Processes</h1>
+                    
+                    <h2 class="subheading">第三章 进程管理！</h2>
+                    <span class="meta">Posted by LvKouKou on March 25, 2023</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="processes">Processes</h1>
+
+<h1 id="1-进程概念-process-concept">1. 进程概念 Process Concept</h1>
+
+<h2 id="11-进程">1.1 进程</h2>
+
+<p>Process – a program in execution; process execution must progress in sequential fashion</p>
+
+<p>Multiple parts：</p>
+
+<ul>
+  <li>The program code, also called text section</li>
+  <li>Current activity including program counter, processor registers</li>
+  <li>Stack containing temporary data
+    <ul>
+      <li>Function parameters, return addresses, local variables</li>
+    </ul>
+  </li>
+  <li>Data section containing global variables</li>
+  <li>Heap containing memory dynamically allocated during run time</li>
+</ul>
+
+<p>Program is passive entity stored on disk (executable file), process is active</p>
+
+<ul>
+  <li>Program becomes process when executable file loaded into memory</li>
+</ul>
+
+<p>Execution of program started via GUI mouse clicks, command line entry of its name, etc</p>
+
+<p>One program can be several processes</p>
+
+<ul>
+  <li>Consider multiple users executing the same program</li>
+</ul>
+
+<p>进程 – 正在执行的程序;进程执行必须按顺序进行（进程和作业两个概念是一样的）</p>
+
+<p>多个部分：</p>
+
+<ul>
+  <li>程序代码，也称为文本部分</li>
+  <li>当前活动，包括程序计数器、处理器寄存器</li>
+  <li>包含临时数据的堆栈
+    <ul>
+      <li>函数参数、返回地址、局部变量</li>
+    </ul>
+  </li>
+  <li>包含全局变量的数据部分</li>
+  <li>包含运行时动态分配的内存的堆</li>
+</ul>
+
+<p>程序是存储在磁盘上的被动实体（可执行文件），进程是活动实体</p>
+
+<ul>
+  <li>当可执行文件加载到内存中时，程序变为进程</li>
+</ul>
+
+<p>通过GUI鼠标单击，命令行输入其名称等启动程序的执行</p>
+
+<ul>
+  <li>
+    <p>一个程序可以是多个进程：</p>
+
+    <p>虽然两个进程可以与同一程序相关联，但是当作两个单独的执行序列。例如，多个用户可以运行电子邮件的不同副本，或者同一用户可以调用 Web 浏览器程序的多个副本。每个都是单独进程:虽然文本段相同，但是数据、堆及堆栈段却不同。进程在运行时也经常会生成许多进程。3.4 节将讨论这些问题。</p>
+  </li>
+  <li>
+    <p>考虑多个用户执行同一个程序</p>
+  </li>
+</ul>
+
+<h2 id="12-进程状态-process-state">1.2 进程状态 Process State</h2>
+
+<p>As a process executes, it changes state</p>
+
+<ul>
+  <li>new: The process is being created</li>
+  <li>running: Instructions are being executed</li>
+  <li>waiting: The process is waiting for some event to occur</li>
+  <li>ready: The process is waiting to be assigned to a processor</li>
+  <li>terminated: The process has finished execution</li>
+</ul>
+
+<p>当进程执行时，它会更改状态</p>
+
+<ul>
+  <li>新的（new）：正在创建进程</li>
+  <li>运行（running）：正在执行指令</li>
+  <li>等待（waiting）：进程正在等待某些事件发生</li>
+  <li>就绪（ready）：进程正在等待分配给处理器</li>
+  <li>终止（terminated）：进程已完成执行</li>
+</ul>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch3.assets/image-20230325194205335.png" alt="image-20230325194205335" /></p>
+
+<h2 id="13-进程控制块-process-control-block-pcb">1.3 进程控制块 Process Control Block (PCB)</h2>
+
+<p>如果没有PCB，将无法将进程调入到CPU中。</p>
+
+<p>操作系统感知进程的唯一方式（PCB是进程的身份证）</p>
+
+<p>Information associated with each process (also called task control block)</p>
+
+<ul>
+  <li>Process state – running, waiting, etc</li>
+  <li>Program counter – location of instruction to next execute</li>
+  <li>CPU registers – contents of all processcentric registers</li>
+  <li>CPU scheduling information- priorities, scheduling queue pointers</li>
+  <li>Memory-management information – memory allocated to the process</li>
+  <li>Accounting information – CPU used, clock time elapsed since start, time limits</li>
+  <li>I/O status information – I/O devices allocated to process, list of open files</li>
+</ul>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch3.assets/image-20230325194622505.png" alt="image-20230325194622505" /></p>
+
+<p>与每个进程关联的信息（也称为任务控制块），PCB就是下列信息的仓库</p>
+
+<ul>
+  <li>进程状态 – 正在运行、等待等</li>
+  <li>程序计数器PC - 下次执行的指令位置</li>
+  <li>CPU 寄存器 – 所有以进程为中心的寄存器的内容</li>
+  <li>CPU调度信息 - 优先级，调度队列指针</li>
+  <li>内存管理信息 – 分配给进程的内存</li>
+  <li>记帐信息 – 使用的 CPU、启动以来经过的时钟时间、时间限制</li>
+  <li>I/O 状态信息 – 分配给进程的 I/O 设备、打开的文件列表</li>
+</ul>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch3.assets/image-20230325194701262.png" alt="image-20230325194701262" /></p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch3.assets/image-20230325194652279.png" alt="image-20230325194652279" /></p>
+
+<h2 id="14-线程-threads">1.4 线程 Threads</h2>
+
+<p>So far, process has a single thread of execution
+Consider having multiple program counters per process</p>
+
+<ul>
+  <li>Multiple locations can execute at once
+    <ul>
+      <li>Multiple threads of control -&gt; threads</li>
+    </ul>
+  </li>
+  <li>Must then have storage for thread details, multiple program counters in PCB</li>
+</ul>
+
+<p>See next chapter</p>
+
+<p>到目前为止，进程只有一个执行线程
+考虑每个进程有多个程序计数器</p>
+
+<ul>
+  <li>多个位置可以一次执行
+    <ul>
+      <li>控制多线程 - &gt;线程</li>
+    </ul>
+  </li>
+  <li>然后必须存储线程详细信息，PCB中的多个程序计数器</li>
+</ul>
+
+<p>请参阅下一章</p>
+
+<h1 id="2-进程调度-process-scheduling">2. 进程调度 Process Scheduling</h1>
+
+<p>Maximize CPU use, quickly switch processes onto CPU for time sharing</p>
+
+<ul>
+  <li>Process scheduler selects among available processes for next execution on CPU</li>
+  <li>Maintains scheduling queues of processes
+    <ul>
+      <li>Job queue – set of all processes in the system</li>
+      <li>Ready queue – set of all processes residing in main memory, ready and waiting to execute</li>
+      <li>Device queues – set of processes waiting for an I/O device Processes migrate among the various queues</li>
+    </ul>
+  </li>
+</ul>
+
+<p>最大化 CPU 利用率，快速将进程切换到 CPU 上以进行分时</p>
+
+<ul>
+  <li>进程调度程序在可用进程中选择下一次在 CPU 上执行</li>
+  <li>维护进程的调度队列
+    <ul>
+      <li>作业队列 – 系统中所有进程的集合</li>
+      <li>就绪队列 – 驻留在主内存中的所有进程的集合，准备就绪并等待执行</li>
+      <li>设备队列 – 等待 I/O 设备的进程集 进程在各种队列之间迁移 （迁移：如一个进程已经进入到CPU开始运行，但若此时要读入数据，则又要到磁盘队列，读取完毕后再进入就绪队列等待进入CPU，然后又可能进入其他调度队列）</li>
+    </ul>
+  </li>
+</ul>
+
+<p>进程调度通常用队列图来表示：</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch3.assets/image-20230325195257459.png" alt="image-20230325195257459" /></p>
+
+<p>最初，新进程被加到就绪队列;它在就绪队列中等待，直到被选中执行或被分派(dispatched)。当该进程分配到 CPU并执行时，以下事件可能发生:
+进程可能发出 I/O 请求，并被放到I/O 队列。
+。进程可能创建一个新的子进程，并等待其终止。
+。进程可能由于中断而被强制释放 CPU，并被放回到就绪队列。
+对于前面两种情况，进程最终从等待状态切换到就绪状态，并放回到就绪队列。进程重复这一循环直到终止;然后它会从所有队列中删除，其 PCB 和资源也被释放。</p>
+
+<h2 id="21-调度程序-schedulers">2.1 调度程序 Schedulers</h2>
+
+<ul>
+  <li>
+    <p><strong>Short-term scheduler</strong> (or <strong>CPU scheduler</strong>) – selects which process should be executed next and allocates CPU</p>
+
+    <ul>
+      <li>Sometimes the only scheduler in a system</li>
+      <li>Short-term scheduler is invoked frequently (milliseconds)  (must be fast)</li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>Long-term schedule</strong>r (o<strong>r job scheduler</strong>) – selects which processes should be brought into the ready queue</p>
+
+    <ul>
+      <li>Long-term scheduler is invoked infrequently (seconds, minutes)  -&gt; (may be slow)</li>
+      <li>The long-term scheduler controls the degree of multiprogramming</li>
+    </ul>
+  </li>
+  <li>
+    <p>Processes can be described as either:</p>
+
+    <ul>
+      <li><strong>I/O-bound process</strong> – spends more time doing I/O than computations, many short CPU bursts</li>
+      <li><strong>CPU-bound process</strong> – spends more time doing computations; few very long CPU bursts</li>
+    </ul>
+  </li>
+  <li>
+    <p>Long-term scheduler strives for good process mix</p>
+  </li>
+  <li>
+    <p>Medium-term scheduler can be added if degree of multiple programming needs to decrease</p>
+
+    <ul>
+      <li>Remove process from memory, store on disk, bring back in from disk to continue execution: swapping</li>
+    </ul>
+  </li>
+  <li>短程调度程序（或 CPU 调度程序） – 从ready队列选择下一个应执行的进程并分配 CPU
+    <ul>
+      <li>有时是系统中唯一的调度程序</li>
+      <li>频繁调用短期调度程序（毫秒）-&gt;（必须快速）</li>
+    </ul>
+  </li>
+  <li>长程调度程序（或作业调度程序） – 选择应将哪些进程进入ready队列
+    <ul>
+      <li>长程调度程序不经常调用（秒、分钟）-&gt;（可能很慢）</li>
+      <li>长程调度程序控制<strong>多道程序程度</strong>（内存中进程的数量）</li>
+    </ul>
+  </li>
+  <li>流程可以描述为：
+    <ul>
+      <li>I/O 绑定进程 – 花费更多的时间进行 I/O 而不是计算，许多短 CPU 突发</li>
+      <li>CPU 密集型进程 – 花费更多时间进行计算;很少有很长的 CPU 突发</li>
+    </ul>
+  </li>
+  <li>如果需要降低多道程序程度，可以添加中程调度程序（系统资源不支持那么多进程同时运行）
+    <ul>
+      <li>从内存中删除进程，存储在磁盘上（换出），从磁盘恢复并从中断处继续执行（换入），这种方案称为：交换</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch3.assets/image-20230325200151551.png" alt="image-20230325200151551" /></p>
+
+<h2 id="22-multitasking-in-mobile-systems">2.2 Multitasking in Mobile Systems</h2>
+
+<p>（课本3.2.3 P78）</p>
+
+<p>Some mobile systems (e.g., early version of iOS) allow only one process to run, others suspended</p>
+
+<p>Due to screen real estate, user interface limits iOS provides for a</p>
+
+<ul>
+  <li>Single foreground process- controlled via user interface</li>
+  <li>Multiple background processes– in memory, running, but not on the display, and with limits</li>
+  <li>Limits include single, short task, receiving notification of events, specific long-running tasks like audio playback</li>
+</ul>
+
+<p>Android runs foreground and background, with fewer limits</p>
+
+<ul>
+  <li>Background process uses a service to perform tasks</li>
+  <li>Service can keep running even if background process is suspended</li>
+  <li>Service has no user interface, small memory use</li>
+</ul>
+
+<p>一些移动系统（例如，iOS的早期版本）只允许运行一个进程，其他系统则暂停</p>
+
+<p>由于屏幕空间，iOS提供的用户界面限制</p>
+
+<ul>
+  <li>单一前台过程 - 通过用户界面控制</li>
+  <li>多个后台进程 - 在内存中，正在运行，但不在显示器上，并且有限制</li>
+  <li>限制包括单个、短任务、接收事件通知、特定的长时间运行任务（如音频播放）</li>
+</ul>
+
+<p>Android 运行前台和后台，限制更少</p>
+
+<ul>
+  <li>后台进程使用服务执行任务</li>
+  <li>即使后台进程挂起，服务也可以继续运行</li>
+  <li>服务没有用户界面，内存使用量小</li>
+</ul>
+
+<h2 id="23-上下文切换-context-switch">2.3 上下文切换 Context Switch</h2>
+
+<p>正如 1.2.1节所提到的，中断导致 CPU 从执行当前任务改变到执行内核程序。这种操作在通用系统中经常发生。当中断发生时，系统需要保存当前运行在CPU 上的进程的上下文以便在处理后能够恢复<strong>上下文</strong>，即先挂起进程，再恢复进程。进程上下文采用进程 PCB 表示，包括 CPU寄存器的值、进程状态(图3-2)和内存管理信息等。通常，通过执行<strong>状态保存</strong>(state save)，保存CPU 当前状态(包括内核模式和用户模式);之后，<strong>状态恢复</strong>(staterestore)重新开始运行。
+切换 CPU到另一个进程需要保存当前进程状态和恢复另一个进程的状态，这个任务称为<strong>上下文切换(context switch)</strong>。当进行上下文切换时，<strong>内核会将旧进程状态保存在其 PCB中</strong>，然后加载经调度而要执行的新进程的上下文。上下文切换的时间是纯粹的开销，因为在切换时系统并没有做任何有用工作。上下文切换的速度因机器不同而有所不同，它依赖于内存速度、必须复制的寄存器数量、是否有特殊指令(如加载或存储所有寄存器的单个指令)。典型速度为几毫秒。</p>
+
+<p>When CPU switches to another process, the system must save the state of the old process and load the saved state for the new process via a context switch</p>
+
+<ul>
+  <li>Context of a process represented in the PCB</li>
+  <li>Context-switch time is overhead; the system does no useful work while switching
+    <ul>
+      <li>The more complex the OS and the PCB ➔ the longer the context switch</li>
+    </ul>
+  </li>
+  <li>Time dependent on hardware support
+    <ul>
+      <li>Some hardware provides multiple sets of registers per CPU ➔ multiple contexts loaded at once</li>
+    </ul>
+  </li>
+</ul>
+
+<p>当 CPU 切换到另一个进程时，系统必须保存旧进程的状态，并通过上下文切换加载新进程的保存状态</p>
+
+<ul>
+  <li>进程的内容保存在PCB中</li>
+  <li>上下文切换时间是开销;切换时系统不做任何有用的工作
+    <ul>
+      <li>操作系统和PCB越复杂➔上下文切换越长</li>
+    </ul>
+  </li>
+  <li>时间取决于硬件支持
+    <ul>
+      <li>某些硬件为每个 CPU 提供多组寄存器 ➔ 一次加载多个上下文</li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="3-进程运行-operations-on-processes">3. 进程运行 Operations on Processes</h1>
+
+<p>System must provide mechanisms for:</p>
+
+<ul>
+  <li>process creation,</li>
+  <li>process termination,</li>
+  <li>and so on as detailed next</li>
+</ul>
+
+<p>系统必须提供以下机制：</p>
+
+<ul>
+  <li>进程创建，</li>
+  <li>进程终止，</li>
+  <li>以此类推，详见下文</li>
+</ul>
+
+<h2 id="31-进程的创建-process-creation">3.1 进程的创建 Process Creation</h2>
+
+<p>Parent process create children processes, which, in turn create other processes, forming a tree of processes</p>
+
+<p>Generally, <strong>process identified and managed via a process identifier (pid)</strong></p>
+
+<p>Resource sharing options</p>
+
+<ol>
+  <li>Parent and children share all resources</li>
+  <li>Children share subset of parent’s resources</li>
+  <li>Parent and child share no resources</li>
+</ol>
+
+<p>Execution options</p>
+
+<ol>
+  <li>Parent and children execute concurrently</li>
+  <li>Parent waits until children terminate</li>
+</ol>
+
+<p>执行选项</p>
+
+<ol>
+  <li>
+    <p>父子并发执行</p>
+  </li>
+  <li>
+    <p>父母等到孩子终止</p>
+  </li>
+</ol>
+
+<p>资源共享选项</p>
+
+<ol>
+  <li>亲子共享所有资源</li>
+  <li>孩子们分享父母资源的子集</li>
+  <li>父子不共享资源</li>
+</ol>
+
+<p>一般来说，当一个进程创建子进程时，该子进程会需要一定的资源(CPU 时间、内存文件、I/O 设备等)来完成任务。子进程可以从操作系统那里直接获得资源，也可以只从父进程那里获得资源子集。<strong>父进程可能要在子进程之间分配资源或共享资源(如内存或文件)</strong>。限制子进程只能使用父进程的资源，可以防止创建过多进程，导致系统超载。</p>
+
+<p>除了提供各种物理和逻辑资源外，父进程也可能向子进程传递初始化数据(或输入)</p>
+
+<p>父进程创建子进程，子进程又创建其他进程，形成进程树，通常，<strong>进程通过进程标识符 (pid) 标识和管理</strong>（pid是识别进程唯一方式）</p>
+
+<p>当进程创建新进程时，可有两种执行可能:</p>
+
+<ul>
+  <li>父进程与子进程并发执行。</li>
+  <li>父进程等待，直到某个或全部子进程执行完新进程的地址空间也有两种可能:</li>
+</ul>
+
+<p>新进程的地址空间也有两种可能</p>
+
+<ul>
+  <li>
+    <p>子进程是父进程的复制品(它具有与父进程同样的程序和数据)</p>
+  </li>
+  <li>
+    <p>子进程加载另一个新程序。</p>
+  </li>
+</ul>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch3.assets/image-20230325202127443.png" alt="image-20230325202127443" /></p>
+
+<h2 id="32-进程终止--process-termination">3.2 进程终止  Process Termination</h2>
+
+<ul>
+  <li>Process executes last statement and then asks the operating system to delete it using the exit() system call.
+    <ul>
+      <li>Returns status data from child to parent (via wait())</li>
+      <li>Process’ resources are deallocated by operating system</li>
+    </ul>
+  </li>
+  <li>Parent may terminate the execution of children processes using the abort() system call. Some reasons for doing so:
+    <ul>
+      <li>Child has exceeded allocated resources</li>
+      <li>Task assigned to child is no longer required</li>
+      <li>The parent is exiting and the operating systems does not allow a child to continue if its parent terminates</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Some operating systems do not allow child to exists if its parent has terminated. If a process terminates, then all its children must also be terminated.</p>
+
+<ul>
+  <li>cascading termination. All children, grandchildren, etc. are terminated.</li>
+  <li>The termination is initiated by the operating system.</li>
+</ul>
+
+<p>The parent process may wait for termination of a child process by using the wait()system call. The call returns status information and the pid of the terminated process
+<code class="language-plaintext highlighter-rouge">pid = wait(&amp;status);</code></p>
+
+<ul>
+  <li>If no parent waiting (did not invoke <code class="language-plaintext highlighter-rouge">wait()</code>) process is a <strong>zombie</strong></li>
+  <li>If parent terminated without invoking <code class="language-plaintext highlighter-rouge">wait</code> , process is an <strong>orphan</strong></li>
+</ul>
+
+<p>进程执行最后一条语句，然后使用 exit() 系统调用要求操作系统删除它。</p>
+<ul>
+  <li>将状态数据从孩子返回给父母<strong>（通过 wait()）</strong></li>
+  <li>进程的资源由操作系统释放</li>
+</ul>
+
+<p>父进程可以使用 abort() 系统调用终止子进程的执行。这样做的一些原因：</p>
+<ul>
+  <li>孩子已经超出了分配的资源</li>
+  <li>不再需要分配给孩子的任务</li>
+  <li>父进程正在退出，操作系统不允许子进程在其父进程终止时继续运行</li>
+</ul>
+
+<p>如果其父进程已终止，则某些操作系统不允许子进程存在。如果一个父进程终止，那么它的所有子进程也必须终止，这种情况叫<strong>级联终止</strong></p>
+
+<ul>
+  <li>级联终止。所有的孩子、孙子等都被终止了。</li>
+  <li>终止由操作系统发起。</li>
+</ul>
+
+<p><strong>父进程可以使用 wait() 系统调用等待子进程的终止。该调用返回状态信息和已终止进程的 pid</strong></p>
+
+<p><code class="language-plaintext highlighter-rouge">pid = wait(&amp;status);</code></p>
+
+<p>系统调用 wait()可以通过参数，让父进程获得子进程的退出状态;这个系统调用也返回终止子进程的标识符，这样父进程能够知道哪个子进程已经终止了；</p>
+
+<p>当一个进程终止时，操作系统会释放其资源。不过，它位于进程表中的条目还是在的直到它的父进程调用 wait();这是因为进程表包含了进程的退出状态。</p>
+
+<ul>
+  <li>
+    <p>当<strong>进程已经终止但是其父进程尚未调用wait（)</strong>，这样的进程称为<strong>僵尸进程(zombie process)</strong>。所有进程终止时都会过渡到这种状态，但是一般而言僵尸只是短暂存在。一旦父进程调用了 wait()，僵尸进程的进程标识符和它在进程表中的条目就会释放。</p>
+  </li>
+  <li>
+    <p>如果父进程没有调用 wait()就终止，以致于子进程成为<strong>孤儿进程(orphan process)</strong></p>
+  </li>
+</ul>
+
+<h2 id="33-multiprocess-architecture--chrome-browse">3.3 Multiprocess Architecture – Chrome Browse</h2>
+
+<p>Many web browsers ran as single process (some still do)</p>
+
+<p>If one web site causes trouble, entire browser can hang or crashGoogle Chrome Browser is multiprocess with 3 different types of processes:</p>
+
+<ul>
+  <li>Browser process manages user interface, disk and network I/O</li>
+  <li>Renderer process renders web pages, deals with HTML, Javascript. A new renderer created for each website opened
+    <ul>
+      <li>Runs in <strong>sandbox</strong> restricting disk and network I/O, minimizing effect of security exploits</li>
+    </ul>
+  </li>
+  <li>Plug-in process for each type of plug-in</li>
+</ul>
+
+<p>许多Web浏览器作为单个进程运行（有些仍然如此）</p>
+
+<p>如果一个网站引起麻烦，整个浏览器可能会挂起或崩溃谷歌Chrome浏览器是多进程的，有3种不同类型的进程：</p>
+
+<ul>
+  <li>浏览器进程管理用户界面、磁盘和网络 I/O</li>
+  <li>渲染器进程渲染网页，处理HTML，Javascript。为每个打开的网站创建一个新的呈现器
+    <ul>
+      <li>在沙盒中运行，限制磁盘和网络 I/O，最大限度地减少安全漏洞的影响</li>
+    </ul>
+  </li>
+  <li>每种插件的插件过程</li>
+</ul>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch3.assets/image-20230325203842639.png" alt="image-20230325203842639" /></p>
+
+<h1 id="4-进程间通信-interprocess-communication">4. 进程间通信 Interprocess Communication</h1>
+
+<p>Processes within a system may be <strong>independent</strong> or <strong>cooperating</strong></p>
+
+<p>Cooperating process can affect or be affected by other processes, including sharing data</p>
+
+<p>Reasons for cooperating processes:</p>
+
+<ul>
+  <li>Information sharing</li>
+  <li>Computation speedup</li>
+  <li>Modularity</li>
+  <li>Convenience</li>
+</ul>
+
+<p>Cooperating processes need <strong>interprocess communication (IPC)</strong></p>
+
+<ul>
+  <li>Two models of IPC
+    <ul>
+      <li>Shared memory</li>
+      <li>Message passing</li>
+    </ul>
+  </li>
+</ul>
+
+<p>系统内的流程可以是独立的，也可以是协作的</p>
+
+<p>合作过程可能会影响其他过程或受其他过程的影响，包括共享数据</p>
+
+<p>合作进程的原因：</p>
+
+<ul>
+  <li>信息共享</li>
+  <li>计算加速</li>
+  <li>模块性</li>
+  <li>方便</li>
+</ul>
+
+<p>协作进程需要进程间通信 （IPC）</p>
+
+<ul>
+  <li>两种IPC模型
+    <ul>
+      <li>共享内存</li>
+      <li>消息传递</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch3.assets/image-20230325204213553.png" alt="image-20230325204213553" /></p>
+
+<h2 id="41-进程协作-cooperating-processes">4.1 进程协作 Cooperating Processes</h2>
+
+<p>Independent process cannot affect or be affected by the execution of another process</p>
+
+<p>Cooperating process can affect or be affected by the execution of another process</p>
+
+<p>Advantages of process cooperation</p>
+
+<ul>
+  <li>Information sharing</li>
+  <li>Computation speed-up</li>
+  <li>Modularity</li>
+  <li>Convenience</li>
+</ul>
+
+<p>独立进程不能影响或受另一个进程的执行影响</p>
+
+<p>协作进程可以影响或受另一个过程的执行的影响</p>
+
+<p>进程协作的优势</p>
+
+<ul>
+  <li>信息共享</li>
+  <li>计算加速</li>
+  <li>模块性</li>
+  <li>方便</li>
+</ul>
+
+<h2 id="42-producer-consumer-problem-解释协作进程为什么要共享">4.2 Producer-Consumer Problem （解释协作进程为什么要共享）</h2>
+
+<p>生产者-消费者问题，这是协作进程的通用范例。
+生产者(producer)进程生成信息，以供消费者(consumer)进程消费。例如，编译器生成的汇编代码可供汇编程序使用，而且汇编程序又可生成目标模块以供加载程序使用。生产者-消费者问题同时还为客户机-服务器范例提供了有用的比喻。通常，将服务器当作生产者，而将客户机当作消费者。例如，一个 Web 服务器生成(提供)HTML 文件和图像，以供请求资源的 Web 客户浏览器使用(读取)。</p>
+
+<p>解决生产者 -消费者问题的方法之一是，采用共享内存。为了允许生产者进程和消费者进程并发执行，应有一个可用的缓冲区，以被生产者填充和被消费者清空。这个缓冲区驻留在生产者进程和消费者进程的共享内存区域内。当消费者使用一项时，生产者可产生另一项。生产者和消费者必须同步，这样消费者不会试图消费一个尚未生产出来的项。</p>
+
+<p>缓冲区类型可分两种。</p>
+
+<ul>
+  <li>无界缓冲区(unbounded-buffer)没有限制缓冲区的大小。消费者可能不得不等待新的项，但生产者总是可以产生新项。</li>
+  <li>有界缓冲区(bounded-buffer)假设固定大小的缓冲区。对于这种情况，如果缓冲区空，那么消费者必须等待;并且如果缓冲区满，那么生产者必须等待。</li>
+</ul>
+
+<hr />
+
+<p>Paradigm for cooperating processes, producer processproduces information that is consumed by a consumer process</p>
+
+<ul>
+  <li><strong>unbounded-buffer</strong> places no practical limit on the size of the buffer</li>
+  <li><strong>bounded-buffer</strong> assumes that there is a fixed buffer size</li>
+</ul>
+
+<p>协作进程的范式，生产者过程产生消费者消费的信息过程</p>
+
+<ul>
+  <li>无界缓冲区对缓冲区的大小没有实际限制</li>
+  <li>有界缓冲区假定存在固定的缓冲区大小</li>
+</ul>
+
+<p>（有代码，在书的3.4.1 P86，PPT在3.31）</p>
+
+<h2 id="43-共享内存-shared-memory">4.3 共享内存 Shared Memory</h2>
+
+<ul>
+  <li>An area of memory shared among the processes that wish to communicate</li>
+  <li>The communication is under the control of the users processes not the operating system.</li>
+  <li>Major issues is to provide mechanism that will allow the user processes to synchronize their actions when they access shared memory.</li>
+  <li>
+    <p>Synchronization is discussed in great details in Chapter 5</p>
+  </li>
+  <li>在希望通信的进程之间共享的内存区域</li>
+  <li>通信由用户进程控制，而不是操作系统。</li>
+  <li>主要问题是提供允许用户进程在访问共享内存时同步其操作的机制。</li>
+  <li>同步在第 5 章中详细讨论</li>
+</ul>
+
+<h2 id="44-消息传递-message-passing">4.4 消息传递 Message Passing</h2>
+
+<ul>
+  <li>Mechanism for processes to communicate and to synchronize their actions</li>
+  <li>Message system – processes communicate with each other without resorting to shared variables</li>
+  <li>IPC facility provides two operations:
+    <ul>
+      <li>send(message)</li>
+      <li>receive(message)</li>
+    </ul>
+  </li>
+  <li>
+    <p>The message size is either fixed or variable</p>
+  </li>
+  <li>If processes P and Q wish to communicate, they need to:
+    <ul>
+      <li>Establish a communication link between them</li>
+      <li>Exchange messages via send/receive</li>
+    </ul>
+  </li>
+  <li>Implementation issues:
+    <ul>
+      <li>How are links established?</li>
+      <li>Can a link be associated with more than two processes?</li>
+      <li>How many links can there be between every pair of communicating processes?</li>
+      <li>What is the capacity of a link?</li>
+      <li>Is the size of a message that the link can accommodate fixed or variable?</li>
+      <li>Is a link unidirectional or bi-directional?</li>
+    </ul>
+  </li>
+  <li>Implementation of communication link
+    <ul>
+      <li>Physical:
+        <ul>
+          <li>Shared memory</li>
+          <li>Hardware bus</li>
+          <li>Network</li>
+        </ul>
+      </li>
+      <li>Logical:</li>
+      <li>Direct or indirect</li>
+      <li>Synchronous or asynchronous</li>
+      <li>Automatic or explicit buffering</li>
+    </ul>
+  </li>
+  <li>进程通信和同步他们的行动的机制</li>
+  <li>消息系统——进程之间无需借助共享变量即可相互通信</li>
+  <li>IPC 设施提供两种操作：
+    <ul>
+      <li>发送信息</li>
+      <li>接收（消息）</li>
+    </ul>
+  </li>
+  <li>
+    <p>消息大小是固定的或可变的</p>
+  </li>
+  <li>如果进程 P 和 Q 希望进行通信，他们需要：
+    <ul>
+      <li>在它们之间建立通信链接</li>
+      <li>通过发送/接收交换信息</li>
+    </ul>
+  </li>
+  <li>实施问题：
+    <ul>
+      <li>链接是如何建立的？</li>
+      <li>一个链接可以与两个以上的进程相关联吗？</li>
+      <li>每对通信进程之间可以有多少个链接？</li>
+      <li>链接的容量是多少？</li>
+      <li>链接可以容纳的消息大小是固定的还是可变的？</li>
+      <li>链接是单向的还是双向的？</li>
+    </ul>
+  </li>
+  <li>通信链路的实现
+    <ul>
+      <li>物理上：
+        <ul>
+          <li>共享内存</li>
+          <li>硬件总线</li>
+          <li>网络</li>
+        </ul>
+      </li>
+      <li><strong>逻辑上</strong>：
+        <ul>
+          <li>直接或间接</li>
+          <li>同步或异步</li>
+          <li>自动或显式缓冲</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p>以下研究逻辑上这3个问题：</p>
+
+<h3 id="441-命名直接通信和间接通信">4.4.1 命名–直接通信和间接通信</h3>
+
+<h4 id="direct-communication">Direct Communication</h4>
+
+<p>对于直接通信(direct communication)需要通信的每个进程必须明确指定通信的接收者或发送者。采用这种方案，原语 send()和receive()定义如下:</p>
+
+<ul>
+  <li>send(P，message): 向进程P发送message。</li>
+  <li>receive(Q，message): 从进程Q接收 message。</li>
+</ul>
+
+<p>这种方案的通信链路具有以下属性:</p>
+
+<ul>
+  <li>在需要通信的每对进程之间，自动建立链路。进程仅需知道对方身份就可进行交流。</li>
+  <li>每个链路只与两个进程相关</li>
+  <li>每对进程之间只有一个链路。</li>
+</ul>
+
+<p>这种方案展示了寻址的<strong>对称性(symmetry)</strong>，即发送和接收进程必须指定对方，以便通信。这种方案的一个变形采用寻址的<strong>非对称性(asymmetry)</strong>，即只要发送者指定接收者，而接收者不需要指定发送者。采用这种方案，原语 send()和 receive()的定义如下:</p>
+
+<ul>
+  <li>send(P，message):向进程P 发送message。</li>
+  <li>receive(id，message):从任何进程，接收message，</li>
+</ul>
+
+<p>这里变量id 被设置成与其通信进程的名称。
+这两个方案(对称和非对称的寻址)的缺点是:生成进程定义的有限模块化。更改进程的标识符可能需要分析所有其他进程定义。所有旧的标识符的引用都应找到，以便修改成为新标识符。通常，任何这样的硬编码(hard-coding)技术(其中标识符需要明确指定)，与下面所述的采用间接的技术相比要差。</p>
+
+<hr />
+
+<p>Processes must name each other explicitly:</p>
+
+<ul>
+  <li>send (P, message) – send a message to process P</li>
+  <li>receive(Q, message) – receive a message from process Q</li>
+</ul>
+
+<p>Properties of communication link</p>
+
+<ul>
+  <li>Links are established automatically</li>
+  <li>A link is associated with exactly one pair of communicating processes</li>
+  <li>Between each pair there exists exactly one link</li>
+  <li>The link may be unidirectional, but is usually bi-directional</li>
+</ul>
+
+<p>进程必须显式命名：</p>
+
+<ul>
+  <li>send (P, message)– 向进程 P 发送消息</li>
+  <li>receive(Q, message)  – 从进程 Q 接收消息</li>
+</ul>
+
+<p>通信链路的属性</p>
+
+<ul>
+  <li>在需要通信的每对进程之间自动建立链路。进程只需要知道对方身份就可以交流</li>
+  <li>一个链接只与一对通信进程相关联</li>
+  <li>每对之间正好存在一个链接</li>
+  <li>链接可能是单向的，但通常是双向的</li>
+</ul>
+
+<h4 id="indirect-communication">Indirect Communication</h4>
+
+<p>在间接通信(indirect communication)中，通过邮箱或端口来发送和接收消息。邮箱可以抽象成一个对象，讲程可以向其中存放消息，也可从中删除消自，每个邮箱都有一个唯一的标识符。例如，POSIX 消息队列采用一个整数值来标识一个邮箱。一个进程可以通过多个不同邮箱与另一个进程通信，但是两个进程只有拥有一个共享邮箱时才能通信。原语send()和receive()定义如下:</p>
+
+<ul>
+  <li>send(A，message):向邮箱A发送message。</li>
+  <li>receive(A，message); 从邮箱A接收message。</li>
+</ul>
+
+<p>对于这种方案，通信链路具有如下特点:</p>
+
+<ul>
+  <li>只有在两个进程共享一个邮箱时，才能建立通信链路</li>
+  <li>一个链路可以与两个或更多进程相关联。</li>
+  <li>两个通信进程之间可有多个不同链路，每个链路对应于一个邮箱。</li>
+</ul>
+
+<p>现在假设进程P、P和P;都共享邮箱A。进程P发送一个消息到A，而进程P和P都对A 执行 receive()。哪个进程会收到 P发送的消息?答案取决于所选择的方案:</p>
+
+<ul>
+  <li>允许一个链路最多只能与两个进程关联。</li>
+  <li>允许一次最多一个进程执行操作 receive()</li>
+  <li>允许系统随意选择一个进程以便接收消息(即进程P和 P两者之一都可以接收消息，但不能两个都可以)。系统同样可以定义一个算法来选择哪个进程是接收者(如轮转，进程轮流接收消息)。系统可以让发送者指定接收者。</li>
+</ul>
+
+<p>邮箱可以为进程或操作系统拥有。如果邮箱为进程拥有(即邮箱是进程地址空间的一部分)，那么需要区分所有者(只能从邮箱接收消息)和使用者(只能向邮箱发送消息)。由于每个邮箱都有唯一的标识符，所以关于谁能接收发到邮箱的消息没有任何疑问。当拥有邮箱的进程终止，那么邮箱消失。任何进程后来向该邮箱发送消息，都会得知邮箱不再存在。</p>
+
+<p>与此相反，操作系统拥有的邮箱是独立存在的;它不属于某个特定进程。因此，操作系统必须提供机制，以便允许进程进行如下操作:</p>
+
+<ul>
+  <li>创建新的邮箱。</li>
+  <li>通过邮箱发送和接收消息。</li>
+  <li>删除邮箱</li>
+</ul>
+
+<hr />
+
+<p>Messages are directed and received from mailboxes (also referred to as ports)</p>
+
+<ul>
+  <li>Each mailbox has a unique id</li>
+  <li>Processes can communicate only if they share a mailbox</li>
+</ul>
+
+<p>Properties of communication link</p>
+
+<ul>
+  <li>Link established only if processes share a common mailbox</li>
+  <li>A link may be associated with many processes</li>
+  <li>Each pair of processes may share several communication links</li>
+  <li>Link may be unidirectional or bi-directional</li>
+</ul>
+
+<p>Operations</p>
+
+<ul>
+  <li>create a new mailbox (port)</li>
+  <li>send and receive messages through mailbox</li>
+  <li>destroy a mailbox</li>
+</ul>
+
+<p>Primitives are defined as:</p>
+
+<ul>
+  <li>send(A, message) – send a message to mailbox A</li>
+  <li>receive(A, message) – receive a message from mailbox A</li>
+</ul>
+
+<p>Mailbox sharing</p>
+
+<ul>
+  <li>P1, P2, and P3 share mailbox A</li>
+  <li>P1, sends; P2 and P3 receive</li>
+  <li>Who gets the message?</li>
+</ul>
+
+<p>Solutions</p>
+
+<ul>
+  <li>Allow a link to be associated with at most two processes</li>
+  <li>Allow only one process at a time to execute a receive operation</li>
+  <li>Allow the system to select arbitrarily the receiver.</li>
+  <li>Sender is notified who the receiver was.</li>
+</ul>
+
+<p>从邮箱（也称为端口）定向和接收邮件</p>
+
+<ul>
+  <li>每个邮箱都有一个唯一的ID</li>
+  <li>进程只有在共享邮箱时才能通信</li>
+</ul>
+
+<p>通信链路的属性</p>
+
+<ul>
+  <li>仅当进程共享公共邮箱时才建立链接</li>
+  <li>一个链接可能与许多进程相关联</li>
+  <li>每对进程可以共享多个通信链路,每个链路对于一个邮箱</li>
+  <li>链接可以是单向的，也可以是双向的</li>
+</ul>
+
+<p>操作</p>
+
+<ul>
+  <li>创建新邮箱（端口）</li>
+  <li>通过邮箱发送和接收消息</li>
+  <li>销毁邮箱</li>
+</ul>
+
+<p>基元定义为：</p>
+
+<ul>
+  <li>send(A, message) – 向邮箱 A 发送邮件</li>
+  <li>receive(A, message) – 从邮箱 A 接收邮件</li>
+</ul>
+
+<p>邮箱共享</p>
+
+<ul>
+  <li>P1、P2 和 P3 共享邮箱 A</li>
+  <li>P1发送;P2 和 P3 接收</li>
+  <li>谁收到消息？</li>
+</ul>
+
+<p>解决方案</p>
+
+<ul>
+  <li>允许链接最多与两个进程关联</li>
+  <li>一次只允许一个进程执行接收操作</li>
+  <li>允许系统任意选择接收器。</li>
+  <li>通知发送方是接收方。</li>
+</ul>
+
+<h3 id="442-同步">4.4.2 同步</h3>
+
+<p>进程间通信可以通过调用原语 send()和receive()来进行。实现这些原语有不同的设计方案。消息传递可以是<strong>阻塞 (blocking)或非阻塞 (nonblocking)，也称为同步(synchronous)或异步(asynchronous)</strong>。(本书的多种操作系统算法会涉及同步和异步行为的概念。</p>
+
+<ul>
+  <li>阻塞发送(blocking send): 发送进程阻塞，直到消息由接收进程或邮箱所接收</li>
+  <li>非阻塞发送(nonblocking send): 发送进程发送消息，并且恢复操作。</li>
+  <li>阻塞接收(blocking receive): 接收进程阻塞，直到有消息可用。</li>
+  <li>非阻塞接收(nonblocking receive):接收进程收到一个有效消息或空消息</li>
+</ul>
+
+<p>不同组合的 send()和 receive()都有可能。当send()和 receive()都是阻塞的，则在发送者和接收者之间就有一个<strong>交会(rendezvous)</strong>。当采用阻塞的 send()和receive()时，生产者-消费者问题的解决就简单了。生产者仅需调用阻塞 send()并且等待，直到消息被送到接收者或邮箱。同样，当消费者调用receive（）时，它会阻塞直到有一个消息可用。</p>
+
+<hr />
+
+<p>Message passing may be either blocking or non-blocking Blocking is considered synchronous</p>
+
+<ul>
+  <li>Blocking send – the sender is blocked until the message is received</li>
+  <li>Blocking receive – the receiver is blocked until a message is available</li>
+</ul>
+
+<p>Non-blocking is considered asynchronous</p>
+
+<ul>
+  <li>Non-blocking send – the sender sends the message and continue</li>
+  <li>Non-blocking receive – the receiver receives:
+    <ul>
+      <li>A valid message, or</li>
+      <li>Null message</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Different combinations possible</p>
+
+<ul>
+  <li>If both send and receive are blocking, we have a rendezvous</li>
+</ul>
+
+<p>消息传递可以是阻塞的或非阻塞的，阻塞被认为是同步的</p>
+
+<ul>
+  <li>阻塞发送——发送者被阻塞直到消息被接收</li>
+  <li>阻塞接收——接收者被阻塞直到消息可用</li>
+</ul>
+
+<p>非阻塞被认为是异步的</p>
+
+<ul>
+  <li>非阻塞发送——发送者发送消息并继续</li>
+  <li>非阻塞接收——接收方接收：
+    <ul>
+      <li>有效消息，或</li>
+      <li>空消息</li>
+    </ul>
+  </li>
+</ul>
+
+<p>可能的不同组合</p>
+
+<ul>
+  <li><strong>如果发送和接收都阻塞，我们有一个交会（rendezvous ）</strong></li>
+</ul>
+
+<h3 id="443-缓冲-buffering">4.4.3 缓冲 Buffering</h3>
+
+<p>不管通信是直接的还是间接的，通信进程交换的消息总是驻留在临时队列中。简单地讲，队列实现有三种方法:</p>
+
+<ul>
+  <li><strong>零容量(zero capacity)</strong>:队列的最大长度为0;因此，链路中不能有任何消息处于等待。对于这种情况，发送者应阻塞，直到接收者接收到消息。</li>
+  <li><strong>有限容量(bounded capacity)</strong>:队列长度为有限的n;因此，最多只能有n个消息驻留其中。如果在发送新消息时队列未满，那么该消息可以放在队列中(或者复制消息或者保存消息的指针)，且发送者可以继续执行而不必等待。然而，链路容量是有限的。如果链路已满，那么发送者应阻塞，直到队列空间有可用的为止。</li>
+  <li><strong>无限容量(unbounded capacity)</strong>:队列长度可以无限，因此，不管多少消息都可在其中等待。发送者从不阻塞。</li>
+</ul>
+
+<p>零容量情况称为无缓冲的消息系统，其他情况称为<strong>自动缓冲</strong>的消息系统。</p>
+
+<hr />
+
+<p>Queue of messages attached to the link. implemented in one of three ways</p>
+
+<ol>
+  <li>Zero capacity – no messages are queued on a link. Sender must wait for receiver (rendezvous)</li>
+  <li>Bounded capacity – finite length of n messages Sender must wait if link full</li>
+  <li>Unbounded capacity – infinite length Sender never waits</li>
+</ol>
+
+<p>附加到链接的消息队列。以三种方式之一实现</p>
+
+<ol>
+  <li>零容量 – 链路上没有消息排队。发送方必须等待接收方（会合）</li>
+  <li>有界容量 – n 条消息的有限长度 如果链接已满，发件人必须等待</li>
+  <li>无限容量 – 无限长度 发送者从不等待</li>
+</ol>
+
+<h1 id="5-ipc-例子">5. IPC 例子</h1>
+
+<p>PPT ch3  3.47 开始</p>
+
+<p>课本 3.5 P89</p>
+
+<h1 id="6-客户机-服务器通信-communications-in-client-server-systems">6. 客户机-服务器通信 Communications in Client-Server Systems</h1>
+
+<ul>
+  <li>Sockets</li>
+  <li>Remote Procedure Calls（RPC）</li>
+  <li>Pipes</li>
+  <li>
+    <p>Remote Method Invocation (Java)  （RMI）</p>
+  </li>
+  <li>
+    <p>套接字</p>
+  </li>
+  <li>远程过程调用（RPC）</li>
+  <li>管道</li>
+  <li>远程方法调用 （Java） （RMI）</li>
+</ul>
+
+<h2 id="61-sockets">6.1 Sockets</h2>
+
+<p>套接字(socket)为通信的端点。通过网络通信的每对进程需要使用一对套接字，即每个进程各有一个。每个套接字由一个IP 地址和一个端口号组成。通常，套接字采用客户机-服务器架构。服务器通过监听指定端口，来等待客户请求。服务器在收到请求后，接受来自客户套接字的连接，从而完成连接。实现特定服务(如telnet、ftp 和 http)的服务器监听所周知的端口(telnet 服务器监听端口 23，fp 服务器监听端口21，Web 或 http 服务器监听端口 80)。所有低于 1024 的端口都是众所周知的，我们可以用它们来实现标准服务</p>
+
+<p>当客户进程发出连接请求时，它的主机为它分配一个端口。这个端口具有大于1024的某个数字。例如，当P地址为146.86.5.20的主机X的客户希望与P地址为161.25.19.8的Web服务器(监听端口80)建立连接时，它所分配的端口可为1625。该连接由一对套接字组成:主机X上的( 146.86.5.20:1625 ),Web 服务器上的(161.25.19.8:80 )这种情况如图3-20所示。根据目的端口号码主机之间传输的分组可以发送到适当的进程。</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch3.assets/image-20230326111136664.png" alt="image-20230326111136664" /></p>
+
+<p>所有连接必须是唯一的。因此，当主机X的另一个进程希望与同样的 Web 服务器建立另一个连接时，它会分配到另一个大于1024但不等于 1625 的端口号。这确保了所有连接都由唯一的一对套接字组成。</p>
+
+<p>Java提供三种不同类型的套接字。</p>
+
+<ul>
+  <li>面向连接(connection-oriented)的TCP套接字是用Socket类实现的。</li>
+  <li>无连接(connectionless)的UDP 套接字使用 DatagramSocket 类。</li>
+  <li>最后MulticastSocket 类为DatagramSocket 类的子类，多播套接字允许数据发送到多个接收者</li>
+</ul>
+
+<hr />
+
+<p>A socket is defined as an endpoint for communication</p>
+
+<p>Concatenation of IP address and port – a number included at start of message packet to differentiate network services on a host</p>
+
+<p>The socket 161.25.19.8:1625 refers to port 1625 on host 161.25.19.8</p>
+
+<p>Communication consists between a pair of sockets</p>
+
+<p>All ports below 1024 are well known, used for standard services</p>
+
+<p>Special IP address 127.0.0.1 (loopback) to refer to system on which process is running</p>
+
+<p>套接字定义为通信终结点</p>
+
+<p>套接字是IP 地址和端口的串联 – 消息数据包开头包含的数字，用于区分主机上的网络服务</p>
+
+<p>套接字 161.25.19.8：1625 是指：主机 161.25.19.8 上的端口 1625</p>
+
+<p>通信由一对套接字组成</p>
+
+<p>1024以下的所有端口都是众所周知的，用于标准服务</p>
+
+<p>特殊 IP 地址 127.0.0.1（环回），用于引用正在运行进程的系统</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch3.assets/image-20230326110547303.png" alt="image-20230326110547303" /></p>
+
+<h2 id="62--remote-procedure-calls---rpc">6.2  Remote Procedure Calls   （RPC）</h2>
+
+<p>（详细内容可看课本3.6.2 P96）</p>
+
+<ul>
+  <li>Remote procedure call (RPC) abstracts procedure calls between processes on networked systems
+    <ul>
+      <li>Again uses ports for service differentiation</li>
+    </ul>
+  </li>
+  <li>Stubs – client-side proxy for the actual procedure on the server</li>
+  <li>The client-side stub locates the server and marshalls the parameters</li>
+  <li>The server-side stub receives this message, unpacks the marshalled parameters, and performs the procedure on the server</li>
+  <li>
+    <p>On Windows, stub code compile from specification written in Microsoft Interface Definition Language (MIDL)</p>
+  </li>
+  <li>Data representation handled via External Data</li>
+  <li>Representation (XDL) format to account for different architectures
+    <ul>
+      <li>Big-endian and little-endian</li>
+    </ul>
+  </li>
+  <li>Remote communication has more failure scenarios than local
+    <ul>
+      <li>Messages can be delivered exactly once rather than at most once</li>
+    </ul>
+  </li>
+  <li>
+    <p>OS typically provides a rendezvous (or matchmaker) service to connect client and server</p>
+  </li>
+  <li>远程过程调用 （RPC） 抽象化网络系统上进程之间的过程调用
+    <ul>
+      <li>再次使用端口进行服务差异化</li>
+    </ul>
+  </li>
+  <li>存根 – 服务器上实际过程的客户端代理</li>
+  <li>客户端存根定位服务器并封送参数</li>
+  <li>服务器端存根接收此消息，解压缩编组参数，并在服务器上执行该过程</li>
+  <li>
+    <p>在Windows上，从微软界面定义语言（MIDL）编写的规范编译的存根代码</p>
+  </li>
+  <li>通过外部数据处理数据表示</li>
+  <li>表示 （XDL） 格式，用于考虑不同的体系结构
+    <ul>
+      <li>大端和小端</li>
+    </ul>
+  </li>
+  <li>远程通信的故障场景多于本地通信
+    <ul>
+      <li>消息可以只传递一次，而不是最多一次</li>
+    </ul>
+  </li>
+  <li>操作系统通常提供会合（或匹配器）服务来连接客户端和服务器</li>
+</ul>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch3.assets/image-20230326112422482.png" alt="image-20230326112422482" /></p>
+
+<h2 id="63-管道">6.3 管道</h2>
+
+<p>Acts as a conduit allowing two processes to communicate Issues:</p>
+
+<ul>
+  <li>Is communication unidirectional or bidirectional?</li>
+  <li>In the case of two-way communication, is it half or full duplex?</li>
+  <li>Must there exist a relationship (i.e., parent-child) between the communicating processes?</li>
+  <li>Can the pipes be used over a network?</li>
+</ul>
+
+<p>Ordinary pipes – cannot be accessed from outside the process that created it. Typically, a parent process creates a pipe and uses it to communicate with a child process that it created.</p>
+
+<p>Named pipes – can be accessed without a parent-child relationship</p>
+
+<p>充当允许两个进程传达问题的管道：</p>
+
+<ul>
+  <li>通信是单向的还是双向的？</li>
+  <li>在双向通信的情况下，是半双工（数据在同一时间内只能按一个方向传输）还是全双工（数据在同一时间内可在两个方向上传输）？</li>
+  <li>通信过程之间是否存在关系（即父子关系）吗？</li>
+  <li>管道可以通过网络使用吗？还是只能在同一台机器上进行</li>
+</ul>
+
+<p>普通管道 – 无法从创建它的进程外部访问。通常，父进程创建一个管道，并使用它来与它创建的子进程进行通信。</p>
+
+<p>命名管道 – 无需父子关系即可访问</p>
+
+<h3 id="ordinary-pipes">Ordinary Pipes</h3>
+
+<ul>
+  <li>Ordinary Pipes allow communication in standard producer-consumer style</li>
+  <li>Producer writes to one end (the write-end of the pipe)</li>
+  <li>Consumer reads from the other end (the read-end of the pipe)</li>
+  <li>Ordinary pipes are therefore unidirectional</li>
+  <li>Require parent-child relationship between communicating processes</li>
+</ul>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch3.assets/image-20230326112810283.png" alt="image-20230326112810283" /></p>
+
+<ul>
+  <li>Windows calls these anonymous pipes</li>
+  <li>
+    <p>See Unix and Windows code samples in textbook</p>
+  </li>
+  <li>普通管道允许以标准的生产者-消费者风格进行通信</li>
+  <li>生产者写入一端（管道的写入端）</li>
+  <li>使用者从另一端（管道的读取端）读取</li>
+  <li>因此普通管道是单向的</li>
+  <li>
+    <p>要求通信进程之间的父子关系</p>
+  </li>
+  <li>Windows调用这些匿名管道</li>
+  <li>请参阅教科书中的Unix和Windows代码示例</li>
+</ul>
+
+<h3 id="named-pipes">Named Pipes</h3>
+
+<ul>
+  <li>Named Pipes are more powerful than ordinary pipes Communication is bidirectional</li>
+  <li>No parent-child relationship is necessary between the communicating processes</li>
+  <li>Several processes can use the named pipe for communication</li>
+  <li>
+    <p>Provided on both UNIX and Windows systems</p>
+  </li>
+  <li>命名管道比普通管道更强大通信是双向的</li>
+  <li>通信过程之间不需要父子关系</li>
+  <li>多个进程可以使用命名管道进行通信</li>
+  <li>在 UNIX 和 Windows 系统上提供</li>
+</ul>
+
+<hr />
+
+<h1 id="操作系统原理第三章作业">操作系统原理第三章作业</h1>
+
+<p>姓名：吕捷为</p>
+
+<p>学号：21307381</p>
+
+<p>完成日期：2023年3月25日</p>
+
+<h2 id="question-1">Question 1</h2>
+
+<p>3.1 Describe the differences among short-term, medium-term, and long-term scheduling.</p>
+
+<p>3.1 描述短程、中程和长程调度之间的差异</p>
+
+<p>Answer:</p>
+
+<ol>
+  <li>时间跨度：</li>
+</ol>
+
+<p>短程调度（也称为进程调度）主要负责将<strong>就绪队列中</strong>的进程选择一个合适的进程，分配给 CPU 进行执行，时间跨度一般是几十毫秒到几秒钟之间。</p>
+
+<p>中程调度（也称为内存调度）主要负责将<strong>处于内存中的进程挂起，将其交换到磁盘上</strong>，以释放出内存空间，之后进程可以被重新调入内存，并从中断处继续执行，时间跨度一般是几分钟到几小时之间。</p>
+
+<p>长程调度（也称为作业调度）主要负责将<strong>新的进程</strong>请求分配给系统，并决定是否创建新的进程，时间跨度一般是几小时到几天之间。</p>
+
+<ol>
+  <li>调度的目的：</li>
+</ol>
+
+<p>短程调度的主要目的是使 CPU 利用率最大化，保证系统的吞吐量，以及确保响应时间和延迟时间的优化。</p>
+
+<p>中程调度的主要目的是管理内存，防止内存耗尽，以及避免进程间的干扰，提高系统的稳定性。</p>
+
+<p>长程调度的主要目的是管理系统资源，保证系统的负载均衡，同时确保系统的可用性和可靠性。</p>
+
+<ol>
+  <li>调度的频率：</li>
+</ol>
+
+<p>短程调度的频率非常高，每个时钟周期都会进行一次调度。</p>
+
+<p>中程调度的频率较低，一般每几分钟到几小时进行一次调度。</p>
+
+<p>长程调度的频率非常低，一般每几小时到几天进行一次调度。</p>
+
+<p>4 调度的对象：</p>
+
+<p>短程调度的对象是<strong>就绪队列中的进程</strong>，其选择策略主要是根据进程的优先级、剩余 CPU 时间等因素进行选择。</p>
+
+<p>中程调度的对象是<strong>内存中的进程</strong>，其选择策略主要是根据进程的内存占用情况、运行时间等因素进行选择。</p>
+
+<p>长程调度的对象是<strong>新的进程请求</strong>，通常批处理系统提交的进程大多可以立即执行，这些进程会被保存到大容量存储设备（通常是磁盘）的缓冲池，长程调度中该池中悬着进程加载到内存，以便执行。其选择策略主要是根据作业的类型、优先级等因素进行选择。</p>
+
+<h2 id="question-2">Question 2：</h2>
+
+<p>3.2 Describe the actions taken by a kernel to context-switch between processes.</p>
+
+<p>3.2 描述内核在进程之间切换上下文时执行的操作。</p>
+
+<p>Answer：</p>
+
+<p>在操作系统中，内核在进行进程之间的切换时，需要执行以下操作：</p>
+
+<ol>
+  <li>保存当前进程的上下文信息：内核会将当前进程的 CPU 寄存器中的信息保存到该进程的 PCB（进程控制块）中，包括程序计数器（PC）、堆栈指针（SP）、通用寄存器和状态寄存器等。</li>
+  <li>选择新进程并恢复其上下文信息：内核会选择一个新的进程，并将该进程的上下文信息从其对应的 PCB 中恢复到 CPU 寄存器中，使得该进程可以继续执行。</li>
+  <li>更新进程状态：内核会更新当前进程的状态，标记其为就绪状态或阻塞状态等，然后将其插入到就绪队列或阻塞队列中。</li>
+  <li>切换内核栈：内核会在从当前进程切换到新进程时，切换内核栈，以确保内核在执行期间可以使用正确的内核栈。</li>
+  <li>执行调度算法：内核会根据调度算法选择下一个要运行的进程，然后切换到该进程的上下文中，并将其标记为当前运行的进程。</li>
+</ol>
+
+<p>需要注意的是，进程切换是一个耗费资源的操作，因为需要保存和恢复大量的上下文信息。因此，操作系统通常会尽量减少进程切换的次数，以提高系统的性能和响应速度。</p>
+
+<h2 id="question-3">Question 3：</h2>
+
+<p>3.5 What are the benefits and the disadvantages of each of the following? Consider both the system level and the programmer level.
+a. Synchronous and asynchronous communication
+b. Automatic and explicit buffering
+c. Send by copy and send by reference
+d. Fixed-sized and variable-sized messages</p>
+
+<p>3.5 以下各项的优点和缺点是什么？同时考虑系统级别和程序员级别。
+a.同步和异步通信
+b.自动和显式缓冲
+c. 通过副本发送和通过引用发送
+d. 固定大小和可变大小的消息</p>
+
+<p>Answer：</p>
+
+<p>a. 同步和异步通信：</p>
+
+<p>同步通信的优点是在程序员级别上比较容易理解和控制，因为程序员可以明确知道在哪里等待消息，等待多长时间以及如何处理消息。此外，同步通信还可以带来更简单的程序结构和更可预测的性能。但在系统级别上，同步通信可能会导致死锁和资源竞争等问题。</p>
+
+<p>异步通信的优点是可以提高系统的并发性和响应性，因为程序可以继续执行其他操作而无需等待通信操作完成。此外，在系统级别上，异步通信也可以降低系统开销，因为操作系统可以通过事件驱动的方式来管理异步操作。但是，在程序员级别上，异步通信可能会比同步通信更难以理解和控制。</p>
+
+<p>b. 自动和显式缓冲：</p>
+
+<p>自动缓冲的优点是可以降低程序员的工作量和减少通信延迟，因为缓冲可以自动处理。此外，自动缓冲还可以减少通信操作的数量，从而提高系统性能。但是，在程序员级别上，自动缓冲可能会使程序难以调试和排错。</p>
+
+<p>显式缓冲的优点是可以更灵活地控制缓冲区的大小和内容，从而提高系统的可靠性和可调试性。此外，显式缓冲还可以使程序员更容易地处理缓冲区溢出等问题。但是，在系统级别上，显式缓冲可能会增加通信延迟和降低系统性能。</p>
+
+<p>c. 通过副本发送和通过引用发送：</p>
+
+<p>通过副本发送的优点是可以避免共享内存导致的数据竞争等问题，从而提高系统的并发性和可靠性。此外，通过副本发送还可以使程序员更容易地理解和控制数据的传输。但是，在程序员级别上，通过副本发送可能会浪费大量的内存和 CPU 时间。</p>
+
+<p>通过引用发送的优点是可以节省内存和 CPU 时间，从而提高系统性能和可扩展性。此外，通过引用发送还可以使程序员更容易地共享数据和管理数据的生命周期。但是，在系统级别上，通过引用发送可能会导致数据共享的问题，例如竞争条件和死锁等。</p>
+
+<p>d. 固定大小和可变大小的消息：</p>
+
+<p>固定大小的消息的优点是可以提高系统的可靠性和性能，因为它们的大小是固定的，所以操作系统可以更容易地管理内存和缓存。此外，在程序员级别上，固定大小的消息可以更容易地理解和控制。但是，在系统级上，固定大小的消息可能会导致浪费和限制消息的灵活性。</p>
+
+<p>可变大小的消息的优点是可以更灵活地传输数据，从而提高系统的可扩展性和灵活性。此外，在程序员级别上，可变大小的消息可以更容易地处理各种数据类型和大小。但是，在系统级别上，可变大小的消息可能会导致更多的开销和更复杂的处理逻辑，因为操作系统需要动态管理内存和缓存。</p>
+
+<p>总的来说，以上这些选择都有其优点和缺点，需要根据具体的应用场景和需求进行选择。在系统级别上，需要考虑性能、可靠性、可扩展性和安全性等因素。在程序员级别上，需要考虑易用性、可读性、可维护性和可测试性等因素。</p>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2023/03/24/Ch2-Operating-System-Structures/" data-toggle="tooltip" data-placement="top" title="Chapter2 Operating-System Structures  ">
+                        Previous<br>
+                        <span>Chapter2 Operating-System Structures  </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2023/03/27/AI-15Puzzle/" data-toggle="tooltip" data-placement="top" title="使用A* 与IDA* 算法解决15-Puzzle问题">
+                        Next<br>
+                        <span>使用A* 与IDA* 算法解决15-Puzzle问题</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+
+                <!--   gitalk       -->
+                <div class="comment">
+                <div id="gitalk-container"></div>
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+                <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+                <script>
+                var gitalk = new Gitalk({
+                    id: location.pathname,
+                    clientID: '0db4b4c6d83c061f6b30',
+                    clientSecret: 'e1651c09f1a49b2b4a544cd584d3e8a55454a48a',
+                    repo: 'BlogComment',
+                    owner: 'jaredddddd',
+                    admin: ['jaredddddd'], 
+                    labels: ['Gitalk'],
+                })
+                gitalk.render('gitalk-container')
+                </script> 
+                </div>
+
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0036" 
+                    href="/archive/?tag=Computer-Organization"
+                    title="Computer-Organization"
+                    rel="21">Computer-Organization</a>
+        
+                <a data-sort="0018" 
+                    href="/archive/?tag=NOTES"
+                    title="NOTES"
+                    rel="39">NOTES</a>
+        
+                <a data-sort="0041" 
+                    href="/archive/?tag=Project"
+                    title="Project"
+                    rel="16">Project</a>
+        
+                <a data-sort="0042" 
+                    href="/archive/?tag=AI"
+                    title="AI"
+                    rel="15">AI</a>
+        
+                <a data-sort="0048" 
+                    href="/archive/?tag=OS"
+                    title="OS"
+                    rel="9">OS</a>
+        
+                <a data-sort="0052" 
+                    href="/archive/?tag=ML"
+                    title="ML"
+                    rel="5">ML</a>
+        
+                <a data-sort="0053" 
+                    href="/archive/?tag=PatternRecognition"
+                    title="PatternRecognition"
+                    rel="4">PatternRecognition</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Blog"
+                    title="Blog"
+                    rel="3">Blog</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Distributed-System"
+                    title="Distributed-System"
+                    rel="3">Distributed-System</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=ANN"
+                    title="ANN"
+                    rel="2">ANN</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CPU%E8%AE%BE%E8%AE%A1"
+                    title="CPU设计"
+                    rel="2">CPU设计</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CompilationPrinciple"
+                    title="CompilationPrinciple"
+                    rel="2">CompilationPrinciple</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     TeX: {
+       equationNumbers: {
+         autoNumber: "AMS"
+       }
+     },
+     SVG: {
+       scale: 90
+     },
+     tex2jax: {
+       inlineMath: [ ['$','$'] ],
+       displayMath: [ ['$$','$$'] ],
+       processEscapes: true,
+     }
+   });
+ </script>
+ <script type="text/javascript"
+         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+
+.post-container {
+    background: #fcfbfb; /* 背景颜色 */
+    border-radius: 25px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    padding-top: 40px; /* 特别增加顶部内边距 */
+    margin-top: 20px; /* 添加顶部外边距 */
+    /* margin-left: 40px; */
+    /* width: 900px; */
+}
+
+
+/* 在宽屏幕设备上应用特定样式 */
+@media (min-width: 1024px) {
+  .post-container {
+    margin-left: 40px; /* 向左扩展 */
+    width: 900px; /* 设置宽度 */
+  }
+  .side-catalog{
+    width: 250px;
+  }
+}
+
+.post-container:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* 当鼠标悬停时增加阴影效果 */
+}
+
+.side-catalog {
+    background: #ffffff; /* 背景颜色 */
+    border-radius: 15px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    margin-left: 10pt;
+    /* width: 200px; */
+
+}
+
+
+
+.catalog-container {
+    /* ... 其他样式 ... */
+    display: none; /* 默认不显示catalog */
+    transition: all 0.3s ease; /* 过渡效果 */
+    margin-top: 20px; /* 添加顶部外边距 */
+}
+
+</style>
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; LvKouKou Blog 2025
+                    <br>
+                    <!--  删掉了作者Hux Blog
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                    -->
+                    <!-- 不蒜子 -->
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                    您是Blog的第<span id="busuanzi_value_site_uv"></span>个小伙伴 </br>
+                     <span id="busuanzi_container_page_pv">
+                        本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<!-- 自己添加的 -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TNVD6PR5TQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNVD6PR5TQ');
+</script>
+<!-- 自己添加的 -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        // a = P.find('h1,h2,h3,h4,h5,h6');
+        a = P.find('h1,h2,h3,h4');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<!--鼠标点击爱心动画-->
+<script type="text/javascript" src="/js/love.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,1864 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @LvKouKou 的个人博客，与你一起发现更大的世界 | 要做一个想环游世界的程序员">
+    <meta name="keywords" content="LvKouKou, jaredddddd, @jaredddddd, LvKouKou Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <link
+  rel="stylesheet"
+  href="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+/>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  defer="defer"
+></script>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  defer="defer"
+  onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
+></script>
+    <script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/mathtex-script-type.min.js"
+  defer="defer"
+></script>
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="Chapter1 Introduction of Operating System - LvKouKou的博客 | LV Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="1. 操作系统的功能 What is an Operating System?
+
+">
+    
+    <meta property="article:published_time" content=" 2023-03-20T00:00:00Z">
+    
+    
+    <meta property="article:author" content="LvKouKou">
+    
+    
+    <meta property="article:tag" content="OS">
+    
+    <meta property="article:tag" content="NOTES">
+    
+    
+    <meta property="og:image" content="https://jaredddddd.github.io/img/LVKOUKOU.jpg">
+    <meta property="og:url" content="https://jaredddddd.github.io/2023/03/20/Chapter1-Introduction/">
+    <meta property="og:site_name" content="LvKouKou的博客 | LV Blog">
+
+    <title>Chapter1 Introduction of Operating System - LvKouKou的博客 | LV Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jaredddddd.github.io/2023/03/20/Chapter1-Introduction/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* 打字机效果的样式 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #666 }
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid #666;
+            white-space: nowrap;
+            word-wrap: break-word;
+            letter-spacing: .1em;
+            width: fit-content;
+            margin: 0 auto;
+            animation: 
+                typing 2s steps(40, end), /* 打字机效果, 3s 完成打字, 每步40个字符 */
+                blink-caret .75s step-end infinite; /* 光标闪烁效果, 0.75s 完成一次闪烁  */
+        }
+
+        /* 添加包装容器样式 */
+        .typing-wrapper {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%; /* 确保不会超出父容器 */
+        }
+
+        /* 添加响应式样式 */
+        @media (max-width: 768px) {
+        .typing-effect {
+            font-size: 16px; /* 在手机上可以适当调整字体大小 */
+            letter-spacing: normal; /* 在手机上减小字间距 */
+        }
+    }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptions = document.getElementsByClassName('subheading');
+            if (descriptions.length > 0) {
+                const description = descriptions[0];
+                const text = description.textContent;
+                description.innerHTML = `<span class="typing-wrapper"><span class="typing-effect">${text}</span></span>`;
+            }
+        });
+    </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">LvKouKou Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/resume-home/">Resume</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/roadtrip/">On The Road</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="Searching...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!--//添加评论系统gitalk-->
+<link rel="stylesheet" href="../../../../css/gitalk.css">
+<script src="../../../../js/gitalk.min.js"></script>
+
+<!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=OS" title="OS">OS</a>
+                        
+                        <a class="tag" href="/archive/?tag=NOTES" title="NOTES">NOTES</a>
+                        
+                    </div>
+                    <h1>Chapter1 Introduction of Operating System</h1>
+                    
+                    <h2 class="subheading">第一章 导论！</h2>
+                    <span class="meta">Posted by LvKouKou on March 20, 2023</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="1-操作系统的功能-what-is-an-operating-system">1. 操作系统的功能 What is an Operating System?</h1>
+
+<h2 id="11-用户视角">1.1 用户视角</h2>
+
+<ul>
+  <li>
+    <p>A program that acts as an <strong>intermediary</strong> between a userof a computer and the computer hardware.</p>
+  </li>
+  <li>Operating system goals:
+    <ul>
+      <li>Execute user programs and make solving userproblems easier.</li>
+      <li>Make the computer system convenient to use.</li>
+    </ul>
+  </li>
+  <li>Use the computer hardware in <strong>an efficient manner</strong></li>
+</ul>
+
+<p>什么是操作系统？</p>
+
+<ul>
+  <li>
+    <p>充当计算机用户和计算机硬件之间的中介的程序。</p>
+  </li>
+  <li>操作系统目标：
+    <ul>
+      <li>执行用户程序并更容易解决用户问题。</li>
+      <li>使电脑系统方便使用。</li>
+    </ul>
+  </li>
+  <li>有效地使用计算机硬件</li>
+</ul>
+
+<h2 id="12-系统视角">1.2 系统视角</h2>
+
+<ul>
+  <li>OS is a <strong>resource allocator</strong>
+    <ul>
+      <li>Manages all resources</li>
+      <li>Decides between conflicting requests for efficient and fair resource use</li>
+    </ul>
+  </li>
+  <li>OS is a <strong>control program</strong>
+    <ul>
+      <li>Controls execution of programs to prevent errors and improper use of the computer</li>
+    </ul>
+  </li>
+  <li>操作系统是<strong>资源分配器</strong>
+    <ul>
+      <li>管理所有资源</li>
+      <li>在有效和公平地使用资源的请求之间做出决定</li>
+    </ul>
+  </li>
+  <li>操作系统是一个<strong>控制程序</strong>
+    <ul>
+      <li>控制程序的执行，以防止错误和计算机使用不当</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="13-操作系统的定义-operating-system-definition">1.3 操作系统的定义 Operating System Definition</h2>
+
+<ul>
+  <li>
+    <p>No universally accepted definition</p>
+  </li>
+  <li>“Everything a vendor ships when you order an operating system” is good approximation
+    <ul>
+      <li>But varies wildly</li>
+    </ul>
+  </li>
+  <li>
+    <p>“The one program running at all times on the computer” is the <strong>kernel</strong>. Everything else is either a system program (ships with the operating system) or an application program</p>
+  </li>
+  <li>
+    <p>没有普遍接受的定义</p>
+  </li>
+  <li>“供应商在您订购操作系统时提供的所有东西”是很好的大概描述
+    <ul>
+      <li>但变化很大</li>
+    </ul>
+  </li>
+  <li>“计算机上始终运行的一个程序”是内核。其他所有内容要么是系统程序（随操作系统一起提供）要么是应用程序</li>
+</ul>
+
+<h1 id="2-计算机系统的组成-computer-system-organization">2. 计算机系统的组成 Computer System Organization</h1>
+
+<h2 id="21-计算机系统的运行">2.1 计算机系统的运行</h2>
+
+<p>Computer-system operation</p>
+
+<ul>
+  <li>One or more CPUs, device controllers connect through <strong>common bus</strong> providing access to shared memory</li>
+  <li><strong>Concurrent</strong> execution of CPUs and devices <strong>competing for memory cycles</strong></li>
+</ul>
+
+<p>计算机系统操作</p>
+
+<ul>
+  <li>一个或多个CPU，设备控制器<strong>通过公共总线连接</strong>，提供对共享内存的访问</li>
+  <li>CPU 和设备<strong>并发</strong>执行，竞争访问内存</li>
+</ul>
+
+<p><img src="/img/in-post/OperatingSystemNotes/Chapter1-Introduction.assets/image-20230320224128902.png" alt="image-20230320224128902" /></p>
+
+<p>==<strong>区分并发和并行的区别：</strong>==</p>
+
+<ul>
+  <li>并发（concurrency）：把任务在不同的时间点交给处理器进行处理（<strong>相同时间间隔</strong>但不是同时）。在同一时间点，任务并不会同时运行。</li>
+  <li>并行（parallelism）：把每一个任务分配给每一个处理器独立完成。在同一时间点，任务一定是同时运行。</li>
+</ul>
+
+<h3 id="211-computer-start-up">2.1.1 Computer Start up</h3>
+
+<p>bootstrap program is loaded at power-up or reboot</p>
+
+<ul>
+  <li>Typically stored in <strong>ROM</strong> or <strong>EPROM</strong>, generally known as <strong>firmware</strong></li>
+  <li>Initializates all aspects of system</li>
+  <li>Loads operating system kernel and starts execution</li>
+</ul>
+
+<p>引导程序在上电或重新启动时加载</p>
+
+<ul>
+  <li>通常存储在ROM或EPROM中，通常称为固件</li>
+  <li>初始化系统的所有方面</li>
+  <li>加载操作系统内核并开始执行</li>
+</ul>
+
+<p>计算机电源开启后，开始运行引导程序（一般位于ROM），初始化系统的各个组件（CPU寄存器、PC，内存）。引导程序必须知道如何加载如何加载操作系统并开始执行操作系统，为了完成这一目标，它必须<strong>定位操作系统的内核并加载到内存</strong>。内核加载到内存并执行，除此，系统程序也会加载为系统进程或系统后台程序（system daemon），此时系统完全启动等待事件发生。</p>
+
+<p>事件发生通常通过硬件或软件的中断(interrupt)来通知。<strong>硬件</strong>可以随时通过系统总线发送信号到CPU，以触发中断。<strong>软件</strong>也可通过执行特别操作即<strong>系统调用(system call)</strong>(也称为监督程序调用(monitor call))以触发中断。</p>
+
+<h3 id="212-common-functions-of-interrupts">2.1.2 Common Functions of Interrupts</h3>
+
+<ul>
+  <li>Interrupt <strong>transfers control</strong> to the interrupt service routine generally, through the <strong>interrupt vector,</strong> which contains <strong>the addresses of all the service routines</strong>.</li>
+  <li>Interrupt architecture must save the address of the interrupted instruction.</li>
+  <li>Incoming interrupts are disabled while another interrupt is being processed to prevent a lost interrupt.</li>
+  <li>A <strong>trap</strong> is a software-generated interrupt caused either by an error or a user request.</li>
+  <li>
+    <p>An operating system is interrupt driven.</p>
+  </li>
+  <li>中断通常通过<strong>中断向量</strong>将控制权转移到中断服务例程，该向量包含所有<strong>服务例程的地址</strong>(中断服务程序的地址)。</li>
+  <li>中断体系结构必须保存中断指令的地址。</li>
+  <li>在处理另一个中断时禁用传入中断，以防止中断丢失。</li>
+  <li>陷阱是由错误或用户请求引起的软件生成的中断。</li>
+  <li><strong>操作系统由中断驱动。</strong></li>
+</ul>
+
+<h3 id="213-interrupt-handling">2.1.3 Interrupt Handling</h3>
+
+<ul>
+  <li>The operating system preserves the state of the CPU by storing registers and the program counter.</li>
+  <li>Determines which type of interrupt has occurred:
+    <ul>
+      <li>polling</li>
+      <li>vectored interrupt system</li>
+    </ul>
+  </li>
+  <li>
+    <p>Separate segments of code determine what action should be taken for each type of interrupt</p>
+  </li>
+  <li>
+    <p>操作系统通过存储寄存器和程序计数器来保留 CPU 的状态。</p>
+  </li>
+  <li>
+    <p>确定发生的中断类型：</p>
+
+    <ul>
+      <li>
+        <p>轮询</p>
+      </li>
+      <li>
+        <p>矢量中断系统</p>
+      </li>
+    </ul>
+  </li>
+  <li>单独的代码段确定应为每种类型的中断采取什么操作</li>
+</ul>
+
+<p><img src="/img/in-post/OperatingSystemNotes/Chapter1-Introduction.assets/image-20230320224905012.png" alt="image-20230320224905012" /></p>
+
+<h2 id="22--storage-structure">2.2  Storage Structure</h2>
+
+<ul>
+  <li>Main memory – only large storage media that the CPU can access directly.</li>
+  <li>Secondary storage – extension of main memory that provides large <strong>nonvolatile</strong> storage capacity.</li>
+  <li>Magnetic disks – rigid metal or glass platters covered with magnetic recording material
+    <ul>
+      <li>Disk surface is <strong>logically</strong> divided into <strong>tracks</strong>, which are subdivided into sectors.</li>
+      <li>The disk controller determines the logical interaction between the device and the computer</li>
+    </ul>
+  </li>
+  <li>主内存 – 只有 CPU 可以直接访问的大型存储介质。</li>
+  <li>辅助存储 – 主存储器的扩展，提供大的<strong>非易失性</strong>存储容量。</li>
+  <li>磁盘 – 覆盖有磁性记录材料的刚性金属或玻璃盘片
+    <ul>
+      <li>磁盘表面在逻辑上分为磁道，磁道又细分为扇区。</li>
+      <li>磁盘控制器确定设备和计算机之间的逻辑交互</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="221-storage-hierarchy">2.2.1 Storage Hierarchy</h3>
+
+<ul>
+  <li>Storage systems organized in hierarchy.
+    <ul>
+      <li>Speed</li>
+      <li>Cost</li>
+      <li>Volatility</li>
+    </ul>
+  </li>
+  <li>
+    <p>Caching – <strong>copying information into faster storage system</strong>; main memory can be viewed as a last cache for secondary storage</p>
+  </li>
+  <li>按层次结构组织的存储系统。
+    <ul>
+      <li>速度</li>
+      <li>成本</li>
+      <li>挥发性</li>
+    </ul>
+  </li>
+  <li>缓存 – 将信息复制到更快的存储系统中;主内存可以被视为辅助存储的最后一个缓存</li>
+</ul>
+
+<p><img src="/img/in-post/OperatingSystemNotes/Chapter1-Introduction.assets/image-20230320230653155.png" alt="image-20230320230653155" /></p>
+
+<h2 id="23-io-structure">2.3 I/O Structure</h2>
+
+<ul>
+  <li>I/O devices and the CPU can execute <strong>concurrently</strong>.</li>
+  <li>Each device controller is in charge of a particular device type.</li>
+  <li>Each device controller has a <strong>local buffer</strong>.</li>
+  <li>CPU moves data from/to <strong>main memory to/from local buffers</strong></li>
+  <li>I/O is from the device to local buffer of controller.</li>
+  <li>
+    <p>Device controller informs CPU that it has finished its operation by causing an <strong>interrupt</strong>.</p>
+  </li>
+  <li>I/O 设备和 CPU 可以同时执行。</li>
+  <li>每个设备控制器负责特定的设备类型。</li>
+  <li>每个设备控制器都有一个<strong>本地缓冲区</strong>。</li>
+  <li>CPU 将数据移入/移出主存储器，移入/移出本地缓冲区</li>
+  <li>I/O 是从设备到控制器的本地缓冲区。</li>
+  <li>
+    <p>设备控制器通过引起<strong>中断</strong>来通知 CPU 它已完成操作。</p>
+  </li>
+  <li><strong>同步</strong>：After I/O starts, control returns to user program <strong>only upon I/O completion</strong>.
+    <ul>
+      <li>Wait instruction <strong>idles the CPU</strong> until the next interrupt</li>
+      <li>Wait loop (contention for memory access).</li>
+      <li>At most one I/O request is outstanding at a time, no simultaneous I/O processing.</li>
+    </ul>
+  </li>
+  <li><strong>异步</strong>：After I/O starts, control returns to user program <strong>without waiting for I/O completion</strong>.
+    <ul>
+      <li>System call – request to the operating system to allow user to wait for I/O completion.</li>
+      <li>Device-status table contains entry for each I/O device indicating its type, address, and state.</li>
+      <li>Operating system indexes into I/O device table to <strong>determine device status</strong> and to modify table entry to include interrupt.</li>
+    </ul>
+  </li>
+  <li>同步：I/O 启动后，只有在 I/O 完成后，控制权才会返回到用户程序。
+    <ul>
+      <li>等待指令使CPU空闲，直到下一个中断</li>
+      <li>等待循环（内存访问争用）。</li>
+      <li>一次最多有一个 I/O 请求未完成，没有同时处理 I/O 处理。</li>
+    </ul>
+  </li>
+  <li>异步：I/O 启动后，控制权将返回到用户程序，而无需等待 I/O 完成。
+    <ul>
+      <li>系统调用 – 请求操作系统允许用户等待 I/O 完成。</li>
+      <li>设备状态表包含每个 I/O 设备的条目，指示其类型、地址和状态。</li>
+      <li>操作系统索引到 I/O 设备表中，以确定                                                                                                    改表条目以包含中断。</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="/img/in-post/OperatingSystemNotes/Chapter1-Introduction.assets/image-20230320225838098.png" alt="image-20230320225838098" /></p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/Chapter1-Introduction.assets/image-20230320230156586.png" alt="image-20230320230156586" /></p>
+
+<h3 id="231-直接内存访问-dmadirect-memory-access-structure">2.3.1 直接内存访问 （DMA）Direct Memory Access Structure</h3>
+
+<p>这种I/O中断驱动适合移动少量数据，但是对于大量数据的移动，如磁盘I/O，就会带来很高的开销。为了解决这个问题，可以采用直接内存访问(Diret Memory Access, DMA)。在为这种 I/O 设备设置好缓冲、指针和计数器之后，设备控制器可在本地缓冲和内存之间传送<strong>整块</strong>的数据，而无需 CPU 的干预。每块只产生一个中断，来告知设备驱动程序操作已完成，<strong>而不是像低速设备那样每个字节产生一个中断</strong>。当设备控制器执行这些操作时，CPU可以进行其他工作。</p>
+
+<ul>
+  <li>Used for high-speed I/O devices able to transmit information at close to memory speeds.</li>
+  <li>Device controller transfers blocks of data from buffer storage directly to main memory <strong>without CPU</strong>
+<strong>intervention</strong>.</li>
+  <li>
+    <p><strong>Only one interrupt is generated per block, rather than the one interrupt per byte.</strong></p>
+  </li>
+  <li>用于能够以接近内存速度传输信息的高速I/O设备。</li>
+  <li>设备控制器将数据块从缓冲存储直接传输到主存储器，无需CPU介入。</li>
+  <li>==<strong>每个块只生成一个中断，而不是每个字节生成一个中断。</strong> （<strong>DMA最大作用</strong>）==</li>
+</ul>
+
+<h1 id="3-计算机系统的体系结构-computer-system-structure">3. 计算机系统的体系结构 Computer System Structure</h1>
+
+<p>Computer system can be divided into four components</p>
+
+<ul>
+  <li>Hardware – provides basic computing resources
+    <ul>
+      <li>CPU, memory, I/O devices</li>
+    </ul>
+  </li>
+  <li><strong>Operating system</strong>
+    <ul>
+      <li><strong>Controls and coordinates use of hardware among various applications and users</strong></li>
+    </ul>
+  </li>
+  <li>Application programs – define the ways in which the system resources are used to solve the computing problems of the users
+    <ul>
+      <li>Word processors, compilers, web browsers, database systems, video games</li>
+    </ul>
+  </li>
+  <li>Users
+    <ul>
+      <li>People, machines, other computers</li>
+    </ul>
+  </li>
+</ul>
+
+<p>计算机系统可分为四个组成部分</p>
+
+<ul>
+  <li>
+    <p>硬件——提供基本的计算资源</p>
+
+    <ul>
+      <li>CPU、内存、I/O设备</li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>操作系统</strong></p>
+
+    <ul>
+      <li><strong>控制和协调各种应用程序和用户之间的硬件使用</strong></li>
+    </ul>
+  </li>
+  <li>
+    <p>应用程序——定义系统资源用于解决用户计算问题的方式</p>
+
+    <ul>
+      <li>文字处理器、编译器、网络浏览器、数据库系统、视频游戏</li>
+    </ul>
+  </li>
+  <li>
+    <p>用户</p>
+
+    <ul>
+      <li>人、机器、其他计算机</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="/img/in-post/OperatingSystemNotes/Chapter1-Introduction.assets/image-20230320155908925.png" alt="image-20230320155908925" /></p>
+
+<h1 id="4-操作系统的结构-operating-system-structure">4. 操作系统的结构 Operating System Structure</h1>
+
+<ul>
+  <li>Multiprogramming needed for efficiency
+    <ul>
+      <li><strong>Single user cannot keep CPU and I/O devices busy at all times</strong></li>
+      <li>Multiprogramming organizes jobs (code and data) so CPU always has one to execute</li>
+      <li>A <strong>subset of total jobs</strong> in system is kept in memory</li>
+      <li>One job selected and run via <strong>job scheduling</strong>（任务调度）</li>
+      <li>When it has to wait (for I/O for example), OS switches to another job</li>
+    </ul>
+  </li>
+  <li>Timesharing (multitasking) is logical extension in which CPU switches jobs so frequently that users can <strong>interact with each job while it is running</strong>, creating interactive computing
+    <ul>
+      <li>Response time should be &lt; 1 second</li>
+      <li>Each user has <strong>at least one program</strong> executing in memory process</li>
+      <li>If several jobs ready to run at the same time CPU scheduling</li>
+      <li>If processes don’t fit in memory, swapping moves them in and out to run</li>
+      <li>Virtual memory allows execution of processes not <strong>completely in memory</strong></li>
+    </ul>
+  </li>
+</ul>
+
+<p>操作系统在内存中同时保存多个任务(图 1-9)。由于主存太小不能容纳所有作业，因此<strong>这些作业首先保存在磁盘的作业池 (job pool) 上</strong>。该作业池包括磁盘上的等待分配内存的所有进程。内存的作业集为作业池的作业集的一个子集。从内存的作业集中，操作系统可以选择执行一个作业。</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/Chapter1-Introduction.assets/image-20230325110630588.png" alt="image-20230325110630588" /></p>
+
+<ul>
+  <li>提高效率所需的多道程序处理
+    <ul>
+      <li>单个用户无法始终保持 CPU 和 I/O 设备繁忙</li>
+      <li>进程并发组织作业（代码和数据），因此CPU始终有一个要执行</li>
+      <li>系统中总作业的子集保存在内存中</li>
+      <li>选择一个作业并通过作业调度运行</li>
+      <li>当它必须等待（例如 I/O）时，操作系统切换到另一个作业</li>
+    </ul>
+  </li>
+  <li>分时（多任务）是一种逻辑扩展，其中 CPU 如此频繁地切换作业，以至于用户可以在每个作业运行时与其进行交互，从而创建交互式计算
+    <ul>
+      <li>响应时间应小于 1 秒</li>
+      <li>每个用户至少有一个程序在内存进程中执行</li>
+      <li>如果多个作业准备同时运行 <strong>CPU 调度</strong></li>
+      <li>如果进程不适合内存，<strong>交换</strong>将它们移入和移出以运行</li>
+      <li>虚拟内存允许不完全在内存中执行进程</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="/img/in-post/OperatingSystemNotes/Chapter1-Introduction.assets/image-20230320231834924.png" alt="image-20230320231834924" /></p>
+
+<h1 id="5-操作系统的执行-operating-system-operations">5. 操作系统的执行 Operating-System Operations</h1>
+
+<p>现代操作系统是<strong><code class="language-plaintext highlighter-rouge">中断驱动 (interrupt driven)的</code></strong>。如果没有进程需要执行没有 I/O 设备需要服务，而且没有用户需要响应，那么操作系统会静静地等待某个事件的发生。事件总是由中断或陷阱引起的。陷阱(trap)(或异常(exception))是一种软件生成的中断，或源于出错(如除数为零或无效存储访问)，或源于用户程序的特定请求(执行操作系统的某个服务)。这种操作系统的中断特性规定了系统的通用结构。对于每种中断，操作系统有不同代码段来处理。中断服务程序用于处理中断。</p>
+
+<ul>
+  <li>Interrupt driven by hardware</li>
+  <li>Software error or request creates <strong>exception</strong> or <strong>trap</strong>
+    <ul>
+      <li>Division by zero, request for operating system service</li>
+    </ul>
+  </li>
+  <li>Other process problems include <strong>infinite loop</strong>, processes modifying each other or the operating system</li>
+  <li>Dual-mode operation allows OS to <strong>protect itself and other system components</strong>
+    <ul>
+      <li>User mode and <strong>kernel mode</strong>(最高权限)</li>
+      <li>Mode bit provided by hardware
+        <ul>
+          <li>Provides ability to distinguish when system is running user code or kernel code</li>
+          <li>Some instructions designated as privileged, only executable <strong>in kernel mode</strong></li>
+          <li><strong>System call changes mode to kernel</strong>, return from call resets</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>由硬件驱动的中断</li>
+  <li>软件错误或请求产生异常或陷阱
+    <ul>
+      <li>除以零，请求操作系统服务</li>
+    </ul>
+  </li>
+  <li>其他进程问题包括无限循环、进程相互修改或操作系统</li>
+  <li>双模式操作允许操作系统保护自身和其他系统组件
+    <ul>
+      <li>用户模式和内核模式（最高权限）</li>
+      <li>硬件提供的模式位
+        <ul>
+          <li>提供区分系统何时运行用户代码或内核代码的功能</li>
+          <li>一些指令被指定为特权，仅在内核模式下可执行</li>
+          <li>系统调用模式更改为内核，从调用重置返回</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="51-内核模式和用户模式-transition-from-user-to-kernel-mode">5.1 内核模式和用户模式 Transition from User to Kernel Mode</h2>
+
+<p>为了确保操作系统的正确运行，必须<strong>区分操作系统代码和用户代码的执行</strong>。大多数计算机系统采用硬件支持，以便区分各种执行模式。至少需要两种单独运行模式:</p>
+
+<ul>
+  <li>用户模式(user mode)</li>
+  <li>内核模式(kernelmode)  (也称为监视模式(supervisor mode)、系统模式(system mode)或特权模式(privileged mode))。</li>
+</ul>
+
+<p>计算机硬件可以通过一个模式位(mode bit)来表示当前模式:内核模式(0)和用户模式(1)有了模式位，就可区分为操作系统执行的任务和为用户执行的任务。当计算机系统执行用户应用时，系统处于用户模式。然而，当用户应用通过系统调用，请求操作系统服务时，系统必须从用户模式切换到内核模式，以满足请求</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/Chapter1-Introduction.assets/image-20230325114209634.png" alt="image-20230325114209634" /></p>
+
+<ul>
+  <li>Timer to <strong>prevent infinite loop / process hogging resources</strong>
+    <ul>
+      <li>Set interrupt after specific period</li>
+      <li>Operating system <strong>decrements</strong> counter</li>
+      <li>When counter zero generate an interrupt</li>
+      <li>Set up before scheduling process to <strong>regain control</strong> or <strong>terminate program</strong> that exceeds allotted time</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="/img/in-post/OperatingSystemNotes/Chapter1-Introduction.assets/image-20230320232519712.png" alt="image-20230320232519712" /></p>
+
+<p><strong>定时器</strong>可防止无限循环/进程占用资源（避免一个进程一直占用CPU时间，如果该进程是死循环，则其他进程无法执行）</p>
+
+<ul>
+  <li>在特定时间段后设置中断</li>
+  <li>操作系统递减计数器</li>
+  <li>当计数器零产生中断时</li>
+  <li>在调度过程之前进行设置，以重新获得控制权或终止超过分配时间的程序</li>
+</ul>
+
+<h1 id="6--进程管理-process-management">6.  进程管理 Process Management</h1>
+
+<p>进程是系统的工作单元。系统由多个进程组成，其中有的是操作系统进程(执行系统代码)，其他的是用户进程(执行用户代码)。<strong>所有这些进程都会并发执行</strong>，例如通过在单 CPU上采用多路复用来实现。（书1.6 P17）</p>
+
+<p><strong>操作系统负责进程管理的以下活动:</strong></p>
+
+<ul>
+  <li>在CPU上<strong>调度</strong>进程和线程</li>
+  <li><strong>创建和删除</strong>用户进程和系统进程</li>
+  <li><strong>挂起和重启</strong>进程</li>
+  <li>提供进程<strong>同步机制</strong></li>
+  <li>
+    <p>提供进程<strong>通信机制</strong></p>
+  </li>
+  <li>A process is a program in execution. It is a unit of work within the system.Program is a <strong>passive entity</strong>, process is an <strong>active entity</strong>.</li>
+  <li>Process needs resources to accomplish its task
+    <ul>
+      <li>CPU, memory, I/O, files</li>
+      <li>Initialization data</li>
+    </ul>
+  </li>
+  <li>Process termination requires reclaim of any reusable resources</li>
+  <li>Single-threaded process has one program counter specifying <strong>location of next instruction</strong> to execute
+    <ul>
+      <li>Process executes instructions <strong>sequentially</strong>, one at a time, until completion</li>
+    </ul>
+  </li>
+  <li><strong>Multi-threaded process</strong> has <strong>one program counter per thread</strong>（每个线程一个程序计数器）</li>
+  <li>Typically system has many processes, some user, some operating system running concurrently on one or more CPUs
+    <ul>
+      <li>Concurrency by multiplexing the CPUs among the processes / threads</li>
+    </ul>
+  </li>
+  <li>进程是正在执行的程序。它是系统内的一个工作单元。<strong>程序是一个被动实体，进程是一个主动实体</strong>。(程序是放在硬盘中的二进制代码，只有被CPU加载进内存中才会变成进程)</li>
+  <li>进程需要资源来完成它的任务
+    <ul>
+      <li>CPU、内存、I/O、文件</li>
+      <li>初始化数据</li>
+    </ul>
+  </li>
+  <li>进程终止需要回收任何可重用资源</li>
+  <li>单线程进程有一个<strong>程序计数器</strong>（PC）指定下一条要执行的指令的位置
+    <ul>
+      <li>进程按顺序执行指令，一次一个，直到完成</li>
+    </ul>
+  </li>
+  <li>==<strong>多线程进程每个线程有一个程序计数器</strong>==</li>
+  <li>通常系统有很多进程，一些用户，一些操作系统在一个或多个 CPU 上<strong>并发</strong>运行
+    <ul>
+      <li>通过在进程/线程之间多路复用 CPU 实现并发</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="61-process-management-activities">6.1 Process Management Activities</h2>
+
+<p>The operating system is responsible for the following activities in connection with process management:</p>
+
+<ul>
+  <li>Creating and deleting both user and system processes</li>
+  <li><strong>Suspending</strong> and <strong>resuming</strong> processes</li>
+  <li>Providing mechanisms for process <strong>synchronization（同步）</strong></li>
+  <li>Providing mechanisms for process <strong>communication</strong></li>
+  <li>Providing mechanisms for <strong>deadlock</strong> handling  （死锁处理）</li>
+</ul>
+
+<p><strong>操作系统负责以下与进程管理相关的活动：</strong></p>
+
+<ul>
+  <li>创建和删除用户和系统进程</li>
+  <li>暂停和恢复进程</li>
+  <li>提供进程同步机制</li>
+  <li>提供进程通信机制</li>
+  <li>提供<strong>死锁处理</strong>机制</li>
+</ul>
+
+<h1 id="7-内存管理-memory-management">7. 内存管理 Memory Management</h1>
+
+<ul>
+  <li>All data in memory before and after processing</li>
+  <li>All instructions in memory in order to execute</li>
+  <li>Memory management determines what is in memory when
+    <ul>
+      <li>Optimizing CPU utilization and computer response to users</li>
+    </ul>
+  </li>
+  <li>Memory management activities
+    <ul>
+      <li>Keeping track of which parts of memory are currently being used and by whom</li>
+      <li>Deciding which processes (or parts thereof) and data to move into and out of memory</li>
+      <li>Allocating and deallocating memory space as needed</li>
+    </ul>
+  </li>
+  <li>处理前后内存中的所有数据</li>
+  <li>内存中的所有指令以执行</li>
+  <li>内存管理确定内存中的内容，当
+    <ul>
+      <li>优化 CPU 利用率和计算机对用户的响应</li>
+    </ul>
+  </li>
+  <li><strong>操作系统内存管理活动</strong>
+    <ul>
+      <li>跟踪内存的哪些部分当前正在使用以及由谁使用</li>
+      <li>决定将哪些进程（或其部分）和数据移入和移出内存</li>
+      <li>根据需要分配和解除分配内存空间</li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="8-存储管理-storage-management">8. 存储管理 Storage Management</h1>
+
+<ul>
+  <li>OS provides uniform, logical view of information storage
+    <ul>
+      <li><strong>Abstracts physical properties to logical storage unit - file</strong></li>
+      <li>Each medium is controlled by device (i.e., disk drive, tape drive)
+        <ul>
+          <li>Varying properties include access speed, capacity, data-transfer rate,access method (<strong>sequential or random</strong>)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>操作系统提供统一的、逻辑的信息存储视图
+    <ul>
+      <li>将物理属性抽象到逻辑存储单元 - 文件</li>
+      <li>每种介质都由设备控制（即磁盘驱动器、磁带驱动器）
+        <ul>
+          <li>不同的属性包括访问速度、容量、数据传输速率、访问方法（顺序或随机）</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="81-文件系统管理-file-system-management">8.1 文件系统管理 File-System management</h2>
+
+<ul>
+  <li>Files usually organized into directories</li>
+  <li>Access control on most systems to determine who can access what</li>
+  <li>OS activities include
+    <ul>
+      <li><strong>Creating</strong> and <strong>deleting</strong> files and directories</li>
+      <li><strong>Primitives</strong> to manipulate files and dirs</li>
+      <li><strong>Mapping</strong> files onto secondary storage</li>
+      <li>Backup files onto stable (<strong>non-volatile</strong>) storage media</li>
+    </ul>
+  </li>
+  <li>文件系统管理
+    <ul>
+      <li>通常将文件组织到目录中</li>
+      <li>大多数系统的访问控制以确定谁可以访问什么</li>
+      <li><strong>操作系统活动包括</strong>
+        <ul>
+          <li>创建和删除文件和目录</li>
+          <li>操作文件和目录的原语</li>
+          <li>将文件映射到辅助存储</li>
+          <li>将文件备份到稳定（非易失性）存储介质上</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="82-大容量存储器管理-mass-storage-management">8.2 大容量存储器管理 Mass-Storage Management</h2>
+
+<ul>
+  <li>Usually disks used to store data that does not fit in main memory or data that must be kept for a “<strong>long</strong>” period of time.</li>
+  <li>Proper management is of central importance</li>
+  <li>Entire speed of computer operation hinges on <strong>disk subsystem and its algorithms</strong></li>
+  <li>OS activities
+    <ul>
+      <li>Free-space management</li>
+      <li>Storage allocation</li>
+      <li><strong>Disk scheduling</strong>（硬盘的调度）</li>
+    </ul>
+  </li>
+  <li>Some storage need not be fast
+    <ul>
+      <li>Tertiary storage includes optical storage, magnetic tape</li>
+      <li>Still must be managed</li>
+      <li>Varies between WORM (write-once, read-many-times) and RW (readwrite)</li>
+    </ul>
+  </li>
+  <li>通常用于存储不适合主内存的数据或必须保留“长时间”的数据的磁盘。</li>
+  <li>适当的管理至关重要</li>
+  <li>计算机运行的整体速度取决于磁盘子系统及其算法</li>
+  <li><strong>操作系统负责有关硬盘管理的以下活动</strong>
+    <ul>
+      <li>空闲空间管理</li>
+      <li>存储空间分配</li>
+      <li>硬盘调度</li>
+    </ul>
+  </li>
+  <li>有些存储不需要很快
+    <ul>
+      <li>三级存储包括光存储、磁带</li>
+      <li>仍然必须管理</li>
+      <li>在 WORM（一次写入、多次读取）和 RW（读写）之间变化</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="83-高速缓存-caching">8.3 高速缓存 Caching</h2>
+
+<ul>
+  <li>Important principle, performed at <strong>many levels</strong> in a computer (in hardware, operating system, software)</li>
+  <li>Information in use copied <strong>from slower to faster storage temporarily</strong></li>
+  <li>Faster storage (cache) checked first to determine if information is there
+    <ul>
+      <li>If it is, information used directly from the cache (<strong>fast</strong>)</li>
+      <li>If not, data copied to cache and used there</li>
+    </ul>
+  </li>
+  <li>Cache smaller than storage being cached
+    <ul>
+      <li>Cache management <strong>important design problem</strong></li>
+      <li>Cache size and replacement policy</li>
+    </ul>
+  </li>
+  <li>重要原理，在计算机中的许多级别（硬件，操作系统，软件）中执行</li>
+  <li>使用中的信息从较慢的存储临时复制到较快的存储</li>
+  <li>首先检查更快的存储（缓存）以确定信息是否存在
+    <ul>
+      <li>如果是，则直接从缓存中使用的信息（快速）</li>
+      <li>如果没有，数据复制到缓存并在那里使用</li>
+    </ul>
+  </li>
+  <li>缓存小于外存（内存可以看作外存的高速缓存）
+    <ul>
+      <li>缓存管理重要设计问题</li>
+      <li>缓存大小和替换策略</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="performance-of-various-levels-of-storage">Performance of Various Levels of Storage</h3>
+
+<p>Movement between levels of storage hierarchy can be explicit or implicit</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/Chapter1-Introduction.assets/image-20230320231040142.png" alt="image-20230320231040142" /></p>
+
+<h3 id="migration-of-integer-a-from-disk-to-register">Migration of Integer A from Disk to Register</h3>
+
+<ul>
+  <li>Multitasking environments must be careful to use most recent value, no matter where it is stored in the storage hierarchy</li>
+</ul>
+
+<p><img src="/img/in-post/OperatingSystemNotes/Chapter1-Introduction.assets/image-20230320231208486.png" alt="image-20230320231208486" /></p>
+
+<ul>
+  <li>Multiprocessor environment must provide <strong>cache coherency</strong> in hardware such that all CPUs have the most recent value in their cache</li>
+  <li>Distributed environment situation even more complex
+    <ul>
+      <li>Several copies of a datum can exist</li>
+      <li>Various solutions covered in Chapter 17</li>
+    </ul>
+  </li>
+</ul>
+
+<p><strong>缓存同一性问题可以用写回法或写直达法解决</strong></p>
+
+<ul>
+  <li>多任务环境必须小心使用最新的值，无论它存储在存储层次结构中的哪个位置</li>
+  <li>
+    <p>多处理器环境必须在硬件中提供缓存一致性，以便所有 CPU 的缓存中都具有最新的值</p>
+  </li>
+  <li>分布式环境情况更加复杂
+    <ul>
+      <li>可以存在多个基准面副本</li>
+      <li>第17章涵盖的各种解决方案</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="84-io-subsystem">8.4 I/O Subsystem</h2>
+
+<ul>
+  <li>One purpose of OS is to <strong>hide peculiarities</strong> of hardware devices from the user</li>
+  <li>I/O subsystem responsible for
+    <ul>
+      <li>Memory management of I/O including <strong>buffering</strong> (storing data temporarily while it is being transferred), <strong>caching</strong> (storing parts of data in faster storage for performance), <strong>spooling</strong> (the overlapping of output of one job with input of other jobs)</li>
+      <li><strong>General device-driver interface</strong></li>
+      <li>Drivers for specific hardware devices</li>
+    </ul>
+  </li>
+  <li>操作系统的一个目的是向用户隐藏硬件设备的特性</li>
+  <li>负责 I/O 的子系统包括以下几个组件：
+    <ul>
+      <li>I/O 的内存管理，包括缓冲（在传输数据时临时存储数据）、缓存（将部分数据存储在更快的存储中以提高性能）、假脱机（一个作业的输出与其他作业的输入重叠）</li>
+      <li>通用设备驱动程序接口</li>
+      <li>特定硬件设备的驱动程序</li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="9-保护与安全-protection-and-security">9. 保护与安全 Protection and Security</h1>
+
+<ul>
+  <li>Protection – any mechanism for <strong>controlling access of processes or users to resources defined by the OS</strong></li>
+  <li>Security – defense of the system against internal and external attacks
+    <ul>
+      <li>Huge range, including denial-of-service, worms, viruses, identity theft, theft of service</li>
+    </ul>
+  </li>
+  <li>Systems generally first distinguish among users, to determine <strong>who can do what</strong>
+    <ul>
+      <li>User identities (user IDs, security IDs) include name and associated number, one per user</li>
+      <li>User ID then associated with all files, processes of that user to determine access control</li>
+      <li>Group identifier (group ID) allows set of users to be defined and controls managed, then also associated with each process, file</li>
+      <li>Privilege escalation allows user to change to effective ID with more rights</li>
+    </ul>
+  </li>
+  <li>保护 – 用于控制进程或用户对操作系统定义的资源的访问的任何机制</li>
+  <li>安全 – 防御系统免受内部和外部攻击
+    <ul>
+      <li>范围广泛，包括拒绝服务、蠕虫、病毒、身份盗用、服务盗窃</li>
+    </ul>
+  </li>
+  <li>系统通常首先区分用户，以确定谁可以做什么
+    <ul>
+      <li>用户身份（用户 ID、安全 ID）包括名称和关联号码，每个用户一个</li>
+      <li>用户ID然后与该用户的所有文件，进程相关联，以确定访问控制</li>
+      <li>组标识符（组ID）允许定义用户集并管理控件，然后还与每个进程，文件相关联</li>
+      <li>权限提升允许用户更改为具有更多权限的有效ID</li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="10-计算环境-computing-environments">10. 计算环境 Computing Environments</h1>
+
+<h2 id="101-传统计算">10.1 传统计算</h2>
+
+<ul>
+  <li>Traditional computer
+    <ul>
+      <li>Blurring over time</li>
+      <li>Office environment
+        <ul>
+          <li>PCs connected to a network, terminals attached to mainframe or minicomputers providing batch and timesharing</li>
+          <li>Now portals allowing networked and remote systems access to same resources</li>
+        </ul>
+      </li>
+      <li>Home networks</li>
+      <li>Used to be single system, then modems</li>
+      <li>Now firewalled, networked</li>
+    </ul>
+  </li>
+</ul>
+
+<p>传统计算机</p>
+
+<ul>
+  <li>随时间模糊</li>
+  <li>办公环境
+    <ul>
+      <li>连接到网络的PC，连接到大型机的终端或提供批量和分时功能的小型计算机</li>
+      <li>现在门户允许网络和远程系统访问相同的资源</li>
+    </ul>
+  </li>
+  <li>家庭网络</li>
+  <li>以前是单系统，然后是调制解调器</li>
+  <li>现在有防火墙，联网</li>
+</ul>
+
+<h2 id="102-移动计算">10.2 移动计算</h2>
+
+<h2 id="103-分布式计算">10.3 分布式计算</h2>
+
+<h2 id="104-客户机-服务器计算--client-server-computing">10.4 客户机-服务器计算  Client-Server Computing</h2>
+
+<ul>
+  <li>Client-Server Computing
+    <ul>
+      <li>Dumb terminals supplanted by smart PCs</li>
+      <li>Many systems now servers, responding to requests generated by clients
+        <ul>
+          <li>Compute-server <strong>provides an interface to client to request services (i.e. database)</strong></li>
+          <li>File-server provides interface for clients to store and retrieve files</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="/img/in-post/OperatingSystemNotes/Chapter1-Introduction.assets/image-20230320233915489.png" alt="image-20230320233915489" /></p>
+
+<p>客户端-服务器计算</p>
+
+<ul>
+  <li>被智能PC取代的哑终端</li>
+  <li>许多系统现在都是服务器，响应客户端生成的请求
+    <ul>
+      <li>计算服务器为客户端提供请求服务（即数据库）的接口</li>
+      <li>文件服务器为客户端提供存储和检索文件的接口</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="105-对等计算-peer-to-peer-computing">10.5 对等计算 Peer-to-Peer Computing</h2>
+
+<ul>
+  <li>Another model of distributed system</li>
+  <li><strong>P2P does not distinguish clients and servers</strong>
+    <ul>
+      <li>Instead all nodes are considered peers</li>
+      <li>May each act as client, server or both</li>
+      <li>Node must join P2P network
+        <ul>
+          <li>Registers its service with central lookup service on network, or</li>
+          <li>Broadcast request for service and respond to requests for service via discovery protocol</li>
+        </ul>
+      </li>
+      <li>Examples include Napster and Gnutella</li>
+    </ul>
+  </li>
+  <li>分布式系统的另一种模型</li>
+  <li>P2P不区分客户端和服务器
+    <ul>
+      <li>相反，所有节点都被视为对等节点</li>
+      <li>可以分别充当客户端、服务器或两者</li>
+      <li>节点必须加入P2P网络
+        <ul>
+          <li>向网络上的中央查找服务注册其服务，或</li>
+          <li>广播服务请求并通过发现协议响应服务请求</li>
+        </ul>
+      </li>
+      <li>例子包括Napster和Gnutella</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="106-web-based-computing">10.6 Web-Based Computing</h2>
+
+<ul>
+  <li>Web has become ubiquitous</li>
+  <li>PCs most prevalent devices</li>
+  <li>More devices becoming networked to allow web access</li>
+  <li>New category of devices to manage web traffic among similar servers: <strong>load balancers</strong></li>
+  <li>
+    <p>Use of operating systems like Windows 95, client-side, have evolved into Linux and Windows XP, which can be clients and servers</p>
+  </li>
+  <li>网络已经无处不在</li>
+  <li>个人电脑最流行的设备</li>
+  <li>更多设备联网以允许网络访问</li>
+  <li>用于管理类似服务器之间网络流量的新设备类别：负载平衡器</li>
+  <li>使用操作系统，如Windows 95，客户端，已经演变为Linux和Windows XP，可以是客户端和服务器</li>
+</ul>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2022/12/20/PipelineCPU/" data-toggle="tooltip" data-placement="top" title="流水线CPU设计与实现">
+                        Previous<br>
+                        <span>流水线CPU设计与实现</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2023/03/24/Ch2-Operating-System-Structures/" data-toggle="tooltip" data-placement="top" title="Chapter2 Operating-System Structures  ">
+                        Next<br>
+                        <span>Chapter2 Operating-System Structures  </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+
+                <!--   gitalk       -->
+                <div class="comment">
+                <div id="gitalk-container"></div>
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+                <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+                <script>
+                var gitalk = new Gitalk({
+                    id: location.pathname,
+                    clientID: '0db4b4c6d83c061f6b30',
+                    clientSecret: 'e1651c09f1a49b2b4a544cd584d3e8a55454a48a',
+                    repo: 'BlogComment',
+                    owner: 'jaredddddd',
+                    admin: ['jaredddddd'], 
+                    labels: ['Gitalk'],
+                })
+                gitalk.render('gitalk-container')
+                </script> 
+                </div>
+
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0036" 
+                    href="/archive/?tag=Computer-Organization"
+                    title="Computer-Organization"
+                    rel="21">Computer-Organization</a>
+        
+                <a data-sort="0018" 
+                    href="/archive/?tag=NOTES"
+                    title="NOTES"
+                    rel="39">NOTES</a>
+        
+                <a data-sort="0041" 
+                    href="/archive/?tag=Project"
+                    title="Project"
+                    rel="16">Project</a>
+        
+                <a data-sort="0042" 
+                    href="/archive/?tag=AI"
+                    title="AI"
+                    rel="15">AI</a>
+        
+                <a data-sort="0048" 
+                    href="/archive/?tag=OS"
+                    title="OS"
+                    rel="9">OS</a>
+        
+                <a data-sort="0052" 
+                    href="/archive/?tag=ML"
+                    title="ML"
+                    rel="5">ML</a>
+        
+                <a data-sort="0053" 
+                    href="/archive/?tag=PatternRecognition"
+                    title="PatternRecognition"
+                    rel="4">PatternRecognition</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Blog"
+                    title="Blog"
+                    rel="3">Blog</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Distributed-System"
+                    title="Distributed-System"
+                    rel="3">Distributed-System</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=ANN"
+                    title="ANN"
+                    rel="2">ANN</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CPU%E8%AE%BE%E8%AE%A1"
+                    title="CPU设计"
+                    rel="2">CPU设计</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CompilationPrinciple"
+                    title="CompilationPrinciple"
+                    rel="2">CompilationPrinciple</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     TeX: {
+       equationNumbers: {
+         autoNumber: "AMS"
+       }
+     },
+     SVG: {
+       scale: 90
+     },
+     tex2jax: {
+       inlineMath: [ ['$','$'] ],
+       displayMath: [ ['$$','$$'] ],
+       processEscapes: true,
+     }
+   });
+ </script>
+ <script type="text/javascript"
+         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+
+.post-container {
+    background: #fcfbfb; /* 背景颜色 */
+    border-radius: 25px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    padding-top: 40px; /* 特别增加顶部内边距 */
+    margin-top: 20px; /* 添加顶部外边距 */
+    /* margin-left: 40px; */
+    /* width: 900px; */
+}
+
+
+/* 在宽屏幕设备上应用特定样式 */
+@media (min-width: 1024px) {
+  .post-container {
+    margin-left: 40px; /* 向左扩展 */
+    width: 900px; /* 设置宽度 */
+  }
+  .side-catalog{
+    width: 250px;
+  }
+}
+
+.post-container:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* 当鼠标悬停时增加阴影效果 */
+}
+
+.side-catalog {
+    background: #ffffff; /* 背景颜色 */
+    border-radius: 15px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    margin-left: 10pt;
+    /* width: 200px; */
+
+}
+
+
+
+.catalog-container {
+    /* ... 其他样式 ... */
+    display: none; /* 默认不显示catalog */
+    transition: all 0.3s ease; /* 过渡效果 */
+    margin-top: 20px; /* 添加顶部外边距 */
+}
+
+</style>
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; LvKouKou Blog 2025
+                    <br>
+                    <!--  删掉了作者Hux Blog
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                    -->
+                    <!-- 不蒜子 -->
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                    您是Blog的第<span id="busuanzi_value_site_uv"></span>个小伙伴 </br>
+                     <span id="busuanzi_container_page_pv">
+                        本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<!-- 自己添加的 -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TNVD6PR5TQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNVD6PR5TQ');
+</script>
+<!-- 自己添加的 -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        // a = P.find('h1,h2,h3,h4,h5,h6');
+        a = P.find('h1,h2,h3,h4');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<!--鼠标点击爱心动画-->
+<script type="text/javascript" src="/js/love.js"></script>
+</body>
+
+</html>

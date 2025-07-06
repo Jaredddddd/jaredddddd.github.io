@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @LvKouKou 的个人博客，与你一起发现更大的世界 | 要做一个想环游世界的程序员">
+    <meta name="keywords" content="LvKouKou, jaredddddd, @jaredddddd, LvKouKou Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <link
+  rel="stylesheet"
+  href="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+/>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  defer="defer"
+></script>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  defer="defer"
+  onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
+></script>
+    <script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/mathtex-script-type.min.js"
+  defer="defer"
+></script>
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="Chapter5 Process scheduling - LvKouKou的博客 | LV Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="CPU调度即为短程调度，在本章中不特别区分进程和线程
+
+">
+    
+    <meta property="article:published_time" content=" 2023-04-15T00:00:00Z">
+    
+    
+    <meta property="article:author" content="LvKouKou">
+    
+    
+    <meta property="article:tag" content="OS">
+    
+    <meta property="article:tag" content="NOTES">
+    
+    
+    <meta property="og:image" content="https://jaredddddd.github.io/img/LVKOUKOU.jpg">
+    <meta property="og:url" content="https://jaredddddd.github.io/2023/04/15/OS-Ch5/">
+    <meta property="og:site_name" content="LvKouKou的博客 | LV Blog">
+
+    <title>Chapter5 Process scheduling - LvKouKou的博客 | LV Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jaredddddd.github.io/2023/04/15/OS-Ch5/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* 打字机效果的样式 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #666 }
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid #666;
+            white-space: nowrap;
+            word-wrap: break-word;
+            letter-spacing: .1em;
+            width: fit-content;
+            margin: 0 auto;
+            animation: 
+                typing 2s steps(40, end), /* 打字机效果, 3s 完成打字, 每步40个字符 */
+                blink-caret .75s step-end infinite; /* 光标闪烁效果, 0.75s 完成一次闪烁  */
+        }
+
+        /* 添加包装容器样式 */
+        .typing-wrapper {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%; /* 确保不会超出父容器 */
+        }
+
+        /* 添加响应式样式 */
+        @media (max-width: 768px) {
+        .typing-effect {
+            font-size: 16px; /* 在手机上可以适当调整字体大小 */
+            letter-spacing: normal; /* 在手机上减小字间距 */
+        }
+    }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptions = document.getElementsByClassName('subheading');
+            if (descriptions.length > 0) {
+                const description = descriptions[0];
+                const text = description.textContent;
+                description.innerHTML = `<span class="typing-wrapper"><span class="typing-effect">${text}</span></span>`;
+            }
+        });
+    </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">LvKouKou Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/resume-home/">Resume</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/roadtrip/">On The Road</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="Searching...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!--//添加评论系统gitalk-->
+<link rel="stylesheet" href="../../../../css/gitalk.css">
+<script src="../../../../js/gitalk.min.js"></script>
+
+<!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=OS" title="OS">OS</a>
+                        
+                        <a class="tag" href="/archive/?tag=NOTES" title="NOTES">NOTES</a>
+                        
+                    </div>
+                    <h1>Chapter5 Process scheduling</h1>
+                    
+                    <h2 class="subheading">第五章 进程调度（CPU调度）！</h2>
+                    <span class="meta">Posted by LvKouKou on April 15, 2023</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<p>CPU调度即为短程调度，在本章中不特别区分进程和线程</p>
+
+<h1 id="objectives">Objectives</h1>
+
+<ul>
+  <li>To introduce CPU scheduling, which is the basis for multiprogrammed operating systems</li>
+  <li>To describe various CPU-scheduling algorithms</li>
+  <li>To discuss evaluation criteria for selecting a CPU-scheduling algorithm for a particular system</li>
+  <li>
+    <p>To examine the scheduling algorithms of several operating systems</p>
+  </li>
+  <li>引入CPU调度，这是多程序操作系统的基础</li>
+  <li>描述各种CPU调度算法</li>
+  <li>讨论为特定系统选择CPU调度算法的评估标准</li>
+  <li>检查几种操作系统的调度算法</li>
+</ul>
+
+<h1 id="1-basic-concepts--基本概念">1. Basic Concepts  基本概念</h1>
+
+<h2 id="11-cpu-io-执行周期">1.1 CPU-I/O 执行周期</h2>
+
+<ul>
+  <li>Maximum CPU utilization obtained with multiprogramming</li>
+  <li>CPU–I/O Burst Cycle – Process execution consists of a cycle of CPU execution and I/O wait</li>
+  <li>CPU burst followed by I/O burst</li>
+  <li>
+    <p>CPU burst distribution is of main concern</p>
+  </li>
+  <li>通过多道并发获得的最大 CPU 利用率</li>
+  <li>CPU–I/O 突发周期 – 进程执行包括 CPU 执行和 I/O 等待周期</li>
+  <li>CPU 突发，然后是 I/O 突发</li>
+  <li>CPU 突发分布是主要关注点</li>
+</ul>
+
+<p>进程执行包括周期(cycle)进行 CPU执行和I/O 等待。进程在这两个状态之间不断交替。进程执行从CPU执行(CPU burst)开始，之后I/O执行(I/O burst);接着另一个CPU 执行，接着另一个I/O执行;等等。最终，最后的 CPU 执行通过系统请求结束，以便终止执行(图 5-1)。</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch5.assets/image-20230410231241450.png" alt="image-20230410231241450" /></p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch5.assets/image-20230410231327363.png" alt="image-20230410231327363" /></p>
+
+<p>由图可知，具有大量短 CPU执行和少量长CPU 执行。I/0 密集型程序通常具有大量短CPU 执行。CPU 密集型程序可能只有少量长 CPU 执行。对于选择合适的 CPU 调度算法，这种分布是很重要的。</p>
+
+<h2 id="12-cpu调度程序-cpu-scheduler">1.2 CPU调度程序 CPU Scheduler</h2>
+
+<p>Short-term scheduler selects from among the processes in ready queue, and allocates the CPU to one of them</p>
+
+<ul>
+  <li>Queue may be ordered in various ways</li>
+</ul>
+
+<p>CPU scheduling decisions may take place when a process:</p>
+
+<ol>
+  <li>Switches from running to waiting state</li>
+  <li>Switches from running to ready state</li>
+  <li>Switches from waiting to ready</li>
+  <li>Terminates</li>
+</ol>
+
+<p>Scheduling under 1 and 4 is nonpreemptive</p>
+
+<p>All other scheduling is preemptive</p>
+
+<ul>
+  <li>Consider access to shared data</li>
+  <li>Consider preemption while in kernel mode</li>
+  <li>Consider interrupts occurring during crucial OS activities</li>
+</ul>
+
+<p>短期调度程序从就绪队列中的进程中进行选择，并将CPU分配给其中一个</p>
+
+<ul>
+  <li>队列可以以各种方式排序</li>
+</ul>
+
+<p>CPU 调度决策可能发生在进程：</p>
+
+<p>1.从运行状态切换到等待状态
+2.从运行状态切换到就绪状态
+3.从等待切换到就绪
+4.终止</p>
+
+<p><strong>1 和 4 下的调度是非抢占式的</strong></p>
+
+<p>所有其他调度都是抢占式的</p>
+
+<ul>
+  <li>考虑访问共享数据</li>
+  <li>在内核模式下考虑抢占</li>
+  <li>考虑在关键操作系统活动期间发生的中断</li>
+</ul>
+
+<p>需要进行 CPU调度的情况可分为以下四种:</p>
+
+<ul>
+  <li>
+    <p>当一个进程从运行状态切换到等待状态时(例如，I/0 请求，或wait()调用以便等待一个子进程的终止)。</p>
+  </li>
+  <li>
+    <p>当一个进程从运行状态切换到就绪状态时(例如，当出现中断时)。</p>
+  </li>
+  <li>
+    <p>当一个进程从等待状态切换到就绪状态时(例如，I/O 完成)。</p>
+  </li>
+  <li>
+    <p>当一个进程终止时。</p>
+  </li>
+</ul>
+
+<p>对于第1种和第4种情况，除了调度没有选择。一个新进程(如果就绪队列有一个进程存在)必须被选择执行。不过，对于第2种和第3种情况，还是有选择的。
+如果调度只能发生在第1种和第4种情况下，则调度方案称为<strong>非抢占的(nnpreemptive)或协作的(cooperative);</strong>否则，调度方案称为<strong>抢占的(preemptive)</strong>。</p>
+
+<p>在<strong>非抢占调度</strong>下，日某个进程分配到CPU，该进程就会一直使用CPU，直到它终止或切换到等待状态</p>
+
+<h2 id="13-调度程序-dispatcher">1.3 调度程序 Dispatcher</h2>
+
+<p>Dispatcher module gives control of the CPU to the process selected by the short-term scheduler; this involves:</p>
+
+<ul>
+  <li>switching context</li>
+  <li>switching to user mode</li>
+  <li>jumping to the proper location in the user program to restart that program</li>
+</ul>
+
+<p><strong>Dispatch latency</strong> – time it takes for the dispatcher to stop one process and start another running</p>
+
+<p>调度程序模块将CPU控制权交给短期调度程序选择的进程;这涉及：</p>
+
+<ul>
+  <li>切换上下文</li>
+  <li>切换到用户模式</li>
+  <li>跳转到用户程序中的适当位置以重新启动该程序</li>
+</ul>
+
+<p>==<strong>调度延迟</strong> – 调度程序停止一个进程并开始另一个进程运行所需的时间==</p>
+
+<h1 id="2-调度准则-scheduling-criteria">2. 调度准则 Scheduling Criteria</h1>
+
+<ul>
+  <li>
+    <p><strong>CPU utilization（MAX）</strong> – keep the CPU as busy as possible</p>
+  </li>
+  <li>
+    <p><strong>Throughput(MAX)</strong> –  of processes that complete their execution per time unit</p>
+  </li>
+  <li>
+    <p><strong>Turnaround time(MIN)</strong> – amount of time to execute a particular process</p>
+  </li>
+  <li>
+    <p><strong>Waiting time(MIN)</strong> – amount of time a process has been waiting in the ready queue</p>
+  </li>
+  <li>
+    <p><strong>Response time(MIN)</strong> – amount of time it takes from when a request was submitted until the first response is produced, not output (for time-sharing environment)</p>
+  </li>
+  <li>CPU 利用率（MAX） – 使 CPU 尽可能保持繁忙</li>
+  <li>吞吐量（MAX） – 每个时间单位完成执行的进程</li>
+  <li>周转时间（MIN） – 从进程提交到进程完成的时间段</li>
+  <li>等待时间（MIN） – 进程在就绪队列中等待的时间量之和</li>
+  <li>响应时间（MIN） – 从提交请求到产生第一个响应所花费的时间，而不是输出（对于分时环境）</li>
+</ul>
+
+<h1 id="3-调度算法">3. 调度算法</h1>
+
+<h2 id="31-先到先服务调度-first--come-first-served-fcfs-scheduling">3.1 先到先服务调度 First- Come, First-Served (FCFS) Scheduling</h2>
+
+<p>最简单的CPU调度算法是先到先服务(First-Come First-Served，FCFS)调度算法。</p>
+
+<p>采用这种方案，先请求 CPU 的进程首先分配到 CPU。FCFS 策略可以通过 FIFO队列容易地实现。当一个进程进入就绪队列时，它的PCB 会被链接到队列尾部。当CPU空闲时，它会分配给位于队列头部的进程，并且这个运行进程从队列中移去。FCFS 调度代码维写简单并且理解容易。</p>
+
+<p>FCFS 策略的缺点是，平均等待时间往往很长。假设有如下一组进程，它们在时间0到达，CPU执行长度按ms计:</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch5.assets/image-20230410234042891.png" alt="image-20230410234042891" /></p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch5.assets/image-20230410234112536.png" alt="image-20230410234112536" /></p>
+
+<p>另外，考虑动态情况下的FCFS 调度性能。2假设有一个CPU密集型进程和多个I/O密集型进程。随着进程在系统中运行，可能发生如下情况:</p>
+
+<p>CPU 密集型进程得到 CPU，并使用它。在这段时间内，所有其他进程会处理完它们的 I/O，并转移到就绪队列来等待 CPU当这些进程在就绪队列中等待时，I/O设备空闲。最终，CPU 密集型进程完成CPU 执行并且移到I/O设备。所有I/0密集型进程，由于只有很短的 CPU 执行，故很快执行完并移回到I/O队列。这时，CPU空闲。之后，CPU密集型进程会移回到就绪队列并分配到CPU.再次，所有I/0进程会在就绪队列中等待 CPU 密集型进程的完成。<strong>由于所有其他进程都等待一个大进程释放CPU，故称之为</strong>==<strong>护航效果</strong>==(convoy effect)。与让较短进程先进行相比这会导致CPU和设备的使用率降低。</p>
+
+<p>也要注意，<strong>FCFS 调度算法是非抢占的</strong>。一旦 CPU 分配给了一个进程，该进程就会使用CPU直到释放CPU为止，即程序终止或是请求I/O。FCFS 算法对于分时系统(每个用户需要定时得到一定的CPU 时间)是特别麻烦的。允许一个进程使用CPU 过长将是个严重错误。</p>
+
+<h2 id="32-最短作业优先调度-shortest-job-first-sjf-scheduling">3.2 最短作业优先调度 Shortest-Job-First (SJF) Scheduling</h2>
+
+<ul>
+  <li>Associate with each process the length of its next CPU burst
+    <ul>
+      <li>Use these lengths to schedule the process with the shortest time</li>
+    </ul>
+  </li>
+  <li>SJF is optimal – gives minimum average waiting time for a given set of processes
+    <ul>
+      <li>The difficulty is knowing the length of the next CPU request</li>
+      <li>Could ask the user</li>
+    </ul>
+  </li>
+  <li>与每个进程关联其下一个 CPU 突发的长度
+    <ul>
+      <li>使用这些长度以最短的时间安排流程</li>
+    </ul>
+  </li>
+  <li>SJF 是最优的 – 为给定的一组过程提供最短的平均等待时间
+    <ul>
+      <li>困难在于知道下一个 CPU 请求的长度</li>
+      <li>可以询问用户</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<p>另一个不同的CPU调度方法是<strong>最短作业优先(Shortest-Job-First，SJF)调度算法</strong>。这个算法将每个进程与其下次 CPU 执行的长度关联起来。当CPU 变为空闲时，它会被赋给具有最短 CPU 执行的进程。<strong>如果两个进程具有同样长度的CPU 执行</strong>，那么可以由 FCFS 来处理。注意，一个更为恰当的表示是<strong>最短下次CPU 执行(shortest-next-CPU-burst)算法</strong>，这是因为<strong>调度取决于进程的下次 CPU 执行的长度，而不是其总的长度</strong>。我们使用 SJF 一词主要由于大多数教科书和有关人员都这么称呼这种类型的调度策略。作为一个SJF 调度的例子，假设有如下一组进程，CPU 执行长度以ms计</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch5.assets/image-20230410234551544.png" alt="image-20230410234551544" /></p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch5.assets/image-20230410234606465.png" alt="image-20230410234606465" /></p>
+
+<p><strong>可以证明 SJF 调度算法是最优的</strong>。这是因为对于给定的一组进程，SJF 算法的平均等待时间最小。通过将短进程移到长进程之前，短进程的等待时间减少大于长进程的等待时间增加。因而，平均等待时间减少。</p>
+
+<p>SJF 算法的真正困难是如何知道下次 CPU 执行的长度。对于批处理系统的长期(或作业)调度，可以将用户提交作业时指定的进程时限作为长度。在这种情况下，用户有意精确估计进程时间，这是因为低值可能意味着更快的响应(过小的值会引起时限超出错误，进而需要重新提交)。<strong>SJF 调度经常用于长期调度</strong>。</p>
+
+<p><strong>虽然SJF 算法是最优的</strong>，但是它不能在短期CPU 调度级别上加以实现，因为没有办法知道下次 CPU执行的长度。一种方法是试图近似 SJF 度。虽然不知道下一个CPU执行的长度，但是可以预测它。可以认为下一个 CPU 执行的长度与以前的相似。因此，通过计算下一个CPU执行长度的近似值，可以选择具有预测最短 CPU 执行的进程来运行。</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch5.assets/image-20230410234856943.png" alt="image-20230410234856943" /></p>
+
+<p>SJF 算法可以是<strong>抢占的或非抢占的</strong>。当一个新进程到达就绪队列而以前进程正在执行时，就需要选择了。新进程的下次CPU执行，与当前运行进程的尚未完成的CPU执行相比，可能还要小。</p>
+
+<ul>
+  <li>
+    <p>抢占 SJF 算法会抢占当前运行进程，</p>
+  </li>
+  <li>
+    <p>非抢占 SJF 算法会允许当前运行进程以先完成CPU执行。</p>
+  </li>
+</ul>
+
+<p>抢占SJF 调度有时称为<strong>最短剩余时间优先(shortest-remaining-timefirst)调度</strong>。</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch5.assets/image-20230410234907380.png" alt="image-20230410234907380" /></p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch5.assets/image-20230410234916894.png" alt="image-20230410234916894" /></p>
+
+<h2 id="33-优先级调度-priority-scheduling">3.3 优先级调度 Priority Scheduling</h2>
+
+<p>A priority number (integer) is associated with each process</p>
+
+<p>The CPU is allocated to the process with the highest priority (smallest integer = highest priority)</p>
+
+<ul>
+  <li>Preemptive</li>
+  <li>Nonpreemptive</li>
+</ul>
+
+<p>SJF is priority scheduling where priority is the inverse of predicted next CPU burst time</p>
+
+<p>Problem =Starvation – low priority processes may never execute</p>
+
+<p>Solution = Aging – as time progresses increase the priority of the process</p>
+
+<p>优先级数字（整数）与每个进程相关联</p>
+
+<p>CPU 分配给具有最高优先级的进程（最小整数 = 最高优先级）</p>
+
+<ul>
+  <li>
+    <p>抢占的</p>
+  </li>
+  <li>
+    <p>非抢占的</p>
+  </li>
+</ul>
+
+<p>SJF 是优先级调度，其中优先级是预测的下一个 CPU 突发时间的倒数</p>
+
+<p>问题 =饥饿 – 低优先级进程可能永远不会执行</p>
+
+<p>解决方案 = 老化 – 随着时间的推移，流程的优先级会提高</p>
+
+<hr />
+
+<p>SJF算法是通用优先级调度(priority-scheduling)算法的一个特例。每个进程都有一个优先级与其关联，而具有最高优先级的进程会分配到 CPU。具有相同优先级的进程按 FCFS顺序调度。SJF 算法是一个简单的优先级算法，其优先级(p) 为下次 (预测的)CPU 执行的倒数。CPU 执行越长，则优先级越小;反之亦然。</p>
+
+<p>注意，我们按照高优先级和低优先级讨论调度。优先级通常为固定区间的数字，如0-7或0~4095。不过，对于0表示最高还是最低的优先级没有定论。有的系统用低数字表示低优先级，其他用低数字表示高优先级。这种差异可以导致混淆。<strong>本书用低数字表示高优先级</strong>。</p>
+
+<p>作为例子，假设有如下一组进程，它们在时间0按顺序 P，P2，·，P;到达，其CPU执行时间以ms计:</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch5.assets/image-20230410235355723.png" alt="image-20230410235355723" /></p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch5.assets/image-20230410235408409.png" alt="image-20230410235408409" /></p>
+
+<p>优先调度可以是抢占的或非抢占的。当一个进程到达就绪队列时，比较它的优先级与当前运行进程的优先级。如果新到达进程的优先级高于当前运行进程的优先级，那么抢占优先级调度算法就会抢占 CPU。非抢占优先级调度算法只是将新的进程加到就绪队列的头部。</p>
+
+<p>优先级调度算法的一个主要问题是<strong>无穷阻塞(indefinite blocking)或饥饿(starvation)</strong>。就绪运行但是等待 CPU的进程可以认为是阻塞的。优先级调度算法可让某个低优先级进程无穷等待CPU。对于一个超载的计算机系统，稳定的更高优先级的进程流可以阻止低优先级的进程获得 CPU。一般来说，有两种情况会发生。要么进程最终会运行(在系统最后为轻负荷时，如星期日凌晨2点)，要么系统最终崩溃并失去所有未完成的低优先级进程。(据说，在1973年关闭MIT的IBM 7094时，发现有一个低优先级进早在1967年就已提交但是一直未能运行。)
+低优先级进程的无穷等待问题的解决方案之一是<strong>老化(aging)</strong>。老化逐渐增加在系统中等待很长时间的进程的优先级。例如，如果优先级为从 127(低)到0(高)，那可以每15分钟递减等待进程的优先级的值。最终初始优先级值为 127 的进程会有系统内最高的优先级，进而能够执行。事实上，不会超过 32小时，优先级为127 的进程会老化为优先级为0的进程。</p>
+
+<h2 id="34-轮转调度-round-robin-rr">3.4 轮转调度 Round Robin (RR)</h2>
+
+<p>轮转(Round-Robin，RR)调度算法是专门<strong>为分时系统设计</strong>的。它类似于FCFS 调度但是增加了抢占以切换进程。将一个较小时间单元定义为时间量 (time quantum)或时间片(time slice)。时间片的大小通常为10~100s。就绪队列作为循环队列。CPU调度程序循环整个就绪队列，为每个进程分配不超过一个时间片的 CPU。
+为了实现 RR 调度，我们再次将就绪队列视为进程的 FIFO 队列。新进程添加到就绪队列的尾部。CPU 调度程序从就绪队列中选择第一个进程，将定时器设置在一个时间片后中断，最后分派这个进程。
+接下来，有两种情况可能发生。</p>
+
+<ul>
+  <li>
+    <p>进程可能只需少于时间片的 CPU执行。对于这种情况进程本身会自动释放 CPU。调度程序接着处理就绪队列的下一个进程。</p>
+  </li>
+  <li>
+    <p>否则，如果当前运行进程的 CPU 执行大于一个时间片，那么定时器会中断，进而中断操作系统。然后，进行上下文切换，再将进程加到就绪队列的尾部，接着 CPU 调度程序会选择就绪队列内的下一个进程。</p>
+  </li>
+</ul>
+
+<p>在RR调度算法中，<strong>没有进程被连续分配超过一个时间片的CPU(除非它是唯一可运行的进程)</strong>。如果进程的CPU 执行超过一个时间片，那么该进程会被抢占，并被放回到就绪队列。因此，<strong>RR 调度算法是抢占的</strong>。</p>
+
+<p>如果就绪队列有n个进程，并且时间片为q，那么每个进程会得到1/n的CPU 时间，而且每次分得的时间不超过q个时间单元。每个进程等待获得下一个CPU 时间片的时间不会超过(n-1)q 个时间单元。例如，如果有 5个进程，并且时间片为20ms，那么每个进程每100ms会得到不超过20ms的时间。</p>
+
+<p><strong>RR 算法的性能很大程度取决于时间片的大小</strong>:</p>
+
+<ul>
+  <li>
+    <p>在一种极端情况下，如果时间片很大,那么RR算法与FCFS算法一样。</p>
+  </li>
+  <li>
+    <p>相反，如果时间片很小(如1ms)，那么RR算法可以导致大量的上下文切换。</p>
+  </li>
+</ul>
+
+<p>例如，假设我们只有一个需要 10 个时间单元的进程。如果时间片为 12个时间单元，那么进程在一个时间片不到就能完成，而且没有额外开销。如果时间片为 6个时间单元，那么进程需要 2 个时间片，并且还有一个上下文切换。如果时间片为 1个时间单元，那么就会有9个上下文切换，相应地使进程执行更慢(图 5-4)。</p>
+
+<p><strong>因此，我们希望时间片远大于上下文切换时间。</strong></p>
+
+<hr />
+
+<p>Each process gets a small unit of CPU time (time quantum q), usually 10-100 milliseconds. After this time has elapsed, the process is preempted and added to the end of the ready queue.</p>
+
+<p>If there are n processes in the ready queue and the time quantum is q, then each process gets 1/n of the CPU time in chunks of at most q time units at once. No process waits more
+than (n-1)q time units.</p>
+
+<p>Timer interrupts every quantum to schedule next process Performance</p>
+
+<ul>
+  <li>
+    <p>q large -&gt; FIFO</p>
+  </li>
+  <li>
+    <p>q small -&gt; q must be large with respect to context switch,</p>
+  </li>
+  <li>
+    <p>otherwise overhead is too high</p>
+  </li>
+</ul>
+
+<p>每个进程获得一个小单位的 CPU 时间（时间量子 q），通常为 10-100 毫秒。经过此时间后，进程将被抢占并添加到就绪队列的末尾。</p>
+
+<p>如果就绪队列中有 n 个进程，并且时间量程为 q，则每个进程一次获得 1/n 的 CPU 时间，以最多 q 个时间单位的块为单位。没有进程等待比 （n-1）q 多的时间单位。</p>
+
+<p>计时器中断每个量程以安排下一个进程性能</p>
+
+<ul>
+  <li>
+    <p>q 大 -&gt; 先进先出</p>
+  </li>
+  <li>
+    <p>q 小 -&gt; q 在上下文切换方面必须很大，</p>
+  </li>
+  <li>
+    <p>否则开销太高</p>
+  </li>
+</ul>
+
+<h2 id="35-多级队列调度-multilevel-queue">3.5 多级队列调度 Multilevel Queue</h2>
+
+<p>Ready queue is partitioned into separate queues, eg:</p>
+
+<ul>
+  <li>foreground (interactive)</li>
+  <li>background (batch)</li>
+</ul>
+
+<p>Process permanently in a given queue</p>
+
+<p>Each queue has its own scheduling algorithm:</p>
+
+<ul>
+  <li>foreground – RR</li>
+  <li>background – FCFS</li>
+</ul>
+
+<p>Scheduling must be done between the queues:</p>
+
+<ul>
+  <li>Fixed priority scheduling; (i.e., serve all from foreground then from background). Possibility of starvation.</li>
+  <li>Time slice – each queue gets a certain amount of CPU time which it can schedule amongst its processes; i.e., 80% to foreground in RR</li>
+  <li>20% to background in FCFS</li>
+</ul>
+
+<p>就绪队列被分区为单独的队列，例如：</p>
+
+<ul>
+  <li>前台进程（交互式）</li>
+  <li>后台进程（批处理）</li>
+</ul>
+
+<p>在给定队列中永久处理</p>
+
+<p>每个队列都有自己的调度算法：</p>
+
+<ul>
+  <li>前台进程 – RR</li>
+  <li>后台进程 - FCFS</li>
+</ul>
+
+<p>必须在队列之间完成调度：</p>
+
+<ul>
+  <li>固定优先级调度;（即，从前台进程然后从后台进程服务所有内容）。饥饿的可能性。</li>
+  <li>时间片 – 每个队列都有一定的 CPU 时间，它可以在其进程中调度;即，RR 中的前景为 80%</li>
+  <li>20%的背景在FCFS中</li>
+</ul>
+
+<h2 id="36-多级反馈队列调度-multilevel-feedback-queue">3.6 多级反馈队列调度 Multilevel Feedback Queue</h2>
+
+<p>A process can move between the various queues; aging can be implemented this way</p>
+
+<p>Multilevel-feedback-queue scheduler defined by the following parameters:</p>
+
+<ul>
+  <li>number of queues</li>
+  <li>scheduling algorithms for each queue</li>
+  <li>method used to determine when to upgrade a process</li>
+  <li>method used to determine when to demote a process</li>
+  <li>method used to determine which queue a process will enter when that process needs service</li>
+</ul>
+
+<p>进程可以在各个队列之间移动;老化可以通过这种方式实现</p>
+
+<p>由以下参数定义的多级反馈队列调度程序：</p>
+
+<ul>
+  <li>队列数量</li>
+  <li>每个队列的调度算法</li>
+  <li>用于确定何时升级进程的方法</li>
+  <li>用于确定何时降级进程的方法</li>
+  <li>用于确定进程在需要服务时将进入哪个队列的方法</li>
+</ul>
+
+<hr />
+
+<p>多级反馈队列(multilevel feedback queue)调度算法<strong>允许进程在队列之间迁移</strong>。这种想法是，根据不同CPU 执行的特点来区分进程。<strong>如果进程使用过多的 CPU时间，那么它会被移到更低的优先级队列</strong>。<strong>这种方案将 I/O 密集型和交互进程放在更高优先级队列上</strong>。此外，<strong>在较低优先级队列中等待过长的进程会被移到更高优先级队列。这种形式的老化阻止饥饿的发生。</strong></p>
+
+<p>通常，多级反馈队列调度程序可由下列参数来定义:</p>
+
+<ul>
+  <li>队列数量。</li>
+  <li>每个队列的调度算法。</li>
+  <li>用以确定何时升级到更高优先级队列的方法</li>
+  <li>用以确定何时降级到更低优先级队列的方法。</li>
+  <li>用以确定进程在需要服务时将会进人哪个队列的方法。</li>
+</ul>
+
+<p>多级反馈队列调度程序的定义使其成为<strong>最通用</strong>的CPU调度算法。通过配置，它能适应所设计的特定系统。遗憾的是，由于需要一些方法来选择参数以定义最佳的调度程序，所以它也是最复杂的算法。</p>
+
+<h1 id="4-线程调度-thread-scheduling">4. 线程调度 Thread Scheduling</h1>
+
+<p>第4章为进程模型引人了线程，还比较了用户级(user-level)和内核级(kernel-level)的线程。在支持线程的操作系统上，<strong>内核级线程(而不是进程)才是操作系统所调度的。用户级线程是由线程库来管理的，而内核并不知道它们</strong>。<strong>用户级线程为了运行在CPU上最终应映射到相关的内核级线程，但是这种映射可能不是直接的，可能采用轻量级进程(LWP)</strong>。本节探讨有关用户级和内核级线程的调度，并提供 Pthreads 调度的具体实例。</p>
+
+<p>LWP为用户级线程和内核级线程之间的中间层。</p>
+
+<h2 id="41-竞争范围">4.1 竞争范围</h2>
+
+<p>用户级和内核级线程之间的一个区别在于它们是如何调度的。</p>
+
+<p><strong>对于实现多对一(4.3.1节)和多对多(4.3.3 节)模型的系统线库会调度用户级线程，以便在可用LWP上运行。这种方案称为进程竞争范围(Process-Contention Scope，PCS)</strong>，因为竞争CPU是发生在同一进程的线程之间。(当我们说线程库将用户线程调度到可用LWP 时，并不意味着线程真实运行在一个CPU上。这会需要操作系统调度内核线程到物理CPU。为了决定哪个内核级线程调度到一个处理器上，<strong>内核采用系统竞争范围 (System-Contention Scope，SCS)</strong>。采用SCS调度来竞争 CPU，发生在系统内的所有线程之间。采用一对一模型(4.3.2节)的系统，如Windows、Linux 和Solaris，只采用SCS调度。
+通常情况下，PCS 采用优先级调度，即调度程序选择运行具有最高优先级的、可运行的线程。用户级线程的优先级是由程序员设置的，并不是由线程库调整的，尽管有些线程库可能允许程序员改变线程的优先级。重要的是，要注意到 PCS 通常允许一个更高优先级的线程来抢占当前运行的线程:不过，在具有相同优先级的线程之间，没有时间分片的保证(5.3.4 节)。</p>
+
+<hr />
+
+<ul>
+  <li>Distinction between user-level and kernel-level threads</li>
+  <li>When threads supported, threads scheduled, not processes</li>
+  <li>Many-to-one and many-to-many models, thread library schedules user-level threads to run on LWP
+    <ul>
+      <li>Known as <strong>process-contention scope (PCS)</strong> since scheduling competition is within the process</li>
+      <li>Typically done via priority set by programmer</li>
+    </ul>
+  </li>
+  <li>
+    <p>Kernel thread scheduled onto available CPU is <strong>system-contention scope (SCS)</strong> – competition among all threads in system</p>
+  </li>
+  <li>区分用户级和内核级线程</li>
+  <li>当支持线程时，调度线程，而不是进程</li>
+  <li>多对一和多对多模型，线程库调度用户级线程在 LWP 上运行
+    <ul>
+      <li>称为进程争用范围 （PCS），因为调度竞争在进程内</li>
+      <li>通常通过程序员设置的优先级来完成</li>
+    </ul>
+  </li>
+  <li>调度到可用 CPU 的内核线程是系统争用范围 （SCS） – 系统中所有线程之间的竞争</li>
+</ul>
+
+<hr />
+
+<h2 id="42-pthreads调度-pthread-scheduling">4.2 Pthreads调度 Pthread Scheduling</h2>
+
+<p>API allows specifying either PCS or SCS during thread creation</p>
+
+<ul>
+  <li>PTHREAD_SCOPE_PROCESS schedules threads using PCS scheduling</li>
+  <li>PTHREAD_SCOPE_SYSTEM schedules threads using SCS scheduling</li>
+</ul>
+
+<p>Can be limited by OS – Linux and Mac OS X only allow PTHREAD_SCOPE_SYSTEM</p>
+
+<h1 id="multiple-processor-scheduling">Multiple-Processor Scheduling</h1>
+
+<p>（了解即可）</p>
+
+<ul>
+  <li>
+    <p>CPU scheduling more complex when multiple CPUs are available</p>
+  </li>
+  <li>
+    <p>Homogeneous processors within a multiprocessor</p>
+  </li>
+  <li>
+    <p>Asymmetric multiprocessing – only one processor accesses the system data structures, alleviating the need for data sharing</p>
+  </li>
+  <li>Symmetric multiprocessing (SMP) – each processor is selfscheduling, all processes in common ready queue, or each has its own private queue of ready processes
+    <ul>
+      <li>Currently, most common</li>
+    </ul>
+  </li>
+  <li>Processor affinity – process has affinity for processor on which it is currently running
+    <ul>
+      <li>soft affinity</li>
+      <li>hard affinity</li>
+      <li>Variations including processor sets</li>
+    </ul>
+  </li>
+  <li>
+    <p>当多个 CPU 可用时，CPU 调度更复杂</p>
+  </li>
+  <li>
+    <p>多处理器内的同构处理器</p>
+  </li>
+  <li>
+    <p>非对称多处理 – 只有一个处理器访问系统数据结构，减轻了数据共享的需求</p>
+  </li>
+  <li>对称多处理 （SMP） – 每个处理器都是自调度的，所有进程都在公共就绪队列中，或者每个进程都有自己的就绪进程专用队列
+    <ul>
+      <li>目前最常见的</li>
+    </ul>
+  </li>
+  <li>处理器关联 – 进程与当前正在运行的处理器具有关联
+    <ul>
+      <li>软亲和力</li>
+      <li>硬亲和力</li>
+      <li>包括处理器组在内的变体</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<p>ch5 的 PPT 最后有一个课堂题比较经典可以看看。</p>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2023/04/10/OS-Ch4/" data-toggle="tooltip" data-placement="top" title="Chapter4 Threads  ">
+                        Previous<br>
+                        <span>Chapter4 Threads  </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2023/04/19/AI-Chess/" data-toggle="tooltip" data-placement="top" title="Alpha-beta剪枝算法设计一个中国象棋博弈程序">
+                        Next<br>
+                        <span>Alpha-beta剪枝算法设计一个中国象棋博弈程序</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+
+                <!--   gitalk       -->
+                <div class="comment">
+                <div id="gitalk-container"></div>
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+                <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+                <script>
+                var gitalk = new Gitalk({
+                    id: location.pathname,
+                    clientID: '0db4b4c6d83c061f6b30',
+                    clientSecret: 'e1651c09f1a49b2b4a544cd584d3e8a55454a48a',
+                    repo: 'BlogComment',
+                    owner: 'jaredddddd',
+                    admin: ['jaredddddd'], 
+                    labels: ['Gitalk'],
+                })
+                gitalk.render('gitalk-container')
+                </script> 
+                </div>
+
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0036" 
+                    href="/archive/?tag=Computer-Organization"
+                    title="Computer-Organization"
+                    rel="21">Computer-Organization</a>
+        
+                <a data-sort="0018" 
+                    href="/archive/?tag=NOTES"
+                    title="NOTES"
+                    rel="39">NOTES</a>
+        
+                <a data-sort="0041" 
+                    href="/archive/?tag=Project"
+                    title="Project"
+                    rel="16">Project</a>
+        
+                <a data-sort="0042" 
+                    href="/archive/?tag=AI"
+                    title="AI"
+                    rel="15">AI</a>
+        
+                <a data-sort="0048" 
+                    href="/archive/?tag=OS"
+                    title="OS"
+                    rel="9">OS</a>
+        
+                <a data-sort="0052" 
+                    href="/archive/?tag=ML"
+                    title="ML"
+                    rel="5">ML</a>
+        
+                <a data-sort="0053" 
+                    href="/archive/?tag=PatternRecognition"
+                    title="PatternRecognition"
+                    rel="4">PatternRecognition</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Blog"
+                    title="Blog"
+                    rel="3">Blog</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Distributed-System"
+                    title="Distributed-System"
+                    rel="3">Distributed-System</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=ANN"
+                    title="ANN"
+                    rel="2">ANN</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CPU%E8%AE%BE%E8%AE%A1"
+                    title="CPU设计"
+                    rel="2">CPU设计</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CompilationPrinciple"
+                    title="CompilationPrinciple"
+                    rel="2">CompilationPrinciple</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     TeX: {
+       equationNumbers: {
+         autoNumber: "AMS"
+       }
+     },
+     SVG: {
+       scale: 90
+     },
+     tex2jax: {
+       inlineMath: [ ['$','$'] ],
+       displayMath: [ ['$$','$$'] ],
+       processEscapes: true,
+     }
+   });
+ </script>
+ <script type="text/javascript"
+         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+
+.post-container {
+    background: #fcfbfb; /* 背景颜色 */
+    border-radius: 25px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    padding-top: 40px; /* 特别增加顶部内边距 */
+    margin-top: 20px; /* 添加顶部外边距 */
+    /* margin-left: 40px; */
+    /* width: 900px; */
+}
+
+
+/* 在宽屏幕设备上应用特定样式 */
+@media (min-width: 1024px) {
+  .post-container {
+    margin-left: 40px; /* 向左扩展 */
+    width: 900px; /* 设置宽度 */
+  }
+  .side-catalog{
+    width: 250px;
+  }
+}
+
+.post-container:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* 当鼠标悬停时增加阴影效果 */
+}
+
+.side-catalog {
+    background: #ffffff; /* 背景颜色 */
+    border-radius: 15px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    margin-left: 10pt;
+    /* width: 200px; */
+
+}
+
+
+
+.catalog-container {
+    /* ... 其他样式 ... */
+    display: none; /* 默认不显示catalog */
+    transition: all 0.3s ease; /* 过渡效果 */
+    margin-top: 20px; /* 添加顶部外边距 */
+}
+
+</style>
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; LvKouKou Blog 2025
+                    <br>
+                    <!--  删掉了作者Hux Blog
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                    -->
+                    <!-- 不蒜子 -->
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                    您是Blog的第<span id="busuanzi_value_site_uv"></span>个小伙伴 </br>
+                     <span id="busuanzi_container_page_pv">
+                        本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<!-- 自己添加的 -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TNVD6PR5TQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNVD6PR5TQ');
+</script>
+<!-- 自己添加的 -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        // a = P.find('h1,h2,h3,h4,h5,h6');
+        a = P.find('h1,h2,h3,h4');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<!--鼠标点击爱心动画-->
+<script type="text/javascript" src="/js/love.js"></script>
+</body>
+
+</html>

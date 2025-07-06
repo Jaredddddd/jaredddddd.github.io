@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @LvKouKou 的个人博客，与你一起发现更大的世界 | 要做一个想环游世界的程序员">
+    <meta name="keywords" content="LvKouKou, jaredddddd, @jaredddddd, LvKouKou Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <link
+  rel="stylesheet"
+  href="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+/>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  defer="defer"
+></script>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  defer="defer"
+  onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
+></script>
+    <script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/mathtex-script-type.min.js"
+  defer="defer"
+></script>
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="分布式系统文件系统设计 - LvKouKou的博客 | LV Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="
+     
+    
+    
+    
+    
+    
+        Distributed Systems
+    
+    
+    
+        Final Project  
+        分布式文件系统
+    
+    
+    
+        Student ID: 21307381 &nbsp;&nbsp;
+        Student Name: LJW...">
+    
+    <meta property="article:published_time" content=" 2023-12-17T00:00:00Z">
+    
+    
+    <meta property="article:author" content="LvKouKou">
+    
+    
+    <meta property="article:tag" content="Distributed-System">
+    
+    <meta property="article:tag" content="Project">
+    
+    
+    <meta property="og:image" content="https://jaredddddd.github.io/img/LVKOUKOU.jpg">
+    <meta property="og:url" content="https://jaredddddd.github.io/2023/12/17/DSFileSystem/">
+    <meta property="og:site_name" content="LvKouKou的博客 | LV Blog">
+
+    <title>分布式系统文件系统设计 - LvKouKou的博客 | LV Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jaredddddd.github.io/2023/12/17/DSFileSystem/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* 打字机效果的样式 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #666 }
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid #666;
+            white-space: nowrap;
+            word-wrap: break-word;
+            letter-spacing: .1em;
+            width: fit-content;
+            margin: 0 auto;
+            animation: 
+                typing 2s steps(40, end), /* 打字机效果, 3s 完成打字, 每步40个字符 */
+                blink-caret .75s step-end infinite; /* 光标闪烁效果, 0.75s 完成一次闪烁  */
+        }
+
+        /* 添加包装容器样式 */
+        .typing-wrapper {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%; /* 确保不会超出父容器 */
+        }
+
+        /* 添加响应式样式 */
+        @media (max-width: 768px) {
+        .typing-effect {
+            font-size: 16px; /* 在手机上可以适当调整字体大小 */
+            letter-spacing: normal; /* 在手机上减小字间距 */
+        }
+    }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptions = document.getElementsByClassName('subheading');
+            if (descriptions.length > 0) {
+                const description = descriptions[0];
+                const text = description.textContent;
+                description.innerHTML = `<span class="typing-wrapper"><span class="typing-effect">${text}</span></span>`;
+            }
+        });
+    </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">LvKouKou Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/resume-home/">Resume</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/roadtrip/">On The Road</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="Searching...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!--//添加评论系统gitalk-->
+<link rel="stylesheet" href="../../../../css/gitalk.css">
+<script src="../../../../js/gitalk.min.js"></script>
+
+<!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=Distributed-System" title="Distributed-System">Distributed-System</a>
+                        
+                        <a class="tag" href="/archive/?tag=Project" title="Project">Project</a>
+                        
+                    </div>
+                    <h1>分布式系统文件系统设计</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by LvKouKou on December 17, 2023</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<div align="center" style="page-break-after: always;">
+     <br /><br />
+    <br /><br />
+    <br /><br />
+    <img src="/img/in-post/DSFileSystem/image-20230327104636895-1679885221095.png" alt="image-20230327104636895-1679885221095" style="zoom:150%;" />
+    <br /><br /><br /><br />
+    <font size="20" face="Impact">
+        Distributed Systems
+    </font>
+    <br /><br /><br />
+    <font size="6" face="Arial Black">
+        Final Project <br /> 
+        分布式文件系统
+    </font>
+    <br /><br /><br />
+    <font size="5" face="华文隶书">
+        Student ID: 21307381 &nbsp;&nbsp;
+        Student Name: LJW <br />
+        <br />
+        Date: 2023.12.17
+    </font>
+    <br /><br />
+    <font size="5" face="华文隶书">
+        Lectured by: Pengfei Chen<br />
+       	Distributed Systems Course<br />
+        Sun Yat-sen University<br />
+    </font>
+    <br /><br />
+    <br /><br />
+    <br /><br />
+</div>
+
+<h1 id="题目">题目</h1>
+
+<p>设计⼀个<strong>分布式文件系统</strong>。该⽂件系统可以是 client-server 架构，也可以是 P2P ⾮集中式架构。 要求⽂件系统具有基本的访问、打开、删除、缓存等功能，同时具有⼀致性、⽀持多⽤户特点。 在设计过程中能够体现在分布式课程中学习到的⼀些机制或者思想，例如 Paxos 共识、缓存更新机制、访问控制机制、并⾏扩展等。 实现语⾔不限， 要求提交代码和实验报告，实验报告模板稍后在课程⽹站下载，提交时间为考试之后⼀周内。</p>
+
+<h2 id="题目要求">题目要求：</h2>
+
+<p>基本要求：
+（1）、编程语言不限，选择自己熟悉的语⾔，但是推荐用Python或者 Java 语言实现；
+（2）、文件系统中不同节点之间的<strong>通信方式采用 RPC 模式</strong>，可选择 Python 版本的 RPC、gRPC 等；
+（3）、文件系统具备基本的文件操作模型包括：<strong>创建、删除、访问</strong>等功能；
+（4）、作为文件系统的<strong>客户端要求具有缓存功能</strong>即⽂件信息⾸先在本地存储搜索，作为缓存的介质可以是内存也可以是磁盘⽂件；
+（5）、为了保证数据的可用性和文件系统性能，数据需要<strong>创建多个副本</strong>，且在正常情况下，多个副本不在同⼀物理机器，<strong>多个副本之间能够保持⼀致性</strong>（可选择最终⼀致性即延迟⼀致性也可以选择瞬时⼀致性即同时写）；
+（6）、⽀持<strong>多用户</strong>即多个客户端，⽂件可以并行读写（即包含文件锁）；
+（7）、对于上述基本功能，可以在本地测试，利⽤多个进程模拟不同的节点，需要有相应的测试命令或者测试用例，并有截屏或者video ⽀持；</p>
+
+<p>加分项：
+（1）、加⼊其它⾼级功能如缓存更新算法；
+（2）、Paxos 共识方法或者主副本选择算法等；
+（3）、访问权限控制；
+（4）、其他⾼级功能；</p>
+
+<h1 id="分布式文件系统总体设计">分布式文件系统总体设计</h1>
+
+<p><img src="/img/in-post/DSFileSystem/%E6%9E%B6%E6%9E%84.jpg" alt="架构" style="zoom: 50%;" /></p>
+
+<center> <font size="3" face="Impact">系统总体架构图 </font></center>
+
+<p>本系统架构设计主要参考自<a href="https://github.com/PinPinIre/CS4032-Distributed-File-System">CS4032-Distributed-File-System</a>。系统中有一个<strong>LockServer</strong>，一个<strong>DirectoryServer</strong>，多个<strong>FileServer</strong>组成服务器集群，可以有多个用户，每个用户可以开启多个Client。<strong>LockServer</strong>和<strong>DirectoryServer</strong>可以使用<strong>FileServer</strong>中互相通信的方法扩展为服务器集群，以便提高可用性（availability）。为了更加专注于分布式系统的设计，在本次实验中将数据保存在对应的txt文件中，模拟后台数据库。使用gRPC进行服务器之间的通信，每种类型的服务器都有自己的proto文件定义消息和提供的服务，用来和客户端或其他的文件进行交互。</p>
+
+<ul>
+  <li><strong>DirectoryServer</strong>是一个目录服务器，用于告诉<strong>Client</strong>现在有哪些<strong>FileServer</strong>是可用的，即向客户端提供可用的文件服务器信息，以便<strong>Client</strong>知道从哪个<strong>FileServer</strong>下载或上传文件。</li>
+  <li><strong>LockServer</strong>实现了互斥锁，文件有一个<strong>Client</strong>正在编辑时，不允许其他<strong>Client</strong>访问，即确保同一时间只有一个<strong>Client</strong>可以访问文件。</li>
+  <li><strong>FileServer</strong>是文件服务器集群，用于存储文件的多个副本，并确保它们之间的一致性。</li>
+  <li><strong>Client</strong>是客户端，可以选择一个<strong>FileServer</strong>作为主服务器，之后可以将服务器上的文件下载到cache中，也可以完成将cache中文件上传到服务器等功能。</li>
+</ul>
+
+<h2 id="运行流程描述">运行流程描述</h2>
+
+<p>当客户端需要访问特定文件时，它首先会向<strong>DirectoryServer</strong>发送请求以获取可用的<strong>FileServer</strong>列表。<strong>DirectoryServer</strong>会返回一组可用的<strong>FileServer</strong>地址或其他相关信息，以便客户端可以选择一个合适的服务器进行文件操作。一旦客户端确定了目标<strong>FileServer</strong>，它可以与该服务器建立连接并发送请求。如果文件存在，客户端将向<strong>LockServer</strong>发送加锁请求。<strong>LockServer</strong>会检查文件的锁定状态，如果文件已经被其他客户端锁定，则客户端需要等待直到文件变为可用。一旦获得了锁定权限，客户端可以从<strong>FileServer</strong>下载文件到本地缓存中进行编辑。客户端可以在本地缓存中对文件进行修改，并可以随时保存更改。当客户端完成对文件的编辑并准备上传时，它可以向<strong>FileServer</strong>发送上传请求。<strong>FileServer</strong>会接受上传的文件，并确保在集群中的其他副本也得到更新，以保持一致性。一旦上传完成，客户端可以释放对文件的锁定，并向<strong>LockServer</strong>发送解锁请求，使其他客户端能够访问该文件。整个过程中，<strong>LockServer</strong>、<strong>DirectoryServer</strong>和<strong>FileServer</strong>之间的通信和协调确保了文件的互斥访问和一致性存储。客户端通过与这些服务器的交互，实现了对文件的下载、编辑和上传等功能，提供了灵活且可靠的文件操作体验。</p>
+
+<h2 id="实现功能">实现功能</h2>
+
+<p>支持副本的瞬时一致性、支持多个账号多用户，也就是用户A的账号可以在多台不同机器上登陆，用户A使用文件服务器时，用户B的账号也可以多用户使用文件服务器、支持⽂件系统具备基本的⽂件操作（具体见下面表格）。</p>
+
+<center> <font size="3" face="Impact">系统支持的指令 </font></center>
+
+<table>
+  <thead>
+    <tr>
+      <th>指令</th>
+      <th>功能</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>help</td>
+      <td>展示可用指令</td>
+    </tr>
+    <tr>
+      <td>upload</td>
+      <td>从cache向服务器上传文件</td>
+    </tr>
+    <tr>
+      <td>download</td>
+      <td>从服务器下载文件到cache</td>
+    </tr>
+    <tr>
+      <td>touch</td>
+      <td>本地cache和服务器中同时创建文件</td>
+    </tr>
+    <tr>
+      <td>touchoc</td>
+      <td>只在服务器中创建文件</td>
+    </tr>
+    <tr>
+      <td>remove</td>
+      <td>从服务器中删除文件</td>
+    </tr>
+    <tr>
+      <td>edit</td>
+      <td>从服务器中获取最新版本的文件下载到cache中编辑</td>
+    </tr>
+    <tr>
+      <td>close</td>
+      <td>关闭正在编辑的文件</td>
+    </tr>
+    <tr>
+      <td>ls</td>
+      <td>展示服务器当前路径下文件</td>
+    </tr>
+    <tr>
+      <td>lse</td>
+      <td>展示本地正在编辑的文件</td>
+    </tr>
+    <tr>
+      <td>cache</td>
+      <td>展示cache中文件</td>
+    </tr>
+    <tr>
+      <td>pwd</td>
+      <td>展示当前路径</td>
+    </tr>
+    <tr>
+      <td>mkdir</td>
+      <td>在服务器中创建文件夹</td>
+    </tr>
+    <tr>
+      <td>cd</td>
+      <td>进入某个文件夹</td>
+    </tr>
+    <tr>
+      <td>cd ..</td>
+      <td>返回上一级文件夹</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>支持的<strong>加分项</strong>：</p>
+
+<ol>
+  <li>
+    <p><strong>缓存更新机制</strong>：每次在本地编辑文件时都是最新的版本，即实现单调写一致性。</p>
+  </li>
+  <li><strong>访问权限控制</strong>：用户A无法查看用户B的文件信息，以保护文件的安全性和隐私</li>
+  <li><strong>其他的高级功能</strong>：pwd，cd，cd ..，mkdir，实现了服务器crash后的恢复机制。</li>
+</ol>
+
+<h2 id="运行效果">运行效果</h2>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231214233803626.png" alt="image-20231214233803626" /></p>
+
+<h1 id="分布式文件系统详细设计">分布式文件系统详细设计</h1>
+
+<h2 id="directoryserver">DirectoryServer</h2>
+
+<p>目录服务器<strong>DirectoryServer</strong>用于管理文件服务器（File Server）的注册和注销，并提供查询在线的文件服务器的功能。所以目录服务器既要与<strong>FileServer</strong>通信，让<strong>FileServer</strong>向<strong>DirectoryServer</strong>注册和注销，也要与<strong>Client</strong>通信，通知<strong>Client</strong>目前在线的<strong>FileServer</strong>，所以<strong>DirectoryServer</strong>的protobuf设计如下：</p>
+
+<div class="language-protobuf highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="kd">service</span> <span class="n">DirServer</span> <span class="p">{</span>
+	<span class="c1">// 1.将已注册的File Server返回Client</span>
+    <span class="k">rpc</span> <span class="n">AllFserver</span><span class="p">(</span><span class="n">DEmpty</span><span class="p">)</span> <span class="k">returns</span> <span class="p">(</span><span class="n">FileServerList</span><span class="p">){}</span> 
+    <span class="c1">// 2.File Server开启时调用，在Directory Server中注册</span>
+    <span class="k">rpc</span> <span class="n">FserverTurnOn</span><span class="p">(</span><span class="n">FserverON_msg</span><span class="p">)</span> <span class="k">returns</span> <span class="p">(</span><span class="n">DirisSuccess</span><span class="p">)</span> <span class="p">{}</span>
+    <span class="c1">// 3.File Server关闭时调用，在Directory Server中删除</span>
+    <span class="k">rpc</span> <span class="n">FserverTurnOff</span><span class="p">(</span><span class="n">FserverOff_msg</span><span class="p">)</span> <span class="k">returns</span> <span class="p">(</span><span class="n">DirisSuccess</span><span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>定义一个名为<code class="language-plaintext highlighter-rouge">Dserver</code>的类，继承自<code class="language-plaintext highlighter-rouge">DirectoryServer_pb2_grpc.DirServerServicer</code>，用这个类实现gRPC服务端的接口。类的构造函数<code class="language-plaintext highlighter-rouge">__init__</code>初始化了目录服务器的相关参数，包括IP地址、端口号、目录服务器数据存放根路径、目录日志文件名等。</p>
+
+<p>在<code class="language-plaintext highlighter-rouge">Dserver</code>类中定义了三个gRPC接口函数，以实现protobuf中定义好的service：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">AllFserver</code>：用于获取所有在线的文件服务器列表。</li>
+  <li><code class="language-plaintext highlighter-rouge">FserverTurnOn</code>：用于将文件服务器<strong>注册</strong>到目录服务器上。</li>
+  <li><code class="language-plaintext highlighter-rouge">FserverTurnOff</code>：用于将文件服务器从目录服务器<strong>注销</strong>。</li>
+</ul>
+
+<p>此外，<code class="language-plaintext highlighter-rouge">Dserver</code>类还定义了一些辅助函数，包括：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">DserverON</code>：打印目录服务器正在工作状态。</li>
+  <li><code class="language-plaintext highlighter-rouge">DserverOff</code>：打印目录服务器崩溃状态。</li>
+  <li><code class="language-plaintext highlighter-rouge">AllFServerAlive</code>：获取所有在线的文件服务器列表。</li>
+  <li><code class="language-plaintext highlighter-rouge">AddFserver</code>：将文件服务器添加到目录服务器的日志中。</li>
+  <li><code class="language-plaintext highlighter-rouge">DeleteFserver</code>：从目录服务器的日志中删除文件服务器。</li>
+</ul>
+
+<p>定义了一个<code class="language-plaintext highlighter-rouge">RunDirServer</code>函数，用于启动目录服务器。在该函数中，首先创建了<code class="language-plaintext highlighter-rouge">Dserver</code>对象，并调用其<code class="language-plaintext highlighter-rouge">DserverON</code>方法说明目录服务器正在工作。然后，检查目录根路径是否存在，如果不存在则创建一个新的目录，说明服务器是第一次工作。接着，检查目录日志文件是否存在，如果存在则将其重命名为<strong>历史文件</strong>，用于故障后恢复，并创建一个新的目录日志文件。然后，创建一个gRPC服务器，并将<code class="language-plaintext highlighter-rouge">Dserver</code>对象添加为其服务端接口的实现。指定服务器监听的地址和端口，并启动服务器。最后，通过一个无限循环保持服务器运行，直到捕获到键盘中断信号（Ctrl+C），用以模仿服务器崩溃，此时调用<code class="language-plaintext highlighter-rouge">DserverOff</code>方法打印崩溃状态。</p>
+
+<h2 id="lockserver">LockServer</h2>
+
+<p>互斥锁服务器用于确保同一时间只有一个<strong>Client</strong>可以访问文件，所以只需要和Client通信即可，<strong>LockServer</strong>的protobuf设计如下：</p>
+
+<div class="language-protobuf highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="kd">service</span> <span class="n">LockServer</span> <span class="p">{</span>
+	<span class="c1">// 加锁</span>
+    <span class="k">rpc</span> <span class="n">lockfile</span><span class="p">(</span><span class="n">LockFileInfo</span><span class="p">)</span> <span class="k">returns</span> <span class="p">(</span><span class="n">LockisSuccess</span><span class="p">){}</span>  
+    <span class="c1">// 解锁</span>
+    <span class="k">rpc</span> <span class="n">unlockfile</span><span class="p">(</span><span class="n">UnLockFileInfo</span><span class="p">)</span> <span class="k">returns</span><span class="p">(</span><span class="n">LockisSuccess</span><span class="p">){}</span> 
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>定义 <code class="language-plaintext highlighter-rouge">LockServer</code> 类，并且该类继承自 <code class="language-plaintext highlighter-rouge">LockServer_pb2_grpc.LockServerServicer</code> 这个 gRPC 服务类。</p>
+
+<p>在<code class="language-plaintext highlighter-rouge">LockServer</code> 类中定义了三个gRPC接口函数，以实现protobuf中定义好的service：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">lockfile</code>：用于请求锁定文件，当文件已经被锁定时会抛出异常。</li>
+  <li><code class="language-plaintext highlighter-rouge">unlockfile</code>：用于释放文件的锁定状态。</li>
+</ul>
+
+<p>此外，<code class="language-plaintext highlighter-rouge">LockServer</code> 类还定义了一些辅助函数，包括：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">LserverON</code>：打印锁服务器正在工作状态。</li>
+  <li><code class="language-plaintext highlighter-rouge">LserverOff</code>：打印锁服务器崩溃信息。</li>
+  <li><code class="language-plaintext highlighter-rouge">AllLockFIle</code>：读取锁日志文件内容，返回一个字典，存储了所有的文件锁定信息。</li>
+  <li><code class="language-plaintext highlighter-rouge">Lock</code>：锁定文件，将文件路径、文件名、客户端 ID 写入锁日志文件。</li>
+  <li><code class="language-plaintext highlighter-rouge">UnLock</code>：释放文件锁定，从锁日志文件中删除相应的记录。</li>
+</ul>
+
+<p>定义了一个<code class="language-plaintext highlighter-rouge">RunLockServer</code> 函数，用于启动锁服务器。在该函数中，首先创建了<code class="language-plaintext highlighter-rouge">LockServer</code>对象，并调用其<code class="language-plaintext highlighter-rouge">LserverON</code>方法说明锁服务器正在工作。然后，检查锁根路径是否存在，如果不存在则创建一个新的目录，说明服务器是第一次工作。接着，检查锁日志文件是否存在，如果存在则将其重命名为<strong>历史文件</strong>，用于故障后恢复，并创建一个新的锁日志文件。然后，创建一个gRPC服务器，并将<code class="language-plaintext highlighter-rouge">LockServer</code>对象添加为其服务端接口的实现。指定服务器监听的地址和端口，并启动服务器。最后，通过一个无限循环保持服务器运行，直到捕获到键盘中断信号（Ctrl+C），用以模仿服务器崩溃，此时调用<code class="language-plaintext highlighter-rouge">LserverOff</code>方法打印崩溃状态。</p>
+
+<p>在客户端上传文件时，先会对文件上锁，然后主文件服务器收到上传文件后，不会立刻返回成功信息，而是先将这个文件同步到所有在线的副本服务器上，然后才会释放对这个文件的锁，这样可以防止在同步过程中又被打开修改了。</p>
+
+<h2 id="fileserver">FileServer</h2>
+
+<p><strong>FileServer</strong>是系统的核心，要处理<strong>Client</strong>发过来的文件处理请求，需要与<strong>DirectoryServer</strong>通信，向<strong>DirectoryServer</strong>注册和注销，此时<strong>FileServer</strong>是以客户端的身份，远程调用<strong>DirectoryServer</strong>的接口。但是同时也要和<strong>Client</strong>通信，处理<strong>Client</strong>发过来的请求，此时<strong>FileServer</strong>就要以服务器的身份，提供接口给<strong>Client</strong>调用了。并且<strong>FileServer</strong>之间也要通信，用于同步更新副本的状态。根据需要完成的文件处理指令，<strong>FileServer</strong>的protobuf设计如下：</p>
+
+<div class="language-protobuf highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="rouge-code"><pre><span class="kd">service</span> <span class="n">FileServer</span> <span class="p">{</span>
+	<span class="c1">// 与Client通信</span>
+    <span class="k">rpc</span> <span class="n">success_connect</span><span class="p">(</span><span class="n">CLIENTID</span><span class="p">)</span> <span class="k">returns</span><span class="p">(</span><span class="n">FEmpty</span><span class="p">){}</span>
+    <span class="k">rpc</span> <span class="n">download</span><span class="p">(</span><span class="n">Download_Request</span><span class="p">)</span> <span class="k">returns</span> <span class="p">(</span><span class="n">File</span><span class="p">)</span> <span class="p">{}</span>
+    <span class="k">rpc</span> <span class="n">upload</span><span class="p">(</span><span class="n">Upload_Request</span><span class="p">)</span> <span class="k">returns</span> <span class="p">(</span><span class="n">FileisSuccess</span><span class="p">)</span> <span class="p">{}</span>   
+    <span class="k">rpc</span> <span class="n">remove</span><span class="p">(</span><span class="n">Remove_Request</span><span class="p">)</span> <span class="k">returns</span> <span class="p">(</span><span class="n">FileisSuccess</span><span class="p">){}</span>
+    <span class="k">rpc</span> <span class="n">list</span><span class="p">(</span><span class="n">List_Request</span><span class="p">)</span> <span class="k">returns</span><span class="p">(</span><span class="n">List_Reply</span><span class="p">){}</span>
+    <span class="k">rpc</span> <span class="n">pwd</span><span class="p">(</span><span class="n">CLIENTID</span><span class="p">)</span> <span class="k">returns</span><span class="p">(</span><span class="n">PWD_Reply</span><span class="p">){}</span>
+    <span class="k">rpc</span> <span class="n">mkdir</span><span class="p">(</span><span class="n">Mkdir_Request</span><span class="p">)</span> <span class="k">returns</span><span class="p">(</span><span class="n">FileisSuccess</span><span class="p">){}</span>
+    <span class="c1">// 与其他FileServer通信</span>
+    <span class="k">rpc</span> <span class="n">upload_to_other_Fserver</span><span class="p">(</span><span class="n">Upload_Request</span><span class="p">)</span> <span class="k">returns</span> <span class="p">(</span><span class="n">FileisSuccess</span><span class="p">)</span> <span class="p">{}</span>
+    <span class="k">rpc</span> <span class="n">remove_from_other_Fserver</span><span class="p">(</span><span class="n">Remove_Request</span><span class="p">)</span> <span class="k">returns</span> <span class="p">(</span><span class="n">FileisSuccess</span><span class="p">){}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>定义了<code class="language-plaintext highlighter-rouge">Fserver</code>类，并且继承自<code class="language-plaintext highlighter-rouge">FileServer_pb2_grpc.FileServerServicer</code>类，这个类中定义了文件服务器可以提供的gRPC服务，包括：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">success_connect</code>：每当客户端连接到文件服务器时，将调用此服务。它会向Directory Server请求在线文件服务器的列表，并在所有当前在线的文件服务器上为该用户创建一个文件夹。</li>
+  <li><code class="language-plaintext highlighter-rouge">download</code>：客户端可以调用此方法从文件服务器下载文件。文件服务器会返回文件内容。</li>
+  <li><code class="language-plaintext highlighter-rouge">upload</code>：客户端可以调用此方法将文件上传到主文件服务器。</li>
+  <li><code class="language-plaintext highlighter-rouge">remove</code>：客户端可以调用此方法从文件服务器删除文件。</li>
+  <li><code class="language-plaintext highlighter-rouge">list</code>：客户端可以调用此方法列出文件服务器上指定目录下的所有文件和子目录。</li>
+  <li><code class="language-plaintext highlighter-rouge">pwd</code>：客户端可以调用此方法获取当前工作目录。</li>
+  <li><code class="language-plaintext highlighter-rouge">mkdir</code>：客户端可以调用此方法在文件服务器上创建新文件夹。</li>
+  <li><code class="language-plaintext highlighter-rouge">upload_to_other_Fserver</code>：此时主服务器以客户端的身份，调用该函数，用来将文件上传到其他的副本服务器，每一个文件服务器都有可能作为主服务器，也有可能是副本服务器，由用户连接的时候选择。</li>
+  <li><code class="language-plaintext highlighter-rouge">remove_from_other_Fserver</code>：此时主服务器以客户端的身份，调用该函数，用来将文件从其他的副本服务器中删除，每一个文件服务器都有可能作为主服务器，也有可能是副本服务器，由用户连接的时候选择。</li>
+</ul>
+
+<p>此外，<code class="language-plaintext highlighter-rouge">FileServer</code>类还定义了一些辅助函数，包括：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">Connect2Dserver</code>:这个函数用于与目录服务器建立连接。它会创建一个gRPC通道，然后使用该通道创建一个目录服务器的存根（Stub）对象，以便后续与目录服务器进行通信。</li>
+  <li><code class="language-plaintext highlighter-rouge">FserverON</code>: 这个函数用于将文件服务器注册到目录服务器上。它会以客户端的身份调用目录服务器中函数：发送一个包含文件服务器ID、IP地址和端口号的消息，并等待目录服务器的响应。如果注册成功，就打印注册成功的消息；否则，打印注册失败的消息。</li>
+  <li><code class="language-plaintext highlighter-rouge">FserverOff</code>: 这个函数用于将文件服务器从目录服务器中注销。它会以客户端的身份调用目录服务器中函数：发送一个包含文件服务器ID的消息，并等待目录服务器的响应。如果移除成功，就打印移除成功的消息；否则，打印移除失败的消息。</li>
+  <li><code class="language-plaintext highlighter-rouge">Upload2OtherFserver</code>: 这个函数用于主服务器将文件同步上传到其他副本文件服务器。首先，它会获取所有在线的文件服务器列表。然后，对于每个非主服务器，主服务器会以客户端身份会创建一个与该服务器的通信通道，并使用该通道创建一个文件服务器的存根对象。接下来，它会将要上传的文件路径转换成相对路径，并调用存根对象的上传方法将文件传输到其他文件服务器。如果传输过程中发生错误，会打印错误消息并继续传输其他文件。最后，打印成功同步上传的消息。</li>
+  <li><code class="language-plaintext highlighter-rouge">DelFromOtherFserver</code>: 这个函数用于将文件同步从其他文件服务器中删除。首先，它会获取所有在线的文件服务器列表。然后，对于每个非主服务器，主服务器会以客户端身份创建一个与该服务器的通信通道，并使用该通道创建一个文件服务器的存根对象。接下来，它会调用存根对象的删除方法，从其他文件服务器中删除指定路径的文件。如果删除成功，会打印删除成功的消息；否则，打印删除失败的消息。</li>
+  <li><code class="language-plaintext highlighter-rouge">RemoveFile</code>: 这个函数用于删除文件服务器上的文件。它会检查指定路径的文件是否存在，如果存在就使用<code class="language-plaintext highlighter-rouge">os.remove()</code>函数将其删除。</li>
+  <li><code class="language-plaintext highlighter-rouge">SaveFile</code>: 这个函数用于保存从客户端接收到的文件。它会将接收到的文件数据写入到文件服务器上指定路径的文件中，并返回保存的文件路径。</li>
+  <li><code class="language-plaintext highlighter-rouge">GetFile</code>: 这个函数用于从文件服务器上获取文件。它会读取指定路径的文件，并将文件数据封装成gRPC的文件对象返回给客户端。</li>
+  <li><code class="language-plaintext highlighter-rouge">GetCurServerFile</code>: 这个函数用于获取当前文件服务器上的文件，并将其转换为适合在其他服务器上保存的格式。它会读取源文件，将文件数据<strong>封装</strong>成gRPC的上传请求对象，并指定目标路径作为相对路径。然后，将封装好的请求对象用于在其他文件服务器上，用以上传文件。</li>
+</ul>
+
+<p>定义了一个<code class="language-plaintext highlighter-rouge">RunFileServer</code> 函数，用于启动文件服务器。在该函数中，首先创建了<code class="language-plaintext highlighter-rouge">Fserver</code>对象，并传入文件服务器的ID、IP地址和端口号作为参数。调用<code class="language-plaintext highlighter-rouge">Connect2Dserver()</code>函数与目录服务器建立连接，连接目录服务器成功后调用<code class="language-plaintext highlighter-rouge">FserverON()</code>函数将文件服务器注册到目录服务器上。检查文件根路径是否存在，如果不存在则创建一个新的目录，说明服务器是第一次工作。然后，创建一个gRPC服务器，并将<code class="language-plaintext highlighter-rouge">FileServer</code>对象添加为其服务端接口的实现。指定服务器监听的地址和端口，并启动服务器。最后，通过一个无限循环保持服务器运行，直到捕获到键盘中断信号（Ctrl+C），用以模仿服务器崩溃，此时调用<code class="language-plaintext highlighter-rouge">FserverOff</code>将当前文件服务器从目录服务器上移除。</p>
+
+<h2 id="client">Client</h2>
+
+<p>用gRPC远程调用以上三个服务器的接口即可，具体实现如下：</p>
+
+<p><strong>主要功能函数</strong>包括：</p>
+
+<p>(1)<code class="language-plaintext highlighter-rouge">help</code>：输出可用的命令说明。</p>
+
+<p>(2)<code class="language-plaintext highlighter-rouge">upload2MainFServer</code>：将本地文件上传到主服务器，由主服务器负责同步到所有副本服务器上，使用了FileServer RPC服务。</p>
+
+<p>(3)<code class="language-plaintext highlighter-rouge">download</code>：从服务器上下载文件到本地缓存，使用了FileServer RPC服务。</p>
+
+<p>(4)<code class="language-plaintext highlighter-rouge">touch</code>：在本地和服务器上创建一个文件，使用了upload2MainFServer函数。</p>
+
+<p>(5)<code class="language-plaintext highlighter-rouge">touchOnlyCloud</code>：仅在服务器上创建一个文件，使用了upload2MainFServer函数和os.remove函数。</p>
+
+<p>(6)<code class="language-plaintext highlighter-rouge">remove</code>：删除服务器上的文件，使用了FileServer RPC服务。</p>
+
+<p>(7)<code class="language-plaintext highlighter-rouge">edit</code>：编辑服务器上的文件，先将其下载到本地缓存，然后再上传回服务器，使用了FileServer RPC服务。</p>
+
+<p>(8)<code class="language-plaintext highlighter-rouge">close</code>：关闭正在编辑的文件，将其同步到服务器上，使用了upload2MainFServer函数和unlockfile函数。</p>
+
+<p>(9)<code class="language-plaintext highlighter-rouge">ListAllFile</code>：列出当前服务器路径下的所有文件和目录，使用了FileServer RPC服务。</p>
+
+<p>(10)<code class="language-plaintext highlighter-rouge">ListEditingFile</code>：列出所有正在编辑的文件。</p>
+
+<p>(11)<code class="language-plaintext highlighter-rouge">mkdir</code>：在服务器上创建一个目录，使用了FileServer RPC服务。</p>
+
+<p>(12)<code class="language-plaintext highlighter-rouge">cd</code>：进入指定的目录，使用了ListAllFile函数。</p>
+
+<p>(13)<code class="language-plaintext highlighter-rouge">cdb</code>：返回上一级目录。</p>
+
+<p>除了以上主要的功能函数外，还有一些<strong>辅助函数</strong>用以辅助实现上述功能：</p>
+
+<p>(1)<code class="language-plaintext highlighter-rouge">lockfile</code>：使用LockServer RPC服务锁定正在编辑的文件。</p>
+
+<p>(2)<code class="language-plaintext highlighter-rouge">unlockfile</code>：使用LockServer RPC服务解锁正在编辑的文件。</p>
+
+<p>(3)<code class="language-plaintext highlighter-rouge">ExtractFile</code>：将本地文件读取为字节流。</p>
+
+<p>(4)<code class="language-plaintext highlighter-rouge">SaveFile</code>：将字节流写入本地文件。</p>
+
+<p>(5)<code class="language-plaintext highlighter-rouge">Connect2Dserver(self)</code>：这个函数用于连接到目录服务器。然后，通过创建一个目录服务器的Stub对象（<code class="language-plaintext highlighter-rouge">DS_pb2_grpc.DirServerStub</code>），客户端可以使用该Stub对象进行后续的RPC调用。</p>
+
+<p>(6)<code class="language-plaintext highlighter-rouge">Connect2Lserver(self)</code>：这个函数用于连接到锁服务器。类似于<code class="language-plaintext highlighter-rouge">Connect2Dserver</code>函数，通过创建一个锁服务器的Stub对象（<code class="language-plaintext highlighter-rouge">LS_pb2_grpc.LockServerStub</code>），客户端可以使用该Stub对象进行后续的RPC调用。</p>
+
+<p>(7)<code class="language-plaintext highlighter-rouge">Connect2Fserver(self)</code>：这个函数用于连接到文件服务器。首先，它调用了<code class="language-plaintext highlighter-rouge">Connect2Lserver</code>函数，以确保在连接到文件服务器之前没有并行写冲突。接下来，它调用了<code class="language-plaintext highlighter-rouge">Connect2Dserver</code>函数，以获取所有正在运行的文件服务器列表。然后，打印出所有文件服务器的信息，并要求用户选择一个<strong>主文件服务器</strong>。当用户输入主文件服务器的ID后，函数根据选择的文件服务器ID从文件服务器列表中获取对应的IP地址和端口号。然后，通过不安全信道连接到选定的主文件服务器，并创建一个文件服务器的Stub（<code class="language-plaintext highlighter-rouge">FileServer_pb2_grpc.FileServerStub</code>），以便后续的RPC调用。最后，函数向文件服务器发送成功连接的请求，并获取当前路径信息。</p>
+
+<p>最后定义一个<code class="language-plaintext highlighter-rouge">RunClient</code>函数，通过输入不同的命令调用上述函数，从而实现与文件服务器进行交互。</p>
+
+<h1 id="效果展示">效果展示</h1>
+
+<p>运行系统前：</p>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215095305874.png" alt="image-20231215095305874" /></p>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215095253283.png" alt="image-20231215095253283" /></p>
+
+<p>首先注册两个文件服务器，三个客户端，运行起来后：
+<strong>DirectoryServer</strong>默认IP是locolhost，Port是8080
+<strong>LockServer</strong>默认IP是locolhost，Port是8081
+<strong>FileServer</strong>默认IP是locolhost，Port从10001开始（由用户输入）</p>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215100205727.png" alt="image-20231215100205727" style="zoom:40%;" /></p>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215100217409.png" alt="image-20231215100217409" /></p>
+
+<p>服务器文件：</p>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215100200272.png" alt="image-20231215100200272" /></p>
+
+<p>客户端cache：</p>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215100253137.png" alt="image-20231215100253137" /></p>
+
+<h2 id="help">help</h2>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215095141527.png" alt="image-20231215095141527" /></p>
+
+<h2 id="touchoc">touchoc</h2>
+
+<p>仅在服务器创建文件1.txt</p>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215100103724.png" alt="image-20231215100103724" /></p>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215100352734.png" alt="image-20231215100352734" /></p>
+
+<p>创建成功并同步到所有在线的服务器。</p>
+
+<h2 id="download">download</h2>
+
+<p>从服务器下载1.txt</p>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215100522761.png" alt="image-20231215100522761" /></p>
+
+<p>可以看到下载成功，cache中已经有了1.txt</p>
+
+<h2 id="touch">touch</h2>
+
+<p>服务器和本地同时创建文件，可以看到服务器和cache同时有了2.txt</p>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215100617791.png" alt="image-20231215100617791" /></p>
+
+<h2 id="remove">remove</h2>
+
+<p>从服务器中删除2.txt，下图中可以看到服务器中已经没有了2.txt，但是不会影响客户端本地的2.txt</p>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215100647744.png" alt="image-20231215100647744" /></p>
+
+<h2 id="upload">upload</h2>
+
+<p>上面删除2.txt后，从本地上传2.txt到服务器</p>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215100721164.png" alt="image-20231215100721164" /></p>
+
+<h2 id="edit加锁和缓存更新机制">edit加锁和缓存更新机制</h2>
+
+<p>看蓝色框内的客户端1，客户端编辑时会自动从服务器中下载最新版本的文件，客户端1（蓝色框）在编辑客户端2（红色框）就不可编辑（加了互斥锁）</p>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215101028813.png" alt="image-20231215101028813" /></p>
+
+<h2 id="lse">lse</h2>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215101059907.png" alt="image-20231215101059907" /></p>
+
+<h2 id="close和单调写一致性">close和单调写一致性</h2>
+
+<p>每次编辑完后都将最新的更新到服务器，保证下次编辑是基于最新版的文件</p>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215104103238.png" alt="image-20231215104103238" /></p>
+
+<p>每次打开都会写入打开实现模拟编辑后效果，可以看cache中文件，每次写都基于上一次最新的版本（以下是多次打开后结果展示）：</p>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215111442111.png" alt="image-20231215111442111" style="zoom:50%;" /></p>
+
+<h2 id="pwd">pwd</h2>
+
+<p>显示当前路径，只显示在文件服务器中的相对路径</p>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215102041251.png" alt="image-20231215102041251" /></p>
+
+<h2 id="mkdir">mkdir</h2>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215102107041.png" alt="image-20231215102107041" /></p>
+
+<h2 id="cd和cd">cd和cd..</h2>
+
+<p>可以用cd进入hello文件夹，然后cd..退回到上一级文件夹</p>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215102413712.png" alt="image-20231215102413712" /></p>
+
+<h2 id="服务器崩溃后重启">服务器崩溃后重启</h2>
+
+<p>上述操作运行完毕后</p>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215102636192.png" alt="image-20231215102636192" /></p>
+
+<p>将它们全部关闭后重新启动，可以看到会将当时的directory记录保存在<strong>history_{crash时间}</strong>文件中，用来故障后恢复信息。</p>
+
+<html>
+
+<head>
+    <title>Two Photos Side by Side</title>
+    <style>
+        .image-container {
+            display: flex;
+        }
+        .image-container img {
+            width: 50%; /* 控制图片宽度 */
+            height: auto; /* 保持原始高宽比 */
+        }
+    </style>
+</head>
+<body>
+    <div class="image-container">
+      <img src="/img/in-post/DSFileSystem/image-20231215103646168.png" alt="image-20231215103646168" style="zoom:50%;" />
+      <img src="/img/in-post/DSFileSystem/image-20231215102954294.png" alt="image-20231215102954294" style="zoom: 80%;" />
+    </div>
+</body>
+</html>
+
+<h2 id="访问权限控制和多用户多客户端">访问权限控制和多用户多客户端</h2>
+
+<p>可以看到上面两个是用户1，下面一个是用户2，它们创建文件和编辑文件不会互相影响，即使用户1的客户端1正在编辑1.txt文件，那么只是用户1的客户端2无法编辑，但是用户2的客户端1仍可以创建1.txt并编辑</p>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215101551772.png" alt="image-20231215101551772" /></p>
+
+<h1 id="如何复现">如何复现</h1>
+
+<ol>
+  <li>首先要确保有gRPC环境：</li>
+</ol>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>pip install grpcio
+pip install grpcio-tools  
+pip install protobuf
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<ol>
+  <li>由于gRPC版本可能不同，所以运行前可以先点击Proto文件夹中compile.bat，使用gRPC的工具包，生成gRPC服务类：</li>
+</ol>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>start cmd /k <span class="s2">"python -m grpc_tools.protoc --python_out=../ --grpc_python_out=../ -I. LockServer.proto"</span>
+start cmd /k <span class="s2">"python -m grpc_tools.protoc --python_out=../ --grpc_python_out=../ -I. FileServer.proto"</span>
+start cmd /k <span class="s2">"python -m grpc_tools.protoc --python_out=../ --grpc_python_out=../ -I. DirectoryServer.proto"</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215105724835.png" alt="image-20231215105724835" /></p>
+
+<ol>
+  <li>可以先将ClientData和ServerData中文件清空，然后直接点<code class="language-plaintext highlighter-rouge">RunAll.bat</code>，就会开启一个目录服务器<strong>DirectoryServer</strong>、一个锁服务器<strong>LockServer</strong>和一个文件服务器<strong>FileServer1</strong>。如果还想开启更多文件服务器可以点击<code class="language-plaintext highlighter-rouge">RunFserver.bat</code>，就会运行一个新的文件服务器<strong>FileServer2</strong>，以此类推还可以运行更多文件服务器。点击运行<code class="language-plaintext highlighter-rouge">RunClient.bat</code>即可运行一个<strong>Client</strong>，一个用户（一个UserID）可以开启多个客户端，选择不同的主服务器。</li>
+</ol>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215110040098.png" alt="image-20231215110040098" /></p>
+
+<h1 id="心得体会">心得体会</h1>
+
+<p>在这个项目中，我使用Python和gRPC实现了一个简单但功能比较齐全的分布式文件存储系统。这个系统可以实现文件的上传、下载和删除等功能，同时也具备一定的容错能力和可拓展性。在实现过程中，我遇到了很多挑战，但最终通过不断地调试和优化，成功地完成了这个项目。</p>
+
+<p>由于在作业3中已经用gRPC实现过<strong>消息订阅系统</strong>，对gRPC比较熟悉了，所以直接选用了gRPC作为RPC的通信工具。一开始想在作业3的消息订阅系统的基础上完成《<strong>去中心化的聊天系统</strong>》，已经简单完成聊天功能准备实现聊天记录去中心化存储时发现，本质上还是分布式的文件系统，所以干脆转为做《<strong>分布式文件系统</strong>》，这样之后直接借用分布式文件系统的思想也就可以完成《<strong>去中心化的聊天系统</strong>》中聊天数据去中心化的操作了。（由于这学期课程作业太多了，所以等寒假时再来完成这一个合并的工作，demo代码也作为附录提交了）</p>
+
+<p><img src="/img/in-post/DSFileSystem/image-20231215150004222.png" alt="image-20231215150004222" style="zoom: 50%;" /></p>
+
+<p>首先，我需要设计整个系统的架构。考虑到分布式系统的特点，我采取了类似于<a href="https://github.com/PinPinIre/CS4032-Distributed-File-System">CS4032-Distributed-File-System</a>的设计思路，使用了DirectoryServer和LockServer来辅助实现一致性和互斥性。DirectoryServer负责记录在线的FileServer，而LockServer则负责保证在同一时间只有一个Client可以修改同一个文件。</p>
+
+<p>接下来，我需要实现各个组件之间的通信，这一步的难点在于protobuf的设计。通过在.proto文件中定义消息格式，然后使用gRPC的编译器生成相应的Python代码。protobuf中服务接口，可以边实现功能边添加，不用一次性设计的很完美。由于调试的时候需要多次更新protobuf，所以我干脆写了一个<code class="language-plaintext highlighter-rouge">compile.bat</code>文件一键编译，这样就不用慢慢输入命令行了，运行<strong>DirectoryServer</strong>和<strong>LockServer</strong>服务器时同理，写了三个使用率很高的bat文件，大大提高了开发效率。</p>
+
+<p>在实现过程中，我还遇到了一些难点，其中最主要的是如何实现一致性。最初，我考虑让Client从DirectoryServer获取所有在线的FileServer，然后与每个服务器建立通信，然后一一上传并覆盖原有文件。但后来发现这样的效率很低，特别是当客户端和文件服务器之间的距离非常远时，通信消耗会很大。因此，我想到了使用一个主服务器来和客户端通信，客户端只需要将文件上传到主服务器，然后由主服务器负责文件服务器集群中的副本同步和一致性，让上传和同步两个工作解耦。这种方案显然更加高效，并且同时保证了系统的一致性。</p>
+
+<p>总的来说，这个项目不仅让我深入理解了gRPC协议和protobuf的使用，还让我学会了如何解决一些分布式系统中常见的问题，例如一致性和可靠性等。通过不断地测试和调试，我最终成功地实现了一个功能比较齐全的分布式文件存储系统，这对于未来从事分布式系统的研究和开发都具有很大的帮助。</p>
+
+<h1 id="实验建议">实验建议</h1>
+
+<p>就像心得中提到的，我觉得可以将HW3中《用gRPC实现过消息订阅系统》改为《用gRPC实现聊天系统》，然后期末再在HW3基础上实现一个《去中心化的聊天系统》，这样实验似乎更具连贯性。</p>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2023/12/12/Database-Supermarket/" data-toggle="tooltip" data-placement="top" title="超市管理数据库设计">
+                        Previous<br>
+                        <span>超市管理数据库设计</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2023/12/23/Ensemble-Learning/" data-toggle="tooltip" data-placement="top" title="集成学习/元学习 Bagging&Boosting">
+                        Next<br>
+                        <span>集成学习/元学习 Bagging&Boosting</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+
+                <!--   gitalk       -->
+                <div class="comment">
+                <div id="gitalk-container"></div>
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+                <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+                <script>
+                var gitalk = new Gitalk({
+                    id: location.pathname,
+                    clientID: '0db4b4c6d83c061f6b30',
+                    clientSecret: 'e1651c09f1a49b2b4a544cd584d3e8a55454a48a',
+                    repo: 'BlogComment',
+                    owner: 'jaredddddd',
+                    admin: ['jaredddddd'], 
+                    labels: ['Gitalk'],
+                })
+                gitalk.render('gitalk-container')
+                </script> 
+                </div>
+
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0036" 
+                    href="/archive/?tag=Computer-Organization"
+                    title="Computer-Organization"
+                    rel="21">Computer-Organization</a>
+        
+                <a data-sort="0018" 
+                    href="/archive/?tag=NOTES"
+                    title="NOTES"
+                    rel="39">NOTES</a>
+        
+                <a data-sort="0041" 
+                    href="/archive/?tag=Project"
+                    title="Project"
+                    rel="16">Project</a>
+        
+                <a data-sort="0042" 
+                    href="/archive/?tag=AI"
+                    title="AI"
+                    rel="15">AI</a>
+        
+                <a data-sort="0048" 
+                    href="/archive/?tag=OS"
+                    title="OS"
+                    rel="9">OS</a>
+        
+                <a data-sort="0052" 
+                    href="/archive/?tag=ML"
+                    title="ML"
+                    rel="5">ML</a>
+        
+                <a data-sort="0053" 
+                    href="/archive/?tag=PatternRecognition"
+                    title="PatternRecognition"
+                    rel="4">PatternRecognition</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Blog"
+                    title="Blog"
+                    rel="3">Blog</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Distributed-System"
+                    title="Distributed-System"
+                    rel="3">Distributed-System</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=ANN"
+                    title="ANN"
+                    rel="2">ANN</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CPU%E8%AE%BE%E8%AE%A1"
+                    title="CPU设计"
+                    rel="2">CPU设计</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CompilationPrinciple"
+                    title="CompilationPrinciple"
+                    rel="2">CompilationPrinciple</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     TeX: {
+       equationNumbers: {
+         autoNumber: "AMS"
+       }
+     },
+     SVG: {
+       scale: 90
+     },
+     tex2jax: {
+       inlineMath: [ ['$','$'] ],
+       displayMath: [ ['$$','$$'] ],
+       processEscapes: true,
+     }
+   });
+ </script>
+ <script type="text/javascript"
+         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+
+.post-container {
+    background: #fcfbfb; /* 背景颜色 */
+    border-radius: 25px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    padding-top: 40px; /* 特别增加顶部内边距 */
+    margin-top: 20px; /* 添加顶部外边距 */
+    /* margin-left: 40px; */
+    /* width: 900px; */
+}
+
+
+/* 在宽屏幕设备上应用特定样式 */
+@media (min-width: 1024px) {
+  .post-container {
+    margin-left: 40px; /* 向左扩展 */
+    width: 900px; /* 设置宽度 */
+  }
+  .side-catalog{
+    width: 250px;
+  }
+}
+
+.post-container:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* 当鼠标悬停时增加阴影效果 */
+}
+
+.side-catalog {
+    background: #ffffff; /* 背景颜色 */
+    border-radius: 15px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    margin-left: 10pt;
+    /* width: 200px; */
+
+}
+
+
+
+.catalog-container {
+    /* ... 其他样式 ... */
+    display: none; /* 默认不显示catalog */
+    transition: all 0.3s ease; /* 过渡效果 */
+    margin-top: 20px; /* 添加顶部外边距 */
+}
+
+</style>
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; LvKouKou Blog 2025
+                    <br>
+                    <!--  删掉了作者Hux Blog
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                    -->
+                    <!-- 不蒜子 -->
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                    您是Blog的第<span id="busuanzi_value_site_uv"></span>个小伙伴 </br>
+                     <span id="busuanzi_container_page_pv">
+                        本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<!-- 自己添加的 -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TNVD6PR5TQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNVD6PR5TQ');
+</script>
+<!-- 自己添加的 -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        // a = P.find('h1,h2,h3,h4,h5,h6');
+        a = P.find('h1,h2,h3,h4');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<!--鼠标点击爱心动画-->
+<script type="text/javascript" src="/js/love.js"></script>
+</body>
+
+</html>

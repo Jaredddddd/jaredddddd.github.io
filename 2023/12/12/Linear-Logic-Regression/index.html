@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @LvKouKou 的个人博客，与你一起发现更大的世界 | 要做一个想环游世界的程序员">
+    <meta name="keywords" content="LvKouKou, jaredddddd, @jaredddddd, LvKouKou Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <link
+  rel="stylesheet"
+  href="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+/>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  defer="defer"
+></script>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  defer="defer"
+  onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
+></script>
+    <script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/mathtex-script-type.min.js"
+  defer="defer"
+></script>
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="线性回归和逻辑回归数学推导 - LvKouKou的博客 | LV Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="回归
+
+">
+    
+    <meta property="article:published_time" content=" 2023-12-12T00:00:00Z">
+    
+    
+    <meta property="article:author" content="LvKouKou">
+    
+    
+    <meta property="article:tag" content="AI">
+    
+    <meta property="article:tag" content="ML">
+    
+    
+    <meta property="og:image" content="https://jaredddddd.github.io/img/LVKOUKOU.jpg">
+    <meta property="og:url" content="https://jaredddddd.github.io/2023/12/12/Linear-Logic-Regression/">
+    <meta property="og:site_name" content="LvKouKou的博客 | LV Blog">
+
+    <title>线性回归和逻辑回归数学推导 - LvKouKou的博客 | LV Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jaredddddd.github.io/2023/12/12/Linear-Logic-Regression/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* 打字机效果的样式 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #666 }
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid #666;
+            white-space: nowrap;
+            word-wrap: break-word;
+            letter-spacing: .1em;
+            width: fit-content;
+            margin: 0 auto;
+            animation: 
+                typing 2s steps(40, end), /* 打字机效果, 3s 完成打字, 每步40个字符 */
+                blink-caret .75s step-end infinite; /* 光标闪烁效果, 0.75s 完成一次闪烁  */
+        }
+
+        /* 添加包装容器样式 */
+        .typing-wrapper {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%; /* 确保不会超出父容器 */
+        }
+
+        /* 添加响应式样式 */
+        @media (max-width: 768px) {
+        .typing-effect {
+            font-size: 16px; /* 在手机上可以适当调整字体大小 */
+            letter-spacing: normal; /* 在手机上减小字间距 */
+        }
+    }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptions = document.getElementsByClassName('subheading');
+            if (descriptions.length > 0) {
+                const description = descriptions[0];
+                const text = description.textContent;
+                description.innerHTML = `<span class="typing-wrapper"><span class="typing-effect">${text}</span></span>`;
+            }
+        });
+    </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">LvKouKou Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/resume-home/">Resume</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/roadtrip/">On The Road</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="Searching...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!--//添加评论系统gitalk-->
+<link rel="stylesheet" href="../../../../css/gitalk.css">
+<script src="../../../../js/gitalk.min.js"></script>
+
+<!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=AI" title="AI">AI</a>
+                        
+                        <a class="tag" href="/archive/?tag=ML" title="ML">ML</a>
+                        
+                    </div>
+                    <h1>线性回归和逻辑回归数学推导</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by LvKouKou on December 12, 2023</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="回归">回归</h1>
+
+<blockquote>
+  <p><a href="https://zhuanlan.zhihu.com/p/137607677">线性回归（目标函数的推导）</a>:梯度下降法</p>
+
+  <p><a href="https://zhuanlan.zhihu.com/p/151969741">线性回归</a>：最小二乘法：即直接求导</p>
+</blockquote>
+
+<h2 id="多元线性回归multivariate-linear-regression概述及数学推导">多元线性回归(Multivariate linear regression)概述及数学推导</h2>
+
+<blockquote>
+  <p><a href="https://blog.csdn.net/weixin_46357639/article/details/126335047?ops_request_misc=&amp;request_id=&amp;biz_id=102&amp;utm_term=%E5%A4%9A%E5%85%83%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E8%B6%85%E8%AF%A6%E7%BB%86%E8%AF%A6%E8%A7%A3&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-2-126335047.nonecase&amp;spm=1018.2226.3001.4187">机器学习——四大线性回归模型详解（包含理论讲解+公式推导，非常适合初学者！）</a></p>
+</blockquote>
+
+<p>已知数据集$ D= { (x_1,y_1),(x_2,y_2),\cdots ,(x_n,y_n) }$，其中$  x_i={(x_{i1},x_{i2},\cdots ,x_{id})}$（一个样本$x_i$里有多个属性$(x_{i1},x_{i2},\cdots ,x_{id})$），更多情况下，数据集并非单个属性，而是由多个属性构成如同，此时称为<strong>多元线性回归</strong>。对于多元线性回归我们试图学得参数$w$：</p>
+
+\[f(x_i)=\bold{w^Tx_i}+b,\space 使得预测值f(\bold{x_i})\approx 真实值y_i\]
+
+<p>其中 X  为$ (N\times d)$维向量(N为样本个数，d为属性个数)</p>
+
+\[X=
+\begin{pmatrix}
+ x_{11} &amp; ... &amp; x_{1d}\\
+ x_{21} &amp; ... &amp; x_{2d}\\
+ ... &amp; ... &amp; ...\\
+ ... &amp; ... &amp;... \\
+ x_{n1} &amp;...  &amp;x_{nd}
+\end{pmatrix}\]
+
+<p>为了方便运算，我们在X后增加一列，其值均为1，得到下式，该步骤的目的是为了<strong>将偏置$b$合并至$w$</strong>，便于后续的求解运算。也就是由于常数项的存在导致$w$维度为$(N+1)\times 1$</p>
+
+\[X=
+\begin{pmatrix}
+ x_{11} &amp; ... &amp; x_{1d}&amp;1\\
+ x_{21} &amp; ... &amp; x_{2d}&amp;1\\
+ ... &amp; ... &amp; ...&amp;...\\
+ ... &amp; ... &amp;... &amp;...\\
+ x_{n1} &amp;...  &amp;x_{nd}&amp;1
+\end{pmatrix}
+，
+w=
+\begin{pmatrix}
+ w_0\\
+ w_1\\
+ ...\\
+ w_{n-1}\\
+w_n
+\end{pmatrix}\]
+
+<p>与此同时，我们将标签$y$写成向量的形式$ y=(y_1;y_2;y_3;\dots;y_n)$，类似于式(13)，</p>
+
+<blockquote>
+  <p>因此确定 $w$与$ b$是主要的问题，并且上式表明$f ( x_i ) $与 $y$之间的差别需要尽可能的小，在回归任务中常用<strong>均方误差</strong>作为性能度量，故我们可以尝试让均方误差最小：</p>
+
+\[(w^*,b^*)=arg\underset{(w,b)}{min} \sum_{i=1}^{m}(f(x_i) -y_i)^2 \\
+ =arg\underset{(w,b)}{min} \sum_{i=1}^{m}(y_i-wx_i-b)^2\]
+
+  <p><strong>注</strong>：上式 $ arg\underset{(w,b)}{min} $的含义就是求得均方误差$\sum_{i=1}^{m}(f(x_i) -y_i)^2$最小值时所对应的 $ w$与 $b$的值。
+  这种基于均方误差最小化的模型称为 “<strong>最小二乘法</strong>” ，此处均方误差的公式恰好对应了<strong>欧式距离</strong> ，该算法的目的就是试图找到一条直线，使得样本点欧式距离直线之和最小。</p>
+</blockquote>
+
+<p>我们得到</p>
+
+\[\bold{\hat{w}}^*=\arg \underset{\hat{w}}{\min} (\bold{y-X\hat{w})^T(y-X\hat{w})}\]
+
+<p>令$  E(\hat{w})=\bold{(y-X\hat{w})^T(y-X\hat{w})}$对$\hat{w}$求偏导:</p>
+
+\[\frac{\partial E(w)}{\partial x} =2\bold{X^T(X\hat{w}-y)}\]
+
+<p>令上式=0，最终得到w<em>的解为：</em></p>
+
+\[\bold{w=(X^TX)^{-1}X^Ty}\]
+
+<p>注意，该解只适用于满秩矩阵，但实际我们往往遇到的不是满秩矩阵，遇到的变量数目超过样本量，导致$X$的列数大于行数，此时就需要引入<strong>正则项</strong>。</p>
+
+<hr />
+
+<p>但显示中往往矩阵很大无法直接计算，这时就要用<strong>梯度下降法</strong>来迭代求解$w$了：</p>
+
+<p>由PPT中的公式(化成减法的形式)，使用均方误差：</p>
+
+\[\theta^{(\tau + 1)}=\theta^{(\tau )}-\rho(\tau)  \nabla log\mathcal L(\theta^{(\tau )}|D)\\
+=\theta^{(\tau )} + \rho(\tau)  \frac{1}{n} \sum_{n}^{i=1} (y_{i} - \theta^{(\tau )T}x_{i})x_{i}\\
+=\theta^{(\tau )} - \rho(\tau)  \frac{1}{n} \sum_{n}^{i=1} ( \theta^{(\tau )T}x_{i}-y_{i})x_{i}\\\]
+
+<p>如果写成矩阵形式，也就是</p>
+
+\[\theta^{(\tau )} - \rho(\tau)  \frac{1}{n}X^{T}(X\theta^{(\tau )}-Y)\]
+
+<p>也就是<strong>梯度算子</strong>为：</p>
+
+\[\nabla=\frac{1}{n}X^{T}(X\theta^{(\tau )}-Y)\]
+
+<p>其中n为样本个数。</p>
+
+<p>然后让目标函数沿梯度算子方向下降即可：</p>
+
+\[\theta^{(\tau + 1)}=\theta^{(\tau )}-LearningRate* \nabla\]
+
+<hr />
+
+<p>==对比==：</p>
+
+<p><strong>线性回归</strong>中<strong>梯度算子</strong>为：</p>
+
+\[\nabla=\frac{1}{n}X^{T}(X\theta^{(\tau )}-Y)\]
+
+<p>其中n为样本个数。</p>
+
+<p><strong>逻辑回归</strong>中梯度算子为：</p>
+
+\[\nabla=X^T(sigmoid(X\theta^{(\tau )})-Y)\]
+
+<p>逻辑回归中少了$\frac{1}{n}$但是多了个$sigmoid$</p>
+
+<h3 id="线性回归的优点和缺点">线性回归的优点和缺点：</h3>
+
+<p>优点：</p>
+
+<ol>
+  <li>简单易懂：线性回归是一种简单直观的模型，易于理解和解释。</li>
+  <li>计算效率高：线性回归的计算成本相对较低，适用于大规模数据集。</li>
+  <li>提供线性关系：适用于描述自变量和因变量之间的线性关系。</li>
+</ol>
+
+<p>缺点：</p>
+
+<ol>
+  <li>对非线性关系拟合效果差：线性回归无法很好地拟合非线性关系的数据。</li>
+  <li>对异常值敏感：线性回归对异常值敏感，可能导致模型的不稳定性。</li>
+  <li>对特征的要求较高：线性回归要求特征之间的关系是线性的，对数据的要求较高。</li>
+</ol>
+
+<h2 id="逻辑回归logistic-regression概述及数学推导">逻辑回归(Logistic Regression)概述及数学推导</h2>
+
+<p>直观来说，用一条直线对一些现有的数据点进行拟合的过程，就叫做回归。<code class="language-plaintext highlighter-rouge">Logistic分类</code>的主要思想：根据现有数据对分类边界建立回归公式，并以此分类。建立拟合参数的过程中用到 <code class="language-plaintext highlighter-rouge">最优化算法</code>,这里用到的是常用的 <code class="language-plaintext highlighter-rouge">梯度上升法</code>。（Logistic回归是用于<strong>二分类问题</strong>的）</p>
+
+<p>逻辑回归也称对数几率回归。</p>
+
+<h3 id="logistic回归分类器sigmoid-函数">Logistic回归分类器，Sigmoid 函数</h3>
+
+<p>我们想要一个函数，接受所有输入并返回我们的预测值，<code class="language-plaintext highlighter-rouge">sigmoid函数</code>符合我们的要求。</p>
+
+\[g(z)=\frac{1}{1+e^{-z}}\]
+
+<p>可以在 z&gt;0，即 g(z)&gt;=0.5的时候，认为其是 A 类别，g(z)&lt;0.5 时认为是 B 类别。因此logistic回归也可以视为概率估计。<strong>进一步的，g(x)的值就是它等于1的概率，即概率密度函数</strong>
+对每个实例对象构造一个特征向量 <code class="language-plaintext highlighter-rouge">x</code>，对 <code class="language-plaintext highlighter-rouge">x</code>乘上一个回归系数 <code class="language-plaintext highlighter-rouge">w</code>，再求和，<code class="language-plaintext highlighter-rouge">sum</code>作为自变量代入 <code class="language-plaintext highlighter-rouge">sigmoid函数</code>，就得到一个 <code class="language-plaintext highlighter-rouge">0-1</code>范围内的数了。接下来确定 <code class="language-plaintext highlighter-rouge">回归系数(weight)</code>。
+<strong>性质：</strong></p>
+
+\[\frac{\partial g(z)}{\partial z}= \frac{e^{-z}}{(1+e^{-z})} =g(z)(1-g(z))\]
+
+<h3 id="最优化理论确定回归系数weightθ">最优化理论确定回归系数（weight/θ）</h3>
+
+<p>回归系数即 <code class="language-plaintext highlighter-rouge">weight/θ</code>，我们初始化回归系数为1，再不停用梯度上升法迭代，优化这个系数，直到最大迭代次数或是 <code class="language-plaintext highlighter-rouge">w</code>达到误差范围内。</p>
+
+<p><code class="language-plaintext highlighter-rouge">sigmoid</code>的输入记为 <code class="language-plaintext highlighter-rouge">z</code>,那么
+$ z=w_0x_0+w_1x_1+…+w_xx_n，$</p>
+
+<p>即$ z = w^T x $, 常 用 θ 来 代 替 $w$
+所以 <code class="language-plaintext highlighter-rouge">sigmoid</code>也可以写为</p>
+
+\[g(\theta^Tx)=h_\theta(x)=\frac{1}{1+e^{-\theta^Tx}}\]
+
+<h4 id="梯度上升法">梯度上升法</h4>
+
+<p>先介绍梯度上升法。要找到某个函数的最大值，最好最快的方法就是沿着函数的梯度方向探寻。如果梯度记为▽（读作“Nabla”），那么函数f(x,y)的梯度由下式表示：</p>
+
+\[\nabla f(x,y)=\begin{bmatrix}\dfrac{\partial(x,y)}{\partial x}\\\dfrac{\partial(x,y)}{\partial y}\end{bmatrix}\]
+
+<p>定性来说，梯度上升求出函数最大值，沿x方向移动$\frac{\partial(x,y)}{\partial x}$,沿y方向移动$\frac{\partial(x,y)}{\partial y}$，这个点有意义且可微。
+再有了方向之后，人为定一个一个“步长” $ \alpha$
+那么可以写成$ w:=w+\alpha \nabla_wf(w)$</p>
+
+<h4 id="数学推导nabla_wfw">数学推导$\nabla_wf(w)$</h4>
+
+<p>回到我们的讨论，为了求出这个$ \theta$，也就是$w$，为了找出最拟合的线，下面用到最大似然函数，让似然函数最大的$\theta$就是题目要求的$\theta$，求解最大的值的过程中，用的就是梯度上升法。
+定义 y 为根据g(z)来判断类别的结果，为1或0。
+首先 g(z) 就是它等于1的<strong>概率</strong>，即概率密度函数，那么根据上述定义:
+\(P(y=1|x;\theta)=h_{\theta}(x)\\
+ P(y=0|x;\theta)=1-h_{\theta}(x)\)</p>
+
+<p>概率函数为(0-1分布)</p>
+
+\[P(y|x;\theta)=(h_{\theta}(x))^y * (1-h_{\theta}(x))^{(1-y)} \space\space\space, y=0,1\]
+
+<p>似然函数，联合概率密度函数：</p>
+
+\[L(\theta)=\prod_{i=1}^{m} P(y^{(i)}|x^{(i)};\theta)\]
+
+<p>即：</p>
+
+\[L(\theta)=\prod_{i=1}^{m} {(h_{\theta}(x^{(i)}))^{y^{(i)}}} *{(1-h_{\theta}(x^{(i)}))^{1-y^{(i)}}}\]
+
+<p>取对数似然函数(目标函数，梯度上升):</p>
+
+\[l(\theta)=log(L(\theta))=\sum_{i=1}^{m} {y^{(i)}}log{(h_{\theta}(x^{(i)}))} + ({1-y^{(i)}})log{(1-h_{\theta}(x^{(i)}))}\]
+
+<hr />
+
+<p>其梯度算子：</p>
+
+<p>代入$h_\theta(x)$，求导:</p>
+
+\[\frac{\partial }{\partial \theta}l(\theta)=(y\frac{1}{g(\theta^Tx)}-(1-y)\frac{1}{1-g(\theta^Tx)})\frac{\partial}{\partial \theta}(g(\theta^Tx))\\
+=(y−h_θ(x))x\]
+
+<p>所以:($\alpha$是学习率)</p>
+
+\[\theta:=\theta+\alpha \sum_{j=1}^{m} (y-h_\theta(x))x\]
+
+<p>$θ$即$w$</p>
+
+<p>写成矩阵形式：</p>
+
+\[\theta:=\theta-\alpha* (sigmoid(X\theta^{(\tau )})-Y)X\]
+
+<h3 id="逻辑回归的优点和缺点">逻辑回归的优点和缺点：</h3>
+
+<p>优点：</p>
+
+<ol>
+  <li>适用于分类问题：逻辑回归适用于解决二分类问题，能够输出分类概率。</li>
+  <li>计算效率高：逻辑回归的计算成本相对较低，适用于大规模数据集。</li>
+  <li>输出概率值：逻辑回归可以输出分类的概率值，便于进行阈值调整。</li>
+</ol>
+
+<p>缺点：</p>
+
+<ol>
+  <li>对特征工程要求高：逻辑回归对特征的线性关系要求较高，需要进行特征工程处理。</li>
+  <li>容易欠拟合：当特征之间的关系复杂时，逻辑回归容易欠拟合。</li>
+  <li>处理多分类困难：逻辑回归通常只适用于二分类问题，对多分类问题的处理相对困难。</li>
+</ol>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2023/12/07/CG-FinalProject/" data-toggle="tooltip" data-placement="top" title="用OpenGL搭建并渲染一个场景">
+                        Previous<br>
+                        <span>用OpenGL搭建并渲染一个场景</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2023/12/12/Database-Supermarket/" data-toggle="tooltip" data-placement="top" title="超市管理数据库设计">
+                        Next<br>
+                        <span>超市管理数据库设计</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+
+                <!--   gitalk       -->
+                <div class="comment">
+                <div id="gitalk-container"></div>
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+                <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+                <script>
+                var gitalk = new Gitalk({
+                    id: location.pathname,
+                    clientID: '0db4b4c6d83c061f6b30',
+                    clientSecret: 'e1651c09f1a49b2b4a544cd584d3e8a55454a48a',
+                    repo: 'BlogComment',
+                    owner: 'jaredddddd',
+                    admin: ['jaredddddd'], 
+                    labels: ['Gitalk'],
+                })
+                gitalk.render('gitalk-container')
+                </script> 
+                </div>
+
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0036" 
+                    href="/archive/?tag=Computer-Organization"
+                    title="Computer-Organization"
+                    rel="21">Computer-Organization</a>
+        
+                <a data-sort="0018" 
+                    href="/archive/?tag=NOTES"
+                    title="NOTES"
+                    rel="39">NOTES</a>
+        
+                <a data-sort="0041" 
+                    href="/archive/?tag=Project"
+                    title="Project"
+                    rel="16">Project</a>
+        
+                <a data-sort="0042" 
+                    href="/archive/?tag=AI"
+                    title="AI"
+                    rel="15">AI</a>
+        
+                <a data-sort="0048" 
+                    href="/archive/?tag=OS"
+                    title="OS"
+                    rel="9">OS</a>
+        
+                <a data-sort="0052" 
+                    href="/archive/?tag=ML"
+                    title="ML"
+                    rel="5">ML</a>
+        
+                <a data-sort="0053" 
+                    href="/archive/?tag=PatternRecognition"
+                    title="PatternRecognition"
+                    rel="4">PatternRecognition</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Blog"
+                    title="Blog"
+                    rel="3">Blog</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Distributed-System"
+                    title="Distributed-System"
+                    rel="3">Distributed-System</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=ANN"
+                    title="ANN"
+                    rel="2">ANN</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CPU%E8%AE%BE%E8%AE%A1"
+                    title="CPU设计"
+                    rel="2">CPU设计</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CompilationPrinciple"
+                    title="CompilationPrinciple"
+                    rel="2">CompilationPrinciple</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     TeX: {
+       equationNumbers: {
+         autoNumber: "AMS"
+       }
+     },
+     SVG: {
+       scale: 90
+     },
+     tex2jax: {
+       inlineMath: [ ['$','$'] ],
+       displayMath: [ ['$$','$$'] ],
+       processEscapes: true,
+     }
+   });
+ </script>
+ <script type="text/javascript"
+         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+
+.post-container {
+    background: #fcfbfb; /* 背景颜色 */
+    border-radius: 25px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    padding-top: 40px; /* 特别增加顶部内边距 */
+    margin-top: 20px; /* 添加顶部外边距 */
+    /* margin-left: 40px; */
+    /* width: 900px; */
+}
+
+
+/* 在宽屏幕设备上应用特定样式 */
+@media (min-width: 1024px) {
+  .post-container {
+    margin-left: 40px; /* 向左扩展 */
+    width: 900px; /* 设置宽度 */
+  }
+  .side-catalog{
+    width: 250px;
+  }
+}
+
+.post-container:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* 当鼠标悬停时增加阴影效果 */
+}
+
+.side-catalog {
+    background: #ffffff; /* 背景颜色 */
+    border-radius: 15px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    margin-left: 10pt;
+    /* width: 200px; */
+
+}
+
+
+
+.catalog-container {
+    /* ... 其他样式 ... */
+    display: none; /* 默认不显示catalog */
+    transition: all 0.3s ease; /* 过渡效果 */
+    margin-top: 20px; /* 添加顶部外边距 */
+}
+
+</style>
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; LvKouKou Blog 2025
+                    <br>
+                    <!--  删掉了作者Hux Blog
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                    -->
+                    <!-- 不蒜子 -->
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                    您是Blog的第<span id="busuanzi_value_site_uv"></span>个小伙伴 </br>
+                     <span id="busuanzi_container_page_pv">
+                        本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<!-- 自己添加的 -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TNVD6PR5TQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNVD6PR5TQ');
+</script>
+<!-- 自己添加的 -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        // a = P.find('h1,h2,h3,h4,h5,h6');
+        a = P.find('h1,h2,h3,h4');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<!--鼠标点击爱心动画-->
+<script type="text/javascript" src="/js/love.js"></script>
+</body>
+
+</html>

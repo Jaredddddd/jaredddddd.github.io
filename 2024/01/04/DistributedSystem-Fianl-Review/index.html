@@ -1,0 +1,2772 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @LvKouKou 的个人博客，与你一起发现更大的世界 | 要做一个想环游世界的程序员">
+    <meta name="keywords" content="LvKouKou, jaredddddd, @jaredddddd, LvKouKou Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <link
+  rel="stylesheet"
+  href="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+/>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  defer="defer"
+></script>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  defer="defer"
+  onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
+></script>
+    <script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/mathtex-script-type.min.js"
+  defer="defer"
+></script>
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="中山大学分布式系统期末总结 - LvKouKou的博客 | LV Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="分布式系统期末总结
+
+">
+    
+    <meta property="article:published_time" content=" 2024-01-04T00:00:00Z">
+    
+    
+    <meta property="article:author" content="LvKouKou">
+    
+    
+    <meta property="article:tag" content="Distributed-System">
+    
+    <meta property="article:tag" content="NOTES">
+    
+    
+    <meta property="og:image" content="https://jaredddddd.github.io/img/LVKOUKOU.jpg">
+    <meta property="og:url" content="https://jaredddddd.github.io/2024/01/04/DistributedSystem-Fianl-Review/">
+    <meta property="og:site_name" content="LvKouKou的博客 | LV Blog">
+
+    <title>中山大学分布式系统期末总结 - LvKouKou的博客 | LV Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jaredddddd.github.io/2024/01/04/DistributedSystem-Fianl-Review/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* 打字机效果的样式 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #666 }
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid #666;
+            white-space: nowrap;
+            word-wrap: break-word;
+            letter-spacing: .1em;
+            width: fit-content;
+            margin: 0 auto;
+            animation: 
+                typing 2s steps(40, end), /* 打字机效果, 3s 完成打字, 每步40个字符 */
+                blink-caret .75s step-end infinite; /* 光标闪烁效果, 0.75s 完成一次闪烁  */
+        }
+
+        /* 添加包装容器样式 */
+        .typing-wrapper {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%; /* 确保不会超出父容器 */
+        }
+
+        /* 添加响应式样式 */
+        @media (max-width: 768px) {
+        .typing-effect {
+            font-size: 16px; /* 在手机上可以适当调整字体大小 */
+            letter-spacing: normal; /* 在手机上减小字间距 */
+        }
+    }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptions = document.getElementsByClassName('subheading');
+            if (descriptions.length > 0) {
+                const description = descriptions[0];
+                const text = description.textContent;
+                description.innerHTML = `<span class="typing-wrapper"><span class="typing-effect">${text}</span></span>`;
+            }
+        });
+    </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">LvKouKou Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/resume-home/">Resume</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/roadtrip/">On The Road</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="Searching...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!--//添加评论系统gitalk-->
+<link rel="stylesheet" href="../../../../css/gitalk.css">
+<script src="../../../../js/gitalk.min.js"></script>
+
+<!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=Distributed-System" title="Distributed-System">Distributed-System</a>
+                        
+                        <a class="tag" href="/archive/?tag=NOTES" title="NOTES">NOTES</a>
+                        
+                    </div>
+                    <h1>中山大学分布式系统期末总结</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by LvKouKou on January 4, 2024</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="分布式系统期末总结">分布式系统期末总结</h1>
+
+<h2 id="第一章-简介">第一章 简介</h2>
+
+<h3 id="1-分布式系统的定义及特点">1、 分布式系统的定义及特点；</h3>
+
+<p><strong>定义</strong>： 分布式系统是若干独立自主计算机的集合，这些计算机对于用户来说像是单个耦合系统。（物理分散，逻辑统一）</p>
+
+<p><strong>特点</strong>：</p>
+
+<p>自主性：计算节点硬件或者软件进程是独立的。</p>
+
+<p>耦合性：用户/应用程序感觉系统是一个系统构成组件被所有用户共享系统资源可能不允许访问</p>
+
+<p><strong>特性</strong>：</p>
+
+<ul>
+  <li>构成组件被所有用户共享；</li>
+  <li>系统资源可能不允许访问；</li>
+  <li>软件运行在不同处理器上的多个并发进程上；</li>
+  <li>允许多点控制；</li>
+  <li>允许多点失效；</li>
+</ul>
+
+<hr />
+
+<h3 id="分布式系统的8个谬误构建分布式系统陷阱--">分布式系统的8个谬误(构建分布式系统：陷阱  )</h3>
+
+<ol>
+  <li>网络可靠</li>
+  <li>延迟为0</li>
+  <li>带宽无限</li>
+  <li>网络安全</li>
+  <li>拓扑不变</li>
+  <li>只有一个管理者</li>
+  <li>传输花费为0</li>
+  <li>网络是同类的</li>
+</ol>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226104416533.png" alt="image-20231226104416533" style="zoom:50%;" /></p>
+
+<hr />
+
+<h3 id="分布式系统的目标">分布式系统的目标</h3>
+
+<ol>
+  <li>
+    <p><strong>资源可访问</strong>：让用户方便地访问资源</p>
+  </li>
+  <li>
+    <p><strong>透明性</strong>：隐藏进程和资源在多台计算机上分布这一事实</p>
+  </li>
+  <li>
+    <p><strong>开放性</strong>：分布式系统的开放性指：系统根据一系列准则来提供服务，这些准则描述了所提供服务的语法和语义 （标准化）  重点： 策略与机制分离</p>
+  </li>
+  <li>
+    <p><strong>可扩展性</strong></p>
+  </li>
+</ol>
+
+<hr />
+
+<h3 id="2-分布式系统透明性主要包括哪几方面并简要描述">2、 分布式系统透明性主要包括哪几方面？并简要描述。</h3>
+
+<p>访问-&gt;隐藏数据表示<strong>形式的不同</strong>以及资源<strong>访问方式的不同</strong></p>
+
+<p>位置-&gt;隐藏资源所在位置</p>
+
+<p>迁移-&gt;隐藏资源是否移动到另一个位置</p>
+
+<p>重定位-&gt;隐藏资源是否在<strong>使用过程中</strong>移动到另一个位置</p>
+
+<p>复制-&gt;隐藏是否对资源进行复制</p>
+
+<p>并发-&gt;隐藏资源是否由相互竞争的用户共享</p>
+
+<p>故障-&gt;隐藏资源的故障和恢复</p>
+
+<p>持久化-&gt;隐藏数据在主存和磁盘这一事实</p>
+
+<p><strong>透明性与性能的折衷-&gt;时延不能隐藏。</strong></p>
+
+<hr />
+
+<h3 id="3-策略和机制有什么不同">3、 策略和机制有什么不同？</h3>
+
+<p>策略是具体的实现 机制是抽象的设计</p>
+
+<p>大部分的编程问题都可以被切割成两个部分： “需要提供什么功能” （机制）和“怎样实现这些功 能” （策略）。如果由程序中的独立部分分别负责机制和策略的实现，那么开发软件就更容易，也 更容易适应不同的需求。机制策略分离的好处:相当于把一个项目分解成稳定和不稳定的两个部分。一旦用户需求发生改变，只需 要改变策略即可，机制部分只需少许修改或者完全不需要修改。</p>
+
+<hr />
+
+<h3 id="4-分布式系统的可扩展性包括哪些方面-有哪些技术可以实现可扩展性">4、 分布式系统的可扩展性包括哪些方面？ 有哪些技术可以实现可扩展性。</h3>
+
+<p>三个方面的扩展性  ：</p>
+
+<ol>
+  <li>规模可扩展性：用户数量和进程数量增加；</li>
+  <li>地理可扩展性：节点之间的最大物理位置；</li>
+  <li>管理可扩展性：管理域的数量；</li>
+</ol>
+
+<blockquote>
+  <p>技术：在大多数情况下，分布式系统的扩展性问题一般会体现在<strong>服务器有限的性能</strong>与<strong>网络有限的带宽</strong>，可以从下面两个方向考虑：</p>
+
+  <p>垂直扩展：增加服务器的内存，升级服务器的 CPU，。</p>
+
+  <p>水平方向：增加更多的服务器隐藏等待时间（异步通信）分布，将某个组件分割成多个部分，然后再将它们分散到系统中去复制，将组件进行复制，然后将它们分散到 系统中去</p>
+</blockquote>
+
+<p><strong>基本上只有三种扩展技术:</strong></p>
+
+<ol>
+  <li>隐藏通信延迟（隐藏通信的等待时间） :基本想法很简单：尽量避免等待远程服务对请求的响应。
+    <ol>
+      <li>利用异步通信技术；</li>
+      <li>设计分离的响应消息处理器（分发）</li>
+      <li>将计算从服务器端移动到客户端</li>
+    </ol>
+  </li>
+  <li>
+    <p>分布:在多个机器上划分数据和计算（例如DNS系统和万维网WWW）</p>
+  </li>
+  <li>
+    <p>复制:复制和缓存：在多个不同的机器上创建多个数据副本（解决性能下降，那么复制组件到多个机器上）</p>
+
+    <ol>
+      <li>复制文件服务器和数据库；</li>
+      <li>Web站点进行镜像；</li>
+      <li>Web缓存（在浏览器或者代理位置）；</li>
+      <li>文件缓存（在服务器和客户端）；</li>
+    </ol>
+
+    <blockquote>
+      <p>缓存是复制的特殊形式，由要访问资源的用户决定</p>
+    </blockquote>
+  </li>
+</ol>
+
+<hr />
+
+<h3 id="5-集群系统和网格之间的区别">5、 集群系统和网格之间的区别；</h3>
+
+<p>分布式<strong>计算</strong>系统类型可分为</p>
+
+<ol>
+  <li>集群计算系统</li>
+  <li>网格计算系统</li>
+  <li>云</li>
+</ol>
+
+<p>集群系统：底层硬件是由类似的工作站或 PC 机组成，通过高速的局域网紧密联系起来，而且每个节点运行的是相同的操作系统。</p>
+
+<p>集群计算系统本质上是通过LAN连接起来的高端计算系统</p>
+
+<ul>
+  <li>同构： 相同的OS， 近乎相似的硬件；</li>
+  <li>单个管理节点；</li>
+</ul>
+
+<hr />
+
+<p>网格：其中的每个系统<strong>归属于不同的管理域</strong>，而且在硬件、软件和部署网络技术上面也差别比较大，<strong>异构</strong>性比较大，硬件、 OS、网络、管理域、安全策略都不尽相同，容易扩展到广域网的环境中</p>
+
+<p>区别：集群是同构的，网格是异构的集群处于同一个 LAN， 网格的范围可能更广。</p>
+
+<hr />
+
+<p>如何集成应用：</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226110144676.png" alt="image-20231226110144676" /></p>
+
+<hr />
+
+<h3 id="6-云计算作为一种新的计算模式适用于所有企业">6、 云计算作为一种新的计算模式适用于所有企业？</h3>
+
+<ul>
+  <li>不能这样说，需要根据实际情况来判断。如果容量变化比较大，那么用云计算是比较合适的，因为这样能够动态扩容，同时也减少了在高峰期宕机的可能性，同时节省了成本。</li>
+  <li>
+    <p>但是部署云计算本身就是有成本的，企业向云计算迁移的成本可能是比较大的。</p>
+  </li>
+  <li>对于公有云环境下，安全性还存在很大问题，因此对安全性或保密性有比较高要求的企业就不能使用。还有如果所需要的硬件设备云计算服务商不提供也不适合。</li>
+</ul>
+
+<hr />
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226110254578.png" alt="image-20231226110254578" /></p>
+
+<hr />
+
+<h2 id="第二章-架构">第二章 架构</h2>
+
+<hr />
+
+<h3 id="7-主要的软件体系结构包括哪几种有什么特点">7、 主要的软件体系结构包括哪几种？有什么特点？</h3>
+
+<p>A． 分层体系结构：常见的网络协议实现
+B． 基于对象的体系结构：基于 RPC 来进行通信
+C． 基于事件的体系结构：通过事件的传播
+D． 以数据为中心的体系结构：</p>
+
+<hr />
+
+<h3 id="8-主要的系统体系结构包括哪几种有什么特点与软件体系结构的主要区别是什么">8、 主要的系统体系结构包括哪几种？有什么特点？与软件体系结构的主要区别是什么？</h3>
+
+<p>系统体系结构有</p>
+
+<ol>
+  <li>集中式体系结构</li>
+  <li>非集中式体系结构</li>
+  <li>混合组织结构</li>
+</ol>
+
+<p>与软件的区别在于：</p>
+
+<ol>
+  <li>软件体系结构：告诉我们不同的软件组件是如何组织的，应如何相互作用</li>
+  <li>确定软件组件，这些组件的交互以及它们的位置就是软件体系结构的一个实例，又称为系统体系结构</li>
+</ol>
+
+<hr />
+
+<h3 id="9-分布式的分层结构">9、 分布式的分层结构</h3>
+
+<ol>
+  <li>用户接口层：
+    <ol>
+      <li>用户接口层包含系统与用户直接交互的单元；例如：显示 管理</li>
+    </ol>
+  </li>
+  <li>应用处理层
+    <ol>
+      <li>包含应用的主要函数，但是，不与具体的数据绑定</li>
+    </ol>
+  </li>
+  <li>数据层
+    <ol>
+      <li>数据层管理应用使用的实际数据</li>
+    </ol>
+  </li>
+</ol>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226100924506.png" alt="image-20231226100924506" /></p>
+
+<hr />
+
+<h3 id="10-非集中化p2p的体系结构主要类型包括哪些">10、 非集中化（P2P）的体系结构主要类型包括哪些？</h3>
+
+<ol>
+  <li>垂直分布： 系统逻辑分层，不同层次分布于不同的机器上</li>
+  <li>水平分布 ： 客户或者服务器在物理上分成逻辑上相等的几个部分，每个部分相对独立，且分布在不同的机器上</li>
+</ol>
+
+<p>其中点对点就是支持水平分布的系统</p>
+
+<ol>
+  <li>结构化的点对点体系结构</li>
+  <li>非结构化的点对点体系结构</li>
+  <li>覆盖网络</li>
+  <li>超级对等体</li>
+</ol>
+
+<hr />
+
+<h3 id="11-chord-结构的生成和查找算法-下面会有专门的指纹表介绍略过">11、 Chord 结构的生成和查找算法； (下面会有专门的指纹表介绍，略过)</h3>
+
+<p>结构化的P2P系统，覆盖网络是用一个确定性的过程来构成的，最多的是使用分布式哈希表DHT来组织的。</p>
+
+<p>结构化P2P系统例子：Chord：关键值k的数据项映射到最新标识符id&gt;=k的节点，该节点称为关键值k的后继者，记为succ（k）</p>
+
+<blockquote>
+  <p>这里不做详细介绍，在第五章时介绍各种命名系统时再介绍详细内容</p>
+</blockquote>
+
+<hr />
+
+<h3 id="12-非结构化的点对点系统搜索内容的方式">12、 非结构化的点对点系统搜索内容的方式？</h3>
+
+<blockquote>
+  <p>动态随机的邻接表DHT</p>
+</blockquote>
+
+<p>构造方法：</p>
+
+<ol>
+  <li>每个节点都维护一个含有 c 个邻接点的列表（随机部分视图）</li>
+  <li>节点之间可以通过推或拉的方式获得对方的随机部分视图</li>
+</ol>
+
+<p>方法：（PPT2-36）</p>
+
+<ul>
+  <li>泛洪：请求节点向它所有邻居节点发出数据搜索请求，如果已经收到过就会被忽略，否则就会在本节点中查找数据项。</li>
+  <li>随机游走：请求发送节点u从邻居节点中随机选择一个节点，然后进行本地搜索，如果没有完成，就继续随机选一个邻居继续搜索，直到搜索到达目标或终止情况。</li>
+</ul>
+
+<hr />
+
+<h3 id="13-什么是超级对等节点如何确定超级节点">13、 什么是超级对等节点？如何确定超级节点？</h3>
+
+<p>定义：能维护一个缩影或充当一个代理程序的节点</p>
+
+<blockquote>
+  <p>超级对等节点是维护一个索引或充当一个代理程序的节点。在非结构化P2P进行搜索的时候，客户会通过超级对等节点去搜索数据，索引服务器会提高搜索性能，更快定位数据。</p>
+
+  <p>所有往来于常规对等体的通信都是先通过与该对等体关联的超级对等体。一个对等体只要加入到网络中它就只归依某个超级对等体。</p>
+</blockquote>
+
+<p>ch6 中，有领导者选举算法 P193-194</p>
+
+<ol>
+  <li>方法一：使用 DHT 中前 k 位作为超级节点标识符</li>
+  <li>方法二：使用多令牌推动力，使得令牌在二维网络中均匀散布</li>
+</ol>
+
+<hr />
+
+<h3 id="14-在-p2p-系统中节点之间连接的方式">14、 在 P2P 系统中节点之间连接的方式；</h3>
+
+<p>P2P系统分为结构化P2P结构、非结构化P2P结构、混合P2P结构。</p>
+
+<ul>
+  <li>结构化P2P系统将节点组织在一个特定结构的覆盖网络，如环型的Chord结构，</li>
+  <li>非结构化P2P结构的邻接点是随机的，每个节点维护一张动态随机的邻接表构建随机图，边&lt;u,v&gt;存在的概率为P(&lt;u,v&gt;) 。节点周期性的从部分视图中选择别的节点交换信息。</li>
+  <li>混合P2P系统把客户-服务器体系结构和非集中式体系结构组合在了一起。</li>
+</ul>
+
+<hr />
+
+<ol>
+  <li>若都在公共网络上，则控制报文用 tcp，通信使用 udp</li>
+  <li>a 在防火墙内的话，先通过超级对等节点 s 建立 tcp 进行控制报文的中继，然后依旧
+ 使用 udp 传输数据</li>
+  <li>若 ab 都在防火墙内的话， 控制报文和通信都需要使用超级对等节点来中继</li>
+</ol>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226114342681.png" alt="image-20231226114342681" style="zoom: 50%;" /></p>
+
+<hr />
+
+<h3 id="15-分布式系统的自我管理">15、 分布式系统的自我管理；</h3>
+
+<p>出现问题能够自我优化、恢复。在需要完成自适应功能时， 系统架构和软件架构之间的界线逐渐模糊。</p>
+
+<h2 id="第三章-进程">第三章 进程</h2>
+
+<h3 id="16-分布式系统中为什么利用线程而不是进程">16、 分布式系统中为什么利用线程而不是进程？</h3>
+
+<ol>
+  <li><strong>避免不必要的阻塞</strong>，在进行 I/O 操作的时候，对具备多个线程的进程， OS 可以将CPU 切换到进程的另外 一个线程</li>
+  <li><strong>发挥并行性</strong></li>
+  <li>避免代价过高的<strong>进程上下文的切换</strong></li>
+</ol>
+
+<hr />
+
+<p>线程变多并行度不会无限增加，最多是1.5-2.5之间</p>
+
+<hr />
+
+<h3 id="17-虚拟机化主要包含哪些方式简要描述">17、 虚拟机化主要包含哪些方式，简要描述？</h3>
+
+<p>进程虚拟机（Process VM）：实际上是运行在操作系统之上的解释器或者模拟器
+原生虚拟机监控器（Native VMM）：底层指令，同时具有跑在硬件上的最小的操作系统
+主机虚拟机监控器（Hosted VMM）：底层指令，但是需要一个完整的 OS</p>
+
+<ol>
+  <li>进程虚拟机：是一个独立的指令集，在操作系统只上运行一个解释器对指令解释运行比如JAVA的虚拟机就是这样工作的。（（JVM）  ）</li>
+  <li>原生虚拟机监控器：虚拟机监控器安装在物理硬件上，将硬件拆分成多个虚拟机，在其上安装不同的操作系统（双系统）</li>
+  <li>主机虚拟机监控器，需要安装在主机的操作系统之上，然后再其上安装多个不同操作系统。（如：VMware ）</li>
+</ol>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226131532207.png" alt="image-20231226131532207" style="zoom: 25%;" /></p>
+
+<hr />
+
+<h3 id="18-在客户端-服务器模型中服务器的状态主要分为几种简要解释">18、 在客户端-服务器模型中，服务器的状态主要分为几种，简要解释。</h3>
+
+<ol>
+  <li>状态无关服务器（可用cookies），性能低</li>
+  <li>状态相关服务器：一直保存客户端的信息直到显式地删除，可以预测用户行为，性能高</li>
+</ol>
+
+<hr />
+
+<h3 id="19-简述如何实现代码迁移-代码迁移的模型-如何区分强迁移和弱迁移">19、 简述如何实现代码迁移？ 代码迁移的模型？ 如何区分强迁移和弱迁移？</h3>
+
+<ol>
+  <li>背景：分布式系统的通信可能需要传递程序以简化分布式系统设计</li>
+  <li>
+    <p>方法：</p>
+
+    <ol>
+      <li>
+        <p>进程包含以下三段：<strong>代码段，资源段，执行段</strong></p>
+      </li>
+      <li>
+        <p>迁移的区分：发送者启动，接受者启动</p>
+      </li>
+    </ol>
+  </li>
+</ol>
+
+<p>在代码迁移模型中，进程由如下三段组成</p>
+
+<ol>
+  <li>代码段：包含构成正在运行的程序的所有指令</li>
+  <li>资源段：包含指向进程需要的外部资源的指针，如打印机等</li>
+  <li>执行段：存储进程当前执行状态量，比如寄存器、栈等</li>
+</ol>
+
+<hr />
+
+<p>迁移涉及两个问题：迁移整个内存映象和迁移对本地资源的绑定。第一个问题有三种结局方案：</p>
+
+<p>将内存持续的推送到新的机器上，在迁移过程中重新发送被修改过的页面</p>
+
+<p>停止当前的虚拟机，迁移内存，然后重新启动虚拟机</p>
+
+<p>让新的虚拟机按序拉取内存页面：在新的虚拟机上立即创建进程， 并且按需要拷贝内存页面</p>
+
+<hr />
+
+<p><del><strong>弱可移动性</strong>： 仅仅移动代码和数据片段（重启执行）</del></p>
+
+<ol>
+  <li><del>相对简单，特别是如果代码是可移植的 （目标机器能够运行代码）</del></li>
+  <li><del>需要区分两种模式：代码推送（Push）和代码拉取（Pull）</del></li>
+</ol>
+
+<p><del><strong>强可移动性</strong>： 移动组件，包括执行状态 ，可以从中断位置开始执行</del></p>
+
+<ol>
+  <li><del>迁移（Migration）：将整个对象从一个机器移动到另外一个机器</del></li>
+  <li><del>克隆（Cloning）：开始克隆，将其设置为相同的执行状态</del></li>
+</ol>
+
+<hr />
+
+<p>4个模型:</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226132250310.png" alt="image-20231226132250310" style="zoom: 25%;" /><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226132315194.png" alt="image-20231226132315194" style="zoom: 25%;" /></p>
+
+<ol>
+  <li>强弱：</li>
+</ol>
+
+<p>弱移动性：仅仅移动代码和数据片段</p>
+
+<p>强移动性：移动组件，包括执行状态</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226132428342.png" alt="image-20231226132428342" style="zoom:33%;" /></p>
+
+<h3 id="20-虚拟机迁移的种类及主要特点">20、 虚拟机迁移的种类及主要特点？</h3>
+
+<p>强、弱</p>
+
+<p><strong>弱可移动性</strong>： 仅仅移动代码和数据片段（重启执行）</p>
+
+<ol>
+  <li>相对简单，特别是如果代码是可移植的 （目标机器能够运行代码）</li>
+  <li>需要区分两种模式：代码推送（Push）和代码拉取（Pull）</li>
+</ol>
+
+<p><strong>强可移动性</strong>： 移动组件，包括执行状态 ，可以从中断位置开始执行</p>
+
+<ol>
+  <li>迁移（Migration）：将整个对象从一个机器移动到另外一个机器</li>
+  <li>克隆（Cloning）：开始克隆，将其设置为相同的执行状态</li>
+</ol>
+
+<hr />
+
+<ol>
+  <li><del>将内存持续的推送到新的机器上，在迁移过程中重新发送被修改过的页面</del></li>
+  <li><del>停止当前的虚拟机，迁移内存，然后重新启动虚拟机</del></li>
+  <li><del>让新的虚拟机按序拉取内存页面：在新的虚拟机上立即创建进程， 并且按需要拷贝内存页面</del></li>
+</ol>
+
+<hr />
+
+<h3 id="为什么需要虚拟化">为什么需要虚拟化？</h3>
+
+<p>负载分布</p>
+
+<ul>
+  <li>确保数据中心中的服务器的复杂运行更加充分（防止浪费能源）</li>
+  <li>让计算更加贴近数据端，最小化通信代价（例如移动计算）</li>
+</ul>
+
+<p>灵活性</p>
+
+<ul>
+  <li>当需要的时候将代码迁移到客户端</li>
+</ul>
+
+<hr />
+
+<p>虚拟化是一种计算方法，它允许一台物理计算机充当多台虚拟计算机。通过软件抽象层，一台计算机可以被有效地分割成多个“虚拟”机器。虚拟化的主要好处包括降低成本、提高可用性、提高效率、简化DevOps、以及对环境和环境友好。</p>
+
+<blockquote>
+  <p>实现软硬件的多路复用</p>
+</blockquote>
+
+<ol>
+  <li>
+    <p>降低成本：虚拟化可以最大限度地利用现有硬件，减少购买和维护未充分利用的服务器的成本。</p>
+  </li>
+  <li>
+    <p>提高可用性：虚拟化环境不受硬件限制，可以轻松备份、复制和克隆虚拟机到不同的物理硬件上，从而提高系统的弹性和可用性。</p>
+  </li>
+  <li>
+    <p>高可用性：虚拟化环境可以轻松设置冗余环境，通过监控虚拟机状态并在发生故障时快速切换到备用虚拟机，实现极其可靠的系统，无论硬件或软件出现问题，都能无缝继续运行。</p>
+  </li>
+  <li>
+    <p>提高效率：虚拟环境比物理环境更易于维护。您可以从单个计算机上配置、监视和更新所有虚拟机，节省了部署更新、实施安全补丁和安装新软件的时间。</p>
+  </li>
+  <li>
+    <p>简化DevOps：虚拟化可以有效地分割生产和开发环境，无需额外的硬件。开发人员可以轻松克隆虚拟机来设置测试环境，而无需担心增加新硬件。</p>
+  </li>
+  <li>
+    <p>对环境和环境友好：虚拟化减少了硬件需求，从而降低了能源消耗，最终减少了碳排放。这对环境和您的收入都有好处。</p>
+  </li>
+</ol>
+
+<p>总之，虚拟化是一种节约成本、提高效率、提高可用性的计算方法，对于任何企业或开发环境都具有重要意义。</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231228144943732.png" alt="image-20231228144943732" style="zoom: 33%;" /></p>
+
+<h2 id="第四章-通信">第四章 通信</h2>
+
+<p>四种通信类型：</p>
+
+<p>1.瞬时通信和 2. 持久通信</p>
+
+<p>3.异步通信和 4.同步通信</p>
+
+<p>瞬态通信：当消息不能传递到另外一个服务器的时候，丢弃消息；</p>
+
+<p>持久通信：消息存储在通信服务器直到消息被传递出去；</p>
+
+<hr />
+
+<p>还有基于流的通信</p>
+
+<hr />
+
+<h3 id="21-rpc-远程过程调用的概念及主要步骤">21、 RPC 远程过程调用的概念及主要步骤？</h3>
+
+<ol>
+  <li>定义：本地程序允许调用其他机器上的进程</li>
+  <li>客户端调用 RPC，后，实际调用的函数为客户端函数存根stub，函数存根完成：
+    <ol>
+      <li>打包参数</li>
+      <li>调用 send 过程</li>
+      <li>调用 receive 过程，阻塞自己直到收到响应信息</li>
+    </ol>
+  </li>
+  <li>服务器上，具有服务器函数存根stub，完成：
+    <ol>
+      <li>提取参数</li>
+      <li>调用函数</li>
+      <li>send 结果，然后继续 receive 参数，阻塞自己</li>
+    </ol>
+  </li>
+</ol>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226151133193.png" alt="image-20231226151133193" /></p>
+
+<hr />
+
+<p>机器 A 上的进程调用机器 B 上的进程时，A 上的调用进程被挂起，B 上的调用进程开始执行。调用方可以通过使用参数将信息传送给被调用方，然后可以通过传回的结果得到信息。编程人员看不到任何消息传递的过程。</p>
+
+<ol>
+  <li>客户过程以正常的方式调用客户存根；</li>
+  <li>客户存根生成一个消息，然后调用本地 OS；</li>
+  <li>客户端操作系统将消息发送给远程操作系统；</li>
+  <li>远程操作系统将消息交给服务器存根；</li>
+  <li>服务器存根将参数提取出来，然后调用服务器；</li>
+  <li>服务器执行执行要求的操作，操作完成后将结果返回给服务器存根；</li>
+  <li>服务器存根将打包成一个消息，然后调用本地操作系统；</li>
+  <li>服务器操作系统将含有结果的消息发送回客户端操作系统；</li>
+  <li>客户端操作系统将消息交给客户存根；</li>
+  <li>客户存根将结果从消息中提取出来，返回给调用它的客户进程。</li>
+</ol>
+
+<hr />
+
+<h3 id="22-使用-socket-进行网络通信的主要模式及主要过程">22、 使用 socket 进行网络通信的主要模式及主要过程</h3>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226101320751.png" alt="image-20231226101320751" /></p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226151640826.png" alt="image-20231226151640826" /></p>
+
+<hr />
+
+<h3 id="23-什么是点对点通信广播和多播">23、 什么是点对点通信、广播和多播？</h3>
+
+<ol>
+  <li>点对点通信：分布式系统中两个特定实体之间的通信</li>
+  <li>广播：一个特定实体将消息发送到系统中其他所有实体</li>
+  <li>多播：一个特定实体将消息发送到一组特定实体中</li>
+</ol>
+
+<hr />
+
+<p>简述 SSP 即转发指针的工作原理？（了解即可PPT5-13）</p>
+
+<hr />
+
+<h3 id="24-简述-gossip-数据通信和反熵通信模型">24、 简述 Gossip 数据通信和反熵通信模型？</h3>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226152529747.png" alt="image-20231226152529747" style="zoom: 25%;" /></p>
+
+<ol>
+  <li>
+    <p>rumor Spreading 流言传播</p>
+
+    <ol>
+      <li>如果节点 P 正更新数据项 x，那么它将与<strong>任意节点</strong> Q 通信，并将更新信息发送给 Q，若 Q 已经更新过 了，那么 P 有 1/k 的概率变成已隔离的。</li>
+    </ol>
+
+    <p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226152610403.png" alt="image-20231226152610403" style="zoom:25%;" /></p>
+  </li>
+  <li>
+    <p>anti-entropy 反熵模型</p>
+    <ol>
+      <li>
+        <p>节点 P 随机选取另一个节点 Q，然后与 Q 交换更新信息</p>
+
+        <ol>
+          <li>基于 pull 、 基于 push、基于 push-pull</li>
+        </ol>
+
+        <blockquote>
+          <p>push_pull的效率最高，是需要O(log n)即可达成一致</p>
+        </blockquote>
+      </li>
+    </ol>
+
+    <p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226152554648.png" alt="image-20231226152554648" style="zoom: 25%;" /></p>
+  </li>
+</ol>
+
+<p>结点P随机选取另一节点Q，然后与Q交换更新信息。</p>
+
+<ol>
+  <li>P只是把它自己的更新信息发出给Q，即为push的方法</li>
+  <li>P只是从Q那里获得更新信息，即为基于pull的方法</li>
+  <li>P和Q相互发送更新信息给对方，基于push-pull的方法</li>
+</ol>
+
+<p>只基于push的方法是一个不好的选择。在基于push的方法中，更新信息只能由已感染的结点来传播。如果已经感染的结点很多，选择一个易感染的结点的概率就小，到后面速度会比较慢</p>
+
+<p>只基于pull的方法，易感染的结点主动从感染结点出接受信息更新</p>
+
+<p>如果只有一个结点是已经感染的，使用反熵模型的任一种方法都可以很快的传播。但push-pull方法最好，如果将每个节点作为发起者与随机选择的一个结点进行至少一次的信息交换，定义为一轮，则单个信息更新到所有节点需要 轮。</p>
+
+<hr />
+
+<h2 id="第五章-命名系统">第五章 命名系统</h2>
+
+<h3 id="25-chord-指纹表的查找过程节点如何加入和退出指纹表">25、 Chord 指纹表的查找过程，节点如何加入和退出指纹表？</h3>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226164906165.png" alt="image-20231226164906165" style="zoom:25%;" /><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226164918250.png" alt="image-20231226164918250" style="zoom:25%;" /></p>
+
+<hr />
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226164940207.png" alt="image-20231226164940207" style="zoom:25%;" /> <img src="/img/in-post/DistributedSystem-Final-Review/image-20231226164951416.png" alt="image-20231226164951416" style="zoom:25%;" /></p>
+
+<h4 id="节点加入">节点加入</h4>
+
+<p>在大型分布式系统中，参与结点集可能总在变化。</p>
+
+<ol>
+  <li>如果结点p要加入，则只需要与已有系统的任意结点联系，请求查找succ(p+1)，然后插入到环中。注意结点还要跟踪他的前任者。</li>
+  <li>结点q必须保证它的下一个结点succ(q+1)是正确的。q可以定期请求返回pred(succ(q+1))，如果q=pred(succ(q+1))，说明一致。否则说明q的后继者更新了前继，即插入了结点p，且$q&lt;p\leq succ(q+1)$，此时就需要将q的$FT_q[1]$调整称指向p，还有检查p是否将q作为其前继者，如果没有，继续调整$FT_q[1]$</li>
+  <li>同时，每个结点q定期检查前继者是否为活动状态。如果前继者失效，q就将pred(q)记录为未知，</li>
+</ol>
+
+<p>新节点的加入需要一个称为向导的已知节点协助，任何一个运行在 Chord 网络中的节点都可以充当这个角色。加入过程包括新节点本身的 Join 操作和被其他节点发现2个阶段 ，如下图所示。假设 np和 ns 是 Chord 网络中相邻两节点，n 为新节点，它加入网络后应该位于 np 和 ns 节点之间。</p>
+
+<p>在第1阶段中，n 请求向导为它查找后继 (即 ns)，并初始化自身 Finger 表和后继表。按照 Finger 表定义，第1个需要查找后继的表项位置 join 操作完成后节点的情形如图 2(a) 所示。</p>
+
+<p>此时只有 n 对自身属性进行了设置，其他节点并不知道新节点的加入，因此，第2阶段引入了 stabilize操作，所有节点定期检查其后继的前继，并向自己的直接后继发送 Notify 消息。</p>
+
+<p>在图2的例子中：</p>
+
+<p>(1)若 np 比 n 先向 ns 发送 Notify，此次 stabilize 并不改变网络状态；</p>
+
+<p>(2) 若 n 先向 ns 发送 Notify，ns计算 n 的 ID 得知 n 比 np 更接近自己而认为有一个新节点加入， ns 由此把前继修改成 n，然后，np在查看其后继(此时还是 ns)的前继(此时已改为 n)也发现了 n 的加入，np 把其后继修改成 n 并向 n 发送Notify，把 n 的前继修改成 np，这样，np、n、ns 构成了完整的弦环，如图 4(b) 所示。<strong>当只有一个节点时，Chord 约定它的前继、后继都指向自身。</strong></p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20240102175036779.png" alt="image-20240102175036779" /></p>
+
+<h4 id="节点的失效">节点的失效</h4>
+
+<p>节点的失效是节点<strong>没有通知</strong>其他节点而突然离开网络，这通常由主机崩溃或 IP 网络断开等意外原因造成，此时失效节点的前继保存的后继信息变得不可用，从而造成 Chord 环的断裂</p>
+
+<p>需要周期性对节点的前继和后继进行探测。如果节点 n 发现其后继已经失效，则从后继表中顺序查找第1个可用节点替换，并按照节点加入时的算法重建 Finger 表，然后通知前继 。 对前继节点失效的处理需要借助于 Notify 消息 ， 由于上述对后继失效的处理过程能够保证 Chord 环后继链的正确性，因此np 通过在 stabilize 中向新后继 ns 发送 Notify，把 ns 的前继改成 np</p>
+
+<p>值得注意的是，其他节点也可能在 Finger 表项中保存有失效节点的记录，因此需要多次 stabilize，把失效信息扩散到 Chord 网络中</p>
+
+<h4 id="节点的退出">节点的退出</h4>
+
+<p>由于节点失效处理方法是稳定的，因此节点的退出可看作为失效而不采取其他附加措施。但基于效率的考虑，节点 n 退出时进行如下操作：</p>
+
+<p>(1) 把 n 后继节点的前继改成 n 的前继；</p>
+
+<p>(2) 把 n 前继节点的后继改成 n 的后继；</p>
+
+<p>(3) 从 n 前继的后继表中删除 n。</p>
+
+<hr />
+
+<h3 id="26-简述在树结构目录中查询实体及插入实体的过程">26、 简述在树结构目录中查询实体及插入实体的过程？</h3>
+
+<p>查询</p>
+
+<ul>
+  <li>开始在一个叶节点上搜索；</li>
+  <li>如果节点知道实体 E=&gt;继续搜索下游指针，否则返回父节点；</li>
+  <li>向上搜索的过程最终会以到达根节点而停止；</li>
+</ul>
+
+<p>插入</p>
+
+<ul>
+  <li>插入请求被转发到知道实体 E 地址对的第一个节点；</li>
+  <li>建立一条从第一个知道实体 E 地址的节点到实体 E 的指针链</li>
+</ul>
+
+<hr />
+
+<ol>
+  <li>
+    <p>查询实体 E：一开始在一个叶节点上搜索，如果该节点知道实体 E 节点，继续搜索下游指针，否则回退到父</p>
+  </li>
+  <li>
+    <p>最坏的情况是到达根节点，由于根节点具有完整的目录，一定能够到达根节点</p>
+  </li>
+  <li>
+    <p>插入实体 E</p>
+
+    <ol>
+      <li>某个节点会首先知道该实体 E 的存在（比如说某个叶子结点）</li>
+      <li>一种方法：
+        <ol>
+          <li>向上通知，直到到达第一个知道实体地址的节点（最差的是根节点），然后自上而下在每个 节点的目录中建立记录，生成指向实体 的自上而下的指针链</li>
+        </ol>
+      </li>
+    </ol>
+
+    <p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226101624494.png" alt="image-20231226101624494" /></p>
+  </li>
+  <li>
+    <p>另一种方法：在自下而上通知的时候，就在每一层的节点上建立记录，这样子可以让节点 尽快可用</p>
+  </li>
+</ol>
+
+<hr />
+
+<h3 id="27-名称解析闭包">27、 名称解析闭包？</h3>
+
+<ol>
+  <li>名称解析的闭包机制是：知道如何启动， 以及在何处启动名称解析</li>
+  <li>例如域名从 dns 开始，手机号码从拨号程序开始</li>
+</ol>
+
+<h3 id="28-实体的硬链接和软链接">28、 实体的硬链接和软链接？</h3>
+
+<ol>
+  <li>硬链接：路径名，用于在命名图中<strong>按照特定路径搜索</strong>节点的名字就是硬链接</li>
+  <li>软链接：允许一个节点 N 包含另外一个节点名字，通过存储绝对路径名的方式来表示对应的软链接的实体</li>
+</ol>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226101608234.png" alt="image-20231226101608234" /></p>
+
+<hr />
+
+<h3 id="29-什么是挂接点和挂载点">29、 什么是挂接点和挂载点？</h3>
+
+<ol>
+  <li>挂接点：在<strong>当前</strong>命名空间,用于存储节点标识符的目录节点</li>
+  <li>挂载点：在<strong>外部</strong>名称空间中的目录节点，该挂载点是命名空间的根</li>
+  <li>外部命名空间：需要访问的命名空间</li>
+</ol>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226164001045.png" alt="image-20231226164001045" style="zoom:25%;" /></p>
+
+<h3 id="30-什么是命名空间命名空间的分层结构主要由哪几部分构成">30、 什么是命名空间，命名空间的分层结构主要由哪几部分构成？</h3>
+
+<ol>
+  <li>命名服务：允许用户和进程添加，删除和查找名称的服务</li>
+  <li>名称空间：将名称分为了三层
+    <ol>
+      <li>全局层：有最高级别的节点构成，稳定，很少改变(例如.com .edu)</li>
+      <li>行政层：由那些在单个组织里被一起管理的目录节点组成（例如sysu）</li>
+      <li>管理层：由经常改变的节点组</li>
+    </ol>
+
+    <blockquote>
+      <p>行政层的可用性要求最高（中间层的可用性要求最高）</p>
+    </blockquote>
+  </li>
+</ol>
+
+<h3 id="31-迭代命名解析和递归命名解析">31、 迭代命名解析和递归命名解析？</h3>
+
+<p>迭代命名解析：名称解析程序将完整的名称转发给 ，根服务器会尽力返回能解析的部分，然后客户继续将剩下的路径名转发到下一台名称服务器，该服务器再解析一部分名称的每一个部分都通过客户向不同的名称服务器进行解析得到</p>
+
+<p>递归命名解析：客户将名称解析请求发送到名称服务器后，名称服务器会把结果传递给它找到的下一台 服务器，下一台服务器如果故需要的话会继续转发，直至完整的名称解析完成，然后返回客户。
+比较：</p>
+
+<p>递归：</p>
+
+<ol>
+  <li>缺：对名称服务器要求高</li>
+  <li>优：缓存有效，减少通信开销</li>
+</ol>
+
+<p>迭代：</p>
+
+<ol>
+  <li>不容易使用缓存策略进行优化</li>
+</ol>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226164018110.png" alt="image-20231226164018110" style="zoom:25%;" /> <img src="/img/in-post/DistributedSystem-Final-Review/image-20231226164031402.png" alt="image-20231226164031402" style="zoom:25%;" /></p>
+
+<hr />
+
+<h2 id="第六章-协同">第六章 协同</h2>
+
+<p>物理时钟：使用UTC（统一协调时间）</p>
+
+<hr />
+
+<p>时钟同步：</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226170850138.png" alt="image-20231226170850138" style="zoom: 67%;" /></p>
+
+<hr />
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226170932545.png" alt="image-20231226170932545" style="zoom:67%;" /></p>
+
+<hr />
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226170944810.png" alt="image-20231226170944810" style="zoom: 67%;" /></p>
+
+<hr />
+
+<h3 id="32--瞬时同步通信的主要问题以及解决方案">32、  瞬时同步通信的主要问题以及解决方案？</h3>
+
+<ol>
+  <li>瞬时同步的主要问题
+    <ol>
+      <li>瞬时-&gt; 不持久 -&gt; 要求双方都在线，不然通信无法进行，会丢失</li>
+      <li>同步：由于等待带来了很大的性能浪费，无法通过并发来实现性能的提升</li>
+      <li>可扩展性不佳，对系统中节点不宕机的假设不现实，大规模系统中的高并发无法实
+ 现</li>
+    </ol>
+  </li>
+  <li>解决：
+    <ol>
+      <li>使用<strong>消息中间件</strong>实现消息的<strong>持久</strong>化存储</li>
+      <li>实现<strong>异步通信</strong>，利用并发提升系统性能</li>
+    </ol>
+  </li>
+</ol>
+
+<h3 id="33-时钟同步内同步和外同步">33、 时钟同步：内同步和外同步；</h3>
+
+<ol>
+  <li>外同步：使用外部时钟源进行同步（同步准确度）</li>
+  <li>内同步：使用机器内部期间产生的同步信号进行时钟同步（同步精度）</li>
+</ol>
+
+<h3 id="34-如何在没有-utc-的情况下保障时间的准确性">34、 如何在没有 UTC 的情况下保障时间的准确性？</h3>
+
+<p>使用Berkeley算法</p>
+
+<p>时间服务器周期性地扫描所有的服务器，计算时间均值，并告诉其他机器如何调整当前时间
+时间只能前进，不能后退</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226102024225.png" alt="image-20231226102024225" /></p>
+
+<hr />
+
+<p>new：happen-before关系</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226171154178.png" alt="image-20231226171154178" style="zoom:67%;" /></p>
+
+<hr />
+
+<h3 id="35-逻辑时钟及算法">35、 逻辑时钟？及算法</h3>
+
+<p><strong>“Happen-before“</strong></p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226102055873.png" alt="image-20231226102055873" /></p>
+
+<hr />
+
+<p>首先介绍逻辑时钟和向量时钟更新步骤（来自HW4，例题可以看HW4中的）：</p>
+
+<blockquote>
+  <p>逻辑时钟：</p>
+
+  <ul>
+    <li>每一次处理内完内部事件，将<strong>本进程</strong>对应的逻辑时钟+1；</li>
+    <li>每一次发送一个消息的时候，需要将自己的向量时钟和消息一起发送；</li>
+    <li>接受信息时，将本地逻辑时钟设置为max{本地逻辑时钟，收到的逻辑时钟}，然后执行第一步（也就是本地逻辑时钟+1，此时内部事件为将消息传到上层的应用程序中，如下图）</li>
+  </ul>
+
+  <p>总结而言，<strong>发送消息</strong>+1，<strong>接受消息</strong>max{本地逻辑时钟，收到的逻辑时钟}+1</p>
+
+  <p><img src="../../MostUse_G3_UP/%25E5%2588%2586%25E5%25B8%2583%25E5%25BC%258F%25E7%25B3%25BB%25E7%25BB%259F/%25E4%25BD%259C%25E4%25B8%259A/%25E4%25BD%259C%25E4%25B8%259A4/21307381-%25E5%2590%2595%25E6%258D%25B7%25E4%25B8%25BA-%25E4%25BD%259C%25E4%25B8%259A4.assets/image-20231108170425969.png" alt="image-20231108170425969" style="zoom:50%;" /></p>
+
+  <p>向量时钟：</p>
+
+  <p>当系统有 N个进程时，则存在 N个逻辑时钟向量，一个进程对应一个时钟。具体如下：</p>
+
+  <ul>
+    <li>初始时所有时钟都为0；</li>
+    <li>每一次处理内完内部事件，将<strong>本进程</strong>对应的向量时钟+1；</li>
+    <li>每一次发送一个消息的时候，需要将自己的向量时钟和消息一起发送；</li>
+    <li>每一次<strong>接收到一个消息，</strong>同时更新<strong>每一个</strong>向量时钟，更新规则为max{本地向量时钟，收到的向量时钟}，然后执行第一步（也就是<strong>本地向量时钟+1</strong>，此时内部事件为将消息传到上层的应用程序中，如下图）</li>
+  </ul>
+
+  <p>总结而言，<strong>发送消息</strong>则<strong>自己进程</strong>对应向量时钟+1，<strong>接受消息</strong>max{本地向量时钟，收到的向量时钟}，然后自己进程对应向量时钟+1</p>
+</blockquote>
+
+<hr />
+
+<p>new：向量时钟及算法</p>
+
+<hr />
+
+<h3 id="36-什么是全序多播">36、 什么是全序多播？</h3>
+
+<blockquote>
+  <p>全序多播也叫状态复制机</p>
+</blockquote>
+
+<ol>
+  <li>一次将所有的消息以同样的顺序传送给每个接受者的多播操作，可以用Lamport时间戳来实现全序多播。</li>
+  <li>方法：进程接受到消息后，放入本地队列中，并按照时间戳进行排序，然后向其他所有进程广播确认消息；只有当队列中的队列头已经被其他所有进程都确定了时，进程才可以将它传送给运行中的应用程序</li>
+</ol>
+
+<blockquote>
+  <p>PPT6-26有例子</p>
+</blockquote>
+
+<hr />
+
+<p>假设：</p>
+
+<ol>
+  <li>进程P1将加上时间戳的消息mi发送到所有的进程， 消息本身保 存在本地的队列queue中；</li>
+  <li>任何新到达进程 $P_j$的消息放在队列$queue_j $中，根据它的时间戳进行排 序，<strong>并向所有进程广播确认消息</strong>；这样其他进程接收到确认消息的时间戳总是晚于发送这个确认消息的进程的时间戳。</li>
+</ol>
+
+<p>$P_j$在满足如下条件(两个条件同时满足)时会将消息 $m_i$传递到它的应用程序：</p>
+
+<ol>
+  <li>是队列的队列头</li>
+  <li>这个消息 已经被其他所有进程确认了，也就是当前队列中存在所有关于这个消息的其他进程的确认消息。在某一个消息从队列中删除并执行，相关的确认信息也可以被删除。</li>
+</ol>
+
+<p>这个方法保证了，必须所有的进程都已经收到这个消息，并按照队列中的时间戳先后顺序排列才会被执行，因为每个消息发出来之后其他进程收到的时间戳都是一样的，因此排序的队列都是一样的，因此可以保证全序</p>
+
+<h3 id="37-如何利用lamport-逻辑时钟解决互斥访问及临界区访问">37、 如何利用Lamport 逻辑时钟解决<strong>互斥访问及临界区访问</strong>？</h3>
+
+<blockquote>
+  <p>临界区：在同一个时刻至多允许一个进程执行的代码片段。与多播类似，多个进程需要在访问顺序上达成一致</p>
+</blockquote>
+
+<ol>
+  <li>需要：在同一个时刻至多允许一个进程执行一个“关键区” 代码片段</li>
+  <li>实现：与全序多播类似，所有进程建立单独的队列，以相同的顺序发送消息，只要“ENTER”消息的接受 在全体进程的接受顺序上达成一致，就可以了</li>
+  <li>其实和全序多播一样，只要把进入临界区理解成处理某进程的 ENTER 消息就好，通过全序多播就能够 得到这个消息的处理顺序一致且互斥。</li>
+</ol>
+
+<hr />
+
+<p>向量时钟介绍见逻辑时钟中介绍：由于逻辑时钟无法保证因果关系，所以引入向量时钟。</p>
+
+<p>因果依赖：</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226173518078.png" alt="image-20231226173518078" style="zoom:67%;" /></p>
+
+<p>如何比较向量时钟的大小：</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226173716155.png" alt="image-20231226173716155" /></p>
+
+<hr />
+
+<h3 id="38-因果有序的多播传播">38、 因果有序的多播传播？</h3>
+
+<p>与全序多播的关系</p>
+
+<p>因果有序的多播比之前提到的全序多播更弱。尤其是如果两个消息 互相没有任何关系，并不关心以那种顺序发送给应用程序</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20240102203337547.png" alt="image-20240102203337547" /></p>
+
+<hr />
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20240102203348142.png" alt="image-20240102203348142" /></p>
+
+<p>（也就是ts(m)中只可以有其中一个项的时间值 刚好大于本地向量时钟中对应那个项的时间值，且只大1）</p>
+
+<h3 id="39-解决分布式系统中多进程互斥的方法有什么特点过程是怎么样的">39、 解决分布式系统中多进程互斥的方法？有什么特点？过程是怎么样的</h3>
+
+<ul>
+  <li>基于许可的方法：如果进程需要访问临界区或者访问资源，需要从其他进程获得许可。</li>
+  <li>基于令牌的方法：仅有的一个令牌在进程之间传递。拥有令牌的进程可以访问临界区或者将令牌传递给其他进程。</li>
+</ul>
+
+<p>四个算法</p>
+
+<p><strong>1.集中式</strong></p>
+
+<p>选举一个协作者，无论何时一个进程要访问共享资源，要向协作者发起请求并得到同意</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20240102204005467.png" alt="image-20240102204005467" /></p>
+
+<p>有三种消息：Request、OK、Release</p>
+
+<p>如上面例子，进程2想要请求资源被拒绝然后加入排队队列中。这种方法存在的缺点是：协作者如果崩溃了，整个系统可能瘫痪。请求者不知道是没被允许还是协作者崩溃了。而且协作者可能成为性能瓶颈</p>
+
+<hr />
+
+<p><strong>2.非集中式算法</strong></p>
+
+<p>假定每种资源有 N 个副本，每一个副本都有自己的协作者，用于 控制访问。 进程只要获得 m &gt; N/2 个协作者的大多数投票就可以访问 资源。一个协作者总是立即响应请求</p>
+
+<p>假设： 当一个协作者宕机后，它会迅速恢复，但是会忘记已经发出去的许可。</p>
+
+<p>目的： 减少单个协作者由于失效造成的影响，同时提高性能</p>
+
+<p>出错的概率为：</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20240102204324633.png" alt="image-20240102204324633" style="zoom:50%;" /></p>
+
+<hr />
+
+<p><strong>3.分布式（Ricart &amp; Agrawala互斥算法  ）</strong></p>
+
+<p>要求系统中的所有事件都是完全排序的。对于每对事件，比方说 消息，哪个事件先发生都必须非常明确。上面的Lamport算法就是一种完成排序的方法。</p>
+
+<p>进程要访问共享资源时，构造一个消息，包括资源名、它的进程 号和当前逻辑时间。然后发送给所有的其他进程</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20240102204422464.png" alt="image-20240102204422464" style="zoom:50%;" /></p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20240102204441793.png" alt="image-20240102204441793" style="zoom:50%;" /></p>
+
+<p>只有两种消息类型：自己的逻辑时钟、OK</p>
+
+<hr />
+
+<p>4.令牌环算法</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20240102204806116.png" alt="image-20240102204806116" /></p>
+
+<h3 id="40-ricart--agrawala-互斥算法">40、 Ricart &amp; Agrawala 互斥算法？</h3>
+
+<hr />
+
+<p>new：经典的选举算法有哪些？</p>
+
+<p>选举算法
+（ Bully、Ring）</p>
+
+<p>Bully：</p>
+
+<p>当任何一个进程发现协作者不再响应请求时，他就发起一次选举，进程P按照如下过程主持一次选举：</p>
+
+<ol>
+  <li>P向所有<strong>编号比它大</strong>的进程发送一个election信息</li>
+  <li>如果无人响应，获胜成为协作者</li>
+  <li>如果有编号比它大的进程响应，则由响应者接管选举工作，P的工作完成</li>
+</ol>
+
+<p>ring算法  ：</p>
+
+<ol>
+  <li>进程按照物理或逻辑顺序进行排序，组织成环形结构。具有最大ID 的进程被选为协作者</li>
+  <li>当任何进程注意到协作者不工作时，任何进程都可以启动一次选举过程，该进程把选举信息传递给后继者。如果后继者崩溃，消息再依次传递下去</li>
+  <li>在每一步传输过程中，发送者把自己的进程号加到该消息的列表中， 使自己成为协作者的候选人</li>
+  <li>消息<strong>返回到此次选举的进程</strong>，进程发起者接收到一个包含它自己进 程号的消息时，消息类型变成Coordinator消息，并再次绕环向所有进程通知谁是协作者以及新环中的成员都有谁</li>
+</ol>
+
+<hr />
+
+<h3 id="41-无线网络中的选举算法">41、 无线网络中的选举算法；</h3>
+
+<hr />
+
+<hr />
+
+<h2 id="第七章-一致性和复制">第七章 一致性和复制</h2>
+
+<p>持续一致性解释</p>
+
+<p><a href="https://zhuanlan.zhihu.com/p/60375984">分布式系统：持续一致性</a></p>
+
+<hr />
+
+<h3 id="什么是以客户为中心的一致性模型与以数据为中心的一致性的区别">什么是以客户为中心的一致性模型？与以数据为中心的一致性的区别？</h3>
+
+<p>首先，让我们来了解一下以客户为中心的一致性模型。<strong>以客户为中心的一致性模型是指数据存储系统提供给单个客户的数据访问一致性保证。这意味着系统保证单个客户对数据存储的访问是一致的，但不对不同客户之间的并发访问提供一致性保证</strong>。这种模型假设数据存储系统中不存在同时的数据更新，或者可以相对容易地解决这种并发情况。</p>
+
+<p>与之相对的是以数据为中心的一致性模型，它旨在提供系统范围内的数据存储一致性视图。这种模型假设存在并发进程同时更新数据存储，并且需要在这种并发情况下提供一致性保证。</p>
+
+<p>接下来，我们来看一下这两种模型之间的区别：</p>
+
+<ul>
+  <li>数据中心一致性模型：
+    <ul>
+      <li>保证单个客户的数据访问一致性。</li>
+      <li>不提供不同客户之间的并发访问一致性保证。</li>
+      <li>假设不存在同时的数据更新，或者可以相对容易地解决这种并发情况。</li>
+    </ul>
+  </li>
+  <li>客户中心一致性模型：
+    <ul>
+      <li>保证系统范围内的数据存储一致性视图。</li>
+      <li>假设存在并发进程同时更新数据存储，并且需要在这种并发情况下提供一致性保证。</li>
+    </ul>
+  </li>
+</ul>
+
+<p>总的来说，以客户为中心的一致性模型关注单个客户的数据访问一致性，而以数据为中心的一致性模型关注系统范围内的数据存储一致性视图。这两种模型在处理并发访问和提供一致性保证时有不同的重点和假设。</p>
+
+<h3 id="42-数据一致性模型">42、 数据一致性模型</h3>
+
+<p>一致性模型：实质上是进程和数据存储之间的一个约定。如果进程同意遵守某些规则，那么数据存储将正常运行。</p>
+
+<p>应该指以数据为中心的一致性模型？</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226102218279.png" alt="image-20231226102218279" /></p>
+
+<h3 id="以数据为中心">以数据为中心</h3>
+
+<h3 id="43-连续一致性或者一致性程度主要包含哪些方面或称持续一致性">43、 连续一致性或者一致性程度主要包含哪些方面？或称持续一致性</h3>
+
+<ul>
+  <li>绝对/相对数值偏差：股票市场价格记录的复制、 Web 缓存：<strong>可以简单理解为未全局更新的写操作数量。</strong></li>
+  <li>新旧偏差：天气预报滞后几个小时被更新</li>
+  <li>更新顺序偏差：不同副本更新操作顺序和数量可能不同，<strong>用于衡量暂存的写操作在本地副本的顺序与最终提交的写操作全局最终顺序之间的差异。</strong>顺序偏差相对来说比较难理解，首先当允许副本间有差异的时候，那么必定有一个时刻副本会暂存一些写操作，这些写操作在全局提交之后才会成为永久更新，但是这些写操作不一定都能提交成功，它可能会回滚，这意味着副本暂存写操作的顺序跟最终提交的顺序不一定一致。然而暂存的写操作有哪些会回滚导致顺序不一致无法预测，因此为了方便起见，直接取暂存写操作的数量作为顺序偏差，因为这是顺序偏差的上限。这就是顺序偏差的计算规则的由来。举个例子，如果要计算两阶段分布式事务的顺序偏差，那么它的顺序偏差就是准备阶段写操作的数量。</li>
+</ul>
+
+<hr />
+
+<ul>
+  <li><strong>数值偏差表示对于一个副本（一致性单元） R，有多少其他副本的更新没有应用到 R 上，并且这些更新的影响是什么。</strong></li>
+  <li><strong>顺序偏差表示对于一个副本（一致性单元） R，R 有多少暂存的更新操作</strong></li>
+  <li><strong>新旧偏差表示对于一个副本（一致性单元） R，R 有多长时间没有更新数据</strong></li>
+</ul>
+
+<hr />
+
+<p>书上例子中：</p>
+
+<ul>
+  <li>顺序偏差：<strong>本身</strong>还有多少未提及操作</li>
+  <li>A的数值偏差：（A<strong>没</strong>看到的B进程中的操作数量，A中已提交的x和y于A还没收到的B操作产生结果之前最大差分（即$X_A-X_B$和$Y_A-Y_B$中最大的那个））</li>
+</ul>
+
+<h3 id="44-什么是顺序一致性和因果一致性">44、 什么是顺序一致性和因果一致性？</h3>
+
+<ul>
+  <li>顺序一致性：所有读写操作按程序顺序执行，所有进程都只能看到<strong>单一</strong>操作执行顺序</li>
+  <li>因果一致性： 所有进程都以相同的顺序看到具有<strong>潜在因果关系的写</strong>操作</li>
+</ul>
+
+<h3 id="45-数据为中心的一致性和客户为中心的一致性模型各自适用于什么场景">45、 <strong>数据为中心的一致性和客户为中心的一致性模型各自适用于什么场景？</strong></h3>
+
+<ul>
+  <li>以数据为中心的一致性模型：读写并重（计算密集型任务）</li>
+  <li>以客户为中心的一致性模型：读多写少（内容分发、手机应用）</li>
+</ul>
+
+<hr />
+
+<h3 id="以客户为中心">以客户为中心</h3>
+
+<h3 id="46-什么是最终一致性-有什么优缺点">46、 什么是最终一致性？ 有什么优缺点？</h3>
+
+<p>如果在很长一段时间没有更新操作，则所有样本都将逐渐成为一致（WWW）
+优点：避免写写操作冲突
+缺点：达到一致所需时间长</p>
+
+<h3 id="47-读写一致性-写读一致性-具体场景">47、 读写一致性？ 写读一致性？ 具体场景？</h3>
+
+<ul>
+  <li>读写一致性： 同一个进程对数据项 x 执行的读操作之后的写操作，保证发生在与 x 读取值相同或比之更新的值上。（<strong>更新 Web 页面</strong>，使其能够展示最新版本数据，而不是缓存内容；或者用户看完文章后才可以评论）</li>
+  <li>写读一致性： 同一个进程对 x 执行的读操作之后的写操作，保证发生在与 x 读取值相同或比之更新的值上。（网络新闻组用户只有在看到原文章后才能写新的回应文章，<strong>评论区</strong>）</li>
+</ul>
+
+<h3 id="48-服务器副本的放置位置">48、 服务器副本的放置位置？</h3>
+
+<p>从 N 个可能的位置中找出 K 个最佳的位置：</p>
+
+<ol>
+  <li>假定已放置了 k 个服务器，需要从 N-k个服务器中选择一个最佳的服务器，与所有的客户端之间的距离最小。 计算复杂度过高</li>
+  <li>选择第 K 大的自治系统 ，然后在含有最大数量的连接的路由器上放置一台服务器，一次类推。计算复杂度高</li>
+  <li>假定在一个 d 维的几何空间中放置服务器， 节点之间的距离反映了延迟。 把整个空间划分为多个单元，选择 K 个密度最 大的单元放置副本服务器。 计算复杂度比较低</li>
+</ol>
+
+<h3 id="49-内容分发的方式有哪些-pull-based-和-push-based-的内容分发方法有什么不同">49、 内容分发的方式有哪些？ Pull-based 和 Push-based 的内容分发方法有什么不同？</h3>
+
+<ul>
+  <li>无效化协议</li>
+  <li>在多副本间传送被修改数据</li>
+  <li>主动复制：不传送任何数据修改，而告诉每个副本应该执行的更新操作
+Pull：服务器-&gt;客户
+Push：客户-&gt;服务器</li>
+</ul>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226231027614.png" alt="image-20231226231027614" style="zoom:50%;" /></p>
+
+<h3 id="50-在一致性协议中-如何限定数值偏差-限制新旧偏差">50、 在一致性协议中， 如何限定数值偏差？ 限制新旧偏差？</h3>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20240102213221612.png" alt="image-20240102213221612" style="zoom:80%;" /></p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226102335134.png" alt="image-20231226102335134" /></p>
+
+<hr />
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226102341411.png" alt="image-20231226102341411" /></p>
+
+<h3 id="51-基于主备份协议的复制协议主要包括哪两种方式分别有什么特点">51、 基于主备份协议的复制协议主要包括哪两种方式？分别有什么特点？</h3>
+
+<p>a.远程写协议：在数据项 x 上做写操作，
+1.将操作转给 x 主服务器
+2.主服务器本地副本更新
+3.更新转发给备份服务器
+4.备份服务器更新副本
+5.备份-&gt;主备份返回确认
+6.主备份-&gt;初始进程
+也即客户-&gt;主备份-&gt;其他备份-&gt;主备份-&gt;客户</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226102407777.png" alt="image-20231226102407777" /></p>
+
+<p>b.本地写协议：定位 x 主副本，移到自己位置，在本地做写操作，主备份更新完成，再将更新传播给其他副本（即离线操作）</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226102418869.png" alt="image-20231226102418869" /></p>
+
+<h3 id="52-如何理解基于团体的复制写协议">52、 如何理解基于团体的复制写协议？</h3>
+
+<p>N 个副本服务器，得到 NR 个读团体成员同意， NW 个写团体成员同意，满足
+NR+NW&gt;N
+NW&gt;N/2</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226102436739.png" alt="image-20231226102436739" /></p>
+
+<h2 id="第八章-容错">第八章 容错</h2>
+
+<h3 id="53-什么是可依赖性与可依赖性相关的需求包括哪些方面">53、 什么是可依赖性？与可依赖性相关的需求包括哪些方面？</h3>
+
+<p>软件组件为用户提供服务。为了提供服务，组件可能需要来自其他组件的服务（服务依赖），即组件可能依赖于其他组件。</p>
+
+<p><strong>可用性、可靠性、安全性、可维护性</strong></p>
+
+<hr />
+
+<h3 id="54-可靠性与可用性的定义及区别">54、 可靠性与可用性的定义及区别？</h3>
+
+<ul>
+  <li>可靠性： 组件 C 从开始时刻 T = 0 起，经历[0, t)一段事件仍然能够提供正常功能的条件概率，包括平均失效 MTTF、平均恢复 MTTR、两次失效平均时间 MTBF=MTTF+MTTR</li>
+  <li>可用性： 在 [0, t) 时间段内，组件 C 可用的时间比例A=MTTF/MTBF</li>
+</ul>
+
+<h3 id="55-分布式系统中主要包含哪些失效模型简要描述">55、 分布式系统中主要包含哪些<strong>失效</strong>模型？简要描述。</h3>
+
+<ul>
+  <li>崩溃(Crash)：直到崩溃之前都是正常运行的</li>
+  <li>遗漏(Omission)：回应/收取/发出消息失败</li>
+  <li>定时(Timing)：回应超时</li>
+  <li>响应(Response)：回应不正确</li>
+  <li>随意性/拜占庭(Arbitrary)：在任意时间产生任意回应</li>
+</ul>
+
+<hr />
+
+<h3 id="56-分布式系统中冗余的主要方式有哪些冗余掩盖故障">56、 分布式系统中冗余的主要方式有哪些？（冗余掩盖故障）</h3>
+
+<ul>
+  <li>
+    <p><strong>信息冗余</strong>：在数据单元中添加额外的位数据使错乱的位恢复正常；（例如校验码）</p>
+  </li>
+  <li>
+    <p><strong>时间冗余</strong>：如果系统出错，一个动作（有足够时间）可以再次执行（事务处理）；</p>
+  </li>
+  <li>
+    <p><strong>物理冗余</strong>：通过添加额外的装备或进程使系统作为一个整体来容忍部分组件的失效或故障。</p>
+
+    <p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231227132300574.png" alt="image-20231227132300574" style="zoom:67%;" /></p>
+  </li>
+</ul>
+
+<hr />
+
+<p>停止性失效：</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231227132054174.png" alt="image-20231227132054174" style="zoom:67%;" /></p>
+
+<p>异步系统无法检测崩溃失效，同步和半同步系统可以检测出崩溃失效</p>
+
+<hr />
+
+<h3 id="57-在分布式系统中如何检测失效">57、 在分布式系统中如何检测失效？</h3>
+
+<p>每个进程都有一个失效检测模块，探针(probe)检测另一个进程是否存在响应（ping）</p>
+
+<h3 id="58-如何设计可靠的-rpc-通信机制">58、 如何设计可靠的 RPC 通信机制？</h3>
+
+<ul>
+  <li>至少一次语义：操作至少执行一次</li>
+  <li>至多一次语义：操作至多执行一次</li>
+  <li>恰好一次</li>
+</ul>
+
+<h3 id="59-什么是可靠多播可靠多播存在的问题">59、 什么是可靠多播？可靠多播存在的问题？</h3>
+
+<p>消息发送和接收按照发送者发送的顺序进行</p>
+
+<p>问题： 如果存在 N 的接收方，会导致大量返回 N 个确认信息，如果数量很大，发送方会被反馈消息淹没，形成反馈拥塞</p>
+
+<h3 id="60-简述两阶段提交协议-在参与者失效时如何恢复-协作者失效时如何恢复">60、 简述两阶段提交协议？ 在参与者失效时如何恢复？ 协作者失效时如何恢复？</h3>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226102534833.png" alt="image-20231226102534833" /></p>
+
+<p>参与者失效</p>
+
+<ul>
+  <li>INIT：没有问题：参与者还不知道发送的信息；</li>
+  <li>READY：参与者正在等待提交或者终止的信息。恢复后，参与者需要知道它要采取的动作 =&gt; 利用日志记录协作者的决定。</li>
+  <li>ABORT: 此时状态是幂等的，重新执行一遍；</li>
+  <li>COMMIT: 此时状态也是幂等的，重新执行一遍；</li>
+</ul>
+
+<p>协作者失效</p>
+
+<ul>
+  <li>
+    <p>开始 2PC 时，记录进入 WAIT 状态，恢复之后重新发送 VOTE_REQUEST;</p>
+  </li>
+  <li>
+    <p>在第二阶段做出决定后，只要记录表决结果就可以了，恢复时重发这个决定；</p>
+  </li>
+</ul>
+
+<h3 id="61-分布式系统失效恢复的主要方式-回退恢复设置检查点回滚">61、 分布式系统失效恢复的主要方式？* 回退恢复：设置检查点回滚</h3>
+
+<ul>
+  <li>前向恢复：继续执行导向新状态</li>
+  <li>擦除修正：从其他成功传送的分组中建立丢失的分组</li>
+</ul>
+
+<h3 id="62-client-server-失效场景及恢复方法">62、 Client-server 失效场景及恢复方法？</h3>
+
+<hr />
+
+<h3 id="new什么是恢复线">new：什么是恢复线?</h3>
+
+<p>恢复到最近的分布式快照，分布式快照也就是记录一致全局状态</p>
+
+<blockquote>
+  <p>思想：不能只有接受事件没有发送事件</p>
+</blockquote>
+
+<hr />
+
+<h3 id="63-什么是检查点方法">63、 什么是检查点方法？</h3>
+
+<p>Checkpoint，可以回滚</p>
+
+<h3 id="64-独立检查点方法-协调检查点方法">64、 独立检查点方法？ 协调检查点方法？</h3>
+
+<ul>
+  <li>独立检查点：进程独立设置本地检查点，<strong>可能导致多米诺效应</strong></li>
+  <li>协调检查点：所有进程同步将其状态写到本地稳定存储中（类似全序多播的方法）</li>
+</ul>
+
+<h3 id="65-什么是共识主要的共识协议有哪些-共识的使用场景有哪些">65、 什么是共识？主要的共识协议有哪些？ 共识的使用场景有哪些？</h3>
+
+<p>使所有非故障进程就由谁来执行命令达成一致，而且在有限的步骤内就达成一致</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231227132930759.png" alt="image-20231227132930759" style="zoom:50%;" /></p>
+
+<p>使用场景：</p>
+
+<ul>
+  <li>新的 leader 选举</li>
+  <li>消息一致性</li>
+  <li>交易一致性</li>
+</ul>
+
+<h2 id="第九章-共识协议-paxos">第九章 共识协议 paxos</h2>
+
+<h3 id="66-paxos-的主要过程-paxos-算法的特性-paxos-的主要变种">66、 Paxos 的主要过程？ Paxos 算法的特性？ Paxos 的主要变种？</h3>
+
+<blockquote>
+  <p>参考教程：（强推）<a href="https://www.cnblogs.com/linbingdong/p/6253479.html">Paxos算法</a></p>
+</blockquote>
+
+<p>Paxos算法分为<strong>两个阶段</strong>。具体如下：</p>
+
+<ul>
+  <li>
+    <p><strong>阶段一：</strong></p>
+
+    <p>(a) Proposer选择一个<strong>提案编号N</strong>，然后向<strong>半数以上</strong>的Acceptor发送<strong>编号为N</strong>的<strong>Prepare请求</strong>。（N即为rwd）</p>
+
+    <p>(b) 如果一个Acceptor收到一个编号为N的Prepare请求，且N<strong>大于</strong>该Acceptor已经<strong>响应过的</strong>所有<strong>Prepare请求</strong>的编号，那么它就会将它已经<strong>接受过的编号最大的提案（如果有的话）</strong>作为响应反馈给Proposer，同时该Acceptor承诺<strong>不再接受</strong>任何<strong>编号小于N的提案</strong>（将rnd写入到Accepter本地的last_rnd中）。</p>
+  </li>
+  <li>
+    <p><strong>阶段二：</strong></p>
+
+    <p>(a) 如果Proposer收到<strong>半数以上</strong>Acceptor对其发出的编号为N的Prepare请求的<strong>响应</strong>，那么它就会发送一个针对<strong>[N,V]提案</strong>的<strong>Accept请求</strong>给<strong>半数以上</strong>的Acceptor。注意：V就是收到的<strong>响应</strong>中<strong>编号最大的提案的value</strong>，如果响应中<strong>不包含任何提案</strong>，那么V就由Proposer<strong>自己决定</strong>。</p>
+
+    <p>(b) 如果Acceptor收到一个针对编号为N的提案的Accept请求，只要该Acceptor<strong>没有</strong>对编号<strong>大于N</strong>的<strong>Prepare请求</strong>做出过<strong>响应</strong>，它就<strong>接受该提案</strong>。</p>
+  </li>
+</ul>
+
+<hr />
+
+<p>主要变种：</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231227225814890.png" alt="image-20231227225814890" style="zoom: 67%;" /></p>
+
+<p>特点：</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231227225934337.png" alt="image-20231227225934337" style="zoom:67%;" /></p>
+
+<hr />
+
+<hr />
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231227230124283.png" alt="image-20231227230124283" style="zoom:67%;" /></p>
+
+<p>首先，让我们来了解一下Paxos一致性算法的优点和缺点。</p>
+
+<p><strong>优点</strong></p>
+
+<ol>
+  <li><strong>高可用性和容错性</strong>：Paxos算法允许系统在出现故障的情况下仍然保持一致性，即使部分节点发生故障，系统仍能正常运行。</li>
+  <li><strong>适用性广泛</strong>：Paxos算法可以应用于各种分布式系统中，包括数据库、分布式存储系统等，因此具有广泛的适用性。</li>
+  <li><strong>基础理论完备</strong>：Paxos算法是分布式系统领域的经典算法，具有坚实的理论基础，经过长期的实践验证，被广泛认可。</li>
+</ol>
+
+<p><strong>缺点</strong></p>
+
+<ol>
+  <li><strong>复杂性</strong>：Paxos算法的理论描述相对复杂，不太容易理解和实现。这使得Paxos算法在实际应用中需要更多的技术和经验支持。</li>
+  <li><strong>性能开销</strong>：Paxos算法在实际应用中可能会引入一定的性能开销，特别是在节点故障恢复、消息传递等方面，可能会增加系统的负担。</li>
+  <li><strong>难以理解</strong></li>
+  <li><strong>领导者选举</strong>：Paxos算法中的领导者选举过程相对复杂，可能会引入一定的延迟和额外的通信开销。</li>
+</ol>
+
+<p>总的来说，Paxos算法作为一种经典的一致性算法，在分布式系统中具有重要的地位，但也存在一定的复杂性和性能开销。在实际应用中，需要根据具体场景权衡其优点和缺点，选择合适的一致性算法。</p>
+
+<p>见 PPT， Proposers, acceptors, learners
+Paxos 确保了安全性/一致性
+http://paxos.systems/variants.html， RAFT</p>
+
+<hr />
+
+<h3 id="67-raft-共识的主要特点是什么raft的主要过程raft和paxos的主要区别有哪些">67、 Raft 共识的主要特点是什么？raft的主要过程。raft和paxos的主要区别有哪些</h3>
+
+<p>Raft 共识算法是一种用于构建强一致性分布式系统的协议。它具有以下主要特点：</p>
+
+<ol>
+  <li>
+    <p><strong>领导者选举</strong>：Raft 通过选举领导者的方式实现共识。在 Raft 集群中，<strong>只有一个选举出的领导者负责管理日志复制</strong>。当现有领导者失败或算法初始化时，需要选举新的领导者。</p>
+  </li>
+  <li>
+    <p><strong>日志复制</strong>：<strong>领导者</strong>负责日志复制，它接受客户端请求并将请求转发给追随者。一旦领导者收到大多数追随者的确认，该请求被视为已提交。这确保了日志在整个集群中的一致性。</p>
+  </li>
+  <li>
+    <p><strong>安全性</strong>：Raft 确保了选举安全性、领导者只追加日志、日志匹配和状态机安全等安全属性。这些规则保证了系统的安全性和一致性。</p>
+  </li>
+  <li>
+    <p><strong>易于理解</strong>：相比 Paxos 算法，Raft 更易于理解。它的逻辑分离和额外功能使其更容易被开发人员理解和实现。</p>
+  </li>
+  <li>
+    <p>动态成员变更：Raft 允许动态更改集群成员，重新运行领导者选举以处理服务器的添加和移除。</p>
+  </li>
+</ol>
+
+<p>总的来说，Raft 共识算法通过领导者选举和日志复制来实现分布式系统的一致性，同时具有易于理解和动态成员变更的特点。</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20240102222144221.png" alt="image-20240102222144221" style="zoom:50%;" /></p>
+
+<hr />
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20240102222550239.png" alt="image-20240102222550239" style="zoom: 80%;" /></p>
+
+<hr />
+
+<p>首先，Raft是一种共识算法，旨在解决分布式系统中的共识问题。共识问题涉及多个服务器就某个值达成一致。Raft算法通过选举领导者和日志复制来实现共识。</p>
+
+<p>以下是Raft算法的主要过程：</p>
+
+<ol>
+  <li><strong>领导者选举</strong>：
+    <ul>
+      <li>当现任领导者失效或算法初始化时，需要选举新的领导者。</li>
+      <li>选举由候选者服务器发起，如果候选者在一定时间内未收到现任领导者的心跳信号，就会发起选举。</li>
+      <li>候选者会增加任期计数器，为自己投票，并向其他服务器发送请求投票的消息。</li>
+      <li>如果候选者获得大多数选票，它就成为新的领导者；否则，新的任期开始，新一轮选举开始。</li>
+    </ul>
+  </li>
+  <li><strong>日志复制</strong>：
+    <ul>
+      <li>领导者负责日志复制，它接受客户端请求，并将请求作为新条目附加到自己的日志中。</li>
+      <li>然后，领导者将这些请求作为附加条目消息发送给追随者。</li>
+      <li>如果追随者不可用，领导者会不断重试附加条目消息，直到所有追随者都存储了该条目。</li>
+      <li>一旦领导者收到大多数追随者的确认消息，该条目就被视为已提交。</li>
+    </ul>
+  </li>
+  <li><strong>安全性</strong>：
+    <ul>
+      <li>Raft算法通过一系列安全规则来确保共识的安全性，包括选举安全性、领导者只追加、日志匹配、领导者完整性和状态机安全性。</li>
+    </ul>
+  </li>
+</ol>
+
+<p>总的来说，Raft算法通过领导者选举和日志复制来实现共识，同时确保系统的安全性和一致性。</p>
+
+<hr />
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231227230156551.png" alt="image-20231227230156551" style="zoom:67%;" /></p>
+
+<p>Raft和Paxos是两种分布式共识算法，它们的主要区别在于设计理念和实现方式。以下是它们之间的主要区别：</p>
+
+<ol>
+  <li><strong>领导者选举方式</strong>：
+    <ul>
+      <li>Paxos中没有明确的领导者概念，而Raft中有明确定义的领导者角色。Raft通过领导者选举机制来确保系统的一致性，而Paxos则更加灵活，没有明确的领导者。</li>
+    </ul>
+  </li>
+  <li><strong>可理解性</strong>：
+    <ul>
+      <li>Raft被设计为比Paxos更易于理解和实现。Raft的设计目标之一是提供更清晰、更易于理解的算法，以便开发人员更容易实现和维护分布式系统。</li>
+    </ul>
+  </li>
+  <li><strong>消息交换次数</strong>：
+    <ul>
+      <li>Raft通常需要更少的消息交换次数来达成一致，这使得Raft在某些情况下比Paxos更高效。</li>
+    </ul>
+  </li>
+  <li><strong>系统状态</strong>：
+    <ul>
+      <li>Paxos是基于多副本状态机的算法，而Raft是从多副本状态机的角度提出的。这导致了它们在系统状态管理和一致性维护方面的一些差异。</li>
+    </ul>
+  </li>
+</ol>
+
+<p>总的来说，Raft和Paxos都是用于分布式系统中实现一致性的重要算法，它们在实现细节和一些设计理念上有所不同，开发人员可以根据具体的需求和场景选择合适的算法来保证系统的一致性。</p>
+
+<hr />
+
+<p>Raft和Paxos是两种用于分布式系统中的共识算法。它们的主要区别在于设计理念和实现细节。以下是它们之间的主要区别：</p>
+
+<ol>
+  <li><strong>领导者选举方式</strong>：
+    <ul>
+      <li>Paxos使用多个提议者和接受者来达成共识，但没有明确的领导者概念。提议者可以是任何节点。</li>
+      <li>Raft引入了明确的领导者概念，系统中只能有一个领导者。领导者负责处理所有的提案和日志复制。</li>
+    </ul>
+  </li>
+  <li><strong>可理解性</strong>：
+    <ul>
+      <li>Raft的设计旨在更易于理解和实现。它的领导者选举和日志复制机制更直观，因此更容易为开发人员理解和调试。</li>
+      <li>Paxos的算法相对复杂，较难理解和实现。</li>
+    </ul>
+  </li>
+  <li><strong>日志复制方式</strong>：
+    <ul>
+      <li>Paxos使用两个阶段的提交过程，需要多次网络往返来达成共识。</li>
+      <li>Raft将共识过程分解为领导者选举和日志传播两个阶段，简化了共识过程，减少了网络往返次数。</li>
+    </ul>
+  </li>
+  <li><strong>系统状态</strong>：
+    <ul>
+      <li>Paxos算法没有明确的领导者，因此在处理系统状态变更时需要更多的协调。</li>
+      <li>Raft引入了领导者的概念，简化了系统状态变更的处理，提高了效率。</li>
+    </ul>
+  </li>
+</ol>
+
+<p>总的来说，Raft相对于Paxos来说更易于理解和实现，尤其适合于工程实践中的应用。而Paxos则更适合于学术研究和对分布式共识算法有深入理解的人员使用。</p>
+
+<hr />
+
+<p>过程见 https://raft.github.io/
+容易理解，容易实现，强化了 leader 的地位，把整个协议可以清楚的分割成两个部分，并利用日志的连续性做了一些简化：
+（1） Leader 在时。由 Leader 向 Follower 同步日志
+（2） Leader 挂掉了，选一个新 Leader， Leader 选举算法。</p>
+
+<hr />
+
+<p>new：paxos和raft适用的故障场景是什么</p>
+
+<p>fail stop类型</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231227132930759.png" alt="image-20231227132930759" style="zoom:50%;" /></p>
+
+<hr />
+
+<p>new：哪些共识协议可以解决拜占庭失效问题</p>
+
+<p>BFT、PBFT。PoW</p>
+
+<hr />
+
+<h3 id="68-nfs-文件系统的主要架构chap11">68、 NFS 文件系统的主要架构？（Chap11）</h3>
+
+<p>v irtual File System (VFS)</p>
+
+<ul>
+  <li>每个文件服务器都提供其本地文件系统的一个标准化视图；</li>
+  <li>每个 NFS 服务器都支持相同的模型；</li>
+  <li>底层模型是远程文件访问模型；</li>
+</ul>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226102703735.png" alt="image-20231226102703735" /></p>
+
+<h3 id="69-gfs-文件系统的主要特点2个">69、 GFS 文件系统的主要特点？（2个）</h3>
+
+<ul>
+  <li>主服务器仅在内存中维护了一张（文件名，块服务器）的映射表=&gt;最小化 IO，以日志形式保存对数据的更新操作，当日志过大时将创建检查点，存储主存数据</li>
+  <li>大量实际工作由块服务器完成，文件主备模式复制，主服务器避开循环</li>
+</ul>
+
+<h3 id="70-什么是文件系统语义模型-主要的语义模型包括哪些-简要描述其特征">70、 什么是文件系统语义模型？ 主要的语义模型包括哪些？ 简要描述其特征。</h3>
+
+<p>为避免文件共享出现问题，需要精确定义读写操作语义（即时间顺序/并发要求）</p>
+
+<ul>
+  <li>Unix 语义：系统对所有操作强加了绝对时间顺序，且总返回最新的值</li>
+  <li>会话语义：对打开的文件所做的改动只对修改这个文件的进程/机器可见，只有当文件
+被关闭时，这些改动才对其他机器可见</li>
+</ul>
+
+<h3 id="71-拜占庭容错的基本思想及基本过程">71、 拜占庭容错的基本思想及基本过程？</h3>
+
+<p>服务器组至少包含 3k+1 个进程，确保无故障进程以相同顺序执行所有操作
+需要协调器，给每个请求附加一个序号来序列化所有操作</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226102722446.png" alt="image-20231226102722446" /></p>
+
+<h3 id="72-p2p-系统中用于提高系统可用性的方案-以及方案的主要特点">72、 P2P 系统中用于提高系统可用性的方案？ 以及方案的主要特点。</h3>
+
+<ul>
+  <li>复制：通过放置多个副本提高数据的冗余度从而提高可用性</li>
+  <li>擦除编码：通过把一个文件分成 m 块随后把它记录到 n&gt;m 块中。任何 m 个编码块的集合都足以用于重构原始文件；冗余性因子 n/m</li>
+</ul>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226102741635.png" alt="image-20231226102741635" /></p>
+
+<h3 id="73-在分布式文件系统中主要关注的问题包括哪些并分别给出一些解决问题的方案">73、 在分布式文件系统中主要关注的问题包括哪些？并分别给出一些解决问题的方案。</h3>
+
+<ul>
+  <li>一致性</li>
+  <li>可靠性</li>
+  <li>可扩展性</li>
+</ul>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226102752149.png" alt="image-20231226102752149" /></p>
+
+<h3 id="74-分布式机器学习的参数服务器如何理解">74、 分布式机器学习的参数服务器如何理解？</h3>
+
+<p>参数服务器存网络模型，收取梯度，计算更新后返回给各个 worker</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226102809456.png" alt="image-20231226102809456" /></p>
+
+<p>概括来说，参数服务器是一个为了解决分布式机器学习问题的编程框架。</p>
+
+<p>该框架主要包括服务器端（Server ），客户端（Client）和调度器（Scheduler）。</p>
+
+<ul>
+  <li>
+    <p><strong>服务器端</strong>的主要功能是存放机器学习任务的参数，接收客户端的梯度，对本地参数进行更新。</p>
+  </li>
+  <li>
+    <p><strong>客户端</strong>的主要功能有两点：一是从服务器端获取当前最新的参数；二是，使用本地或者远程节点的数据和从服务器端获取的参数，计算得到预测值，然后根据设定的损失函数，计算关于训练参数的梯度，最后将梯度发送给服务器端。</p>
+  </li>
+  <li>
+    <p><strong>调度器</strong>的主要功能是管理服务器，客户端节点，完成节点之间数据同步，节点添加/删除等功能。</p>
+  </li>
+</ul>
+
+<p>参数服务器的五个关键特征（设计理念）：</p>
+
+<ul>
+  <li>高效的通信（Efficient communication）：异步通信模型不阻碍计算，最优化机器学习任务来减少网络负担。</li>
+  <li>灵活的一致性模型（Flexible consistency models）：宽松的一致性进一步隐藏同步花销和延迟。允许算法设计者去平衡算法收敛率与系统效率。</li>
+  <li>灵活的可扩展性（Elastic Scalability）：在无需重启运行中的框架下便可添加新节点。</li>
+  <li>错误容忍和持久（Fault Tolerance and Durability）</li>
+  <li>易用（Ease of Use）</li>
+</ul>
+
+<h3 id="75-如何保障参数服务器状态的一致性">75、 如何保障参数服务器状态的一致性？</h3>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226102818875.png" alt="image-20231226102818875" /></p>
+
+<p>Sequential：这种情况下，所有任务顺序进行，因此数据严格一致，不会出现不同副本看到的数据有不同的情况，因此实际上跟前文介绍的 BSP 是等价的。</p>
+
+<p>Eventual：这种情况下，所有任务并行执行，因此拥有最大的随机性。 Eventual 只适用于对于数据一致没有要求，非常健壮的算法，比如 SGD。</p>
+
+<p>Bounded Delay：每个任务需要设置最大超时时间，在该时间之前如果有任务未结束，那么新任务将会等待。 Bounded Delay 类似于上面的 SSP，只不过这是用时间而 SSP 则是用迭代次数。</p>
+
+<hr />
+
+<ul>
+  <li>Sequential：这种情况下，所有任务顺序进行，因此数据严格一致，不会出现不同副本看到的数据有不同的情况，因此实际上跟前文介绍的 BSP 是等价的。</li>
+  <li>Eventual：这种情况下，所有任务并行执行，因此拥有最大的随机性。Eventual 只适用于对于数据一致没有要求，非常健壮的算法，比如 SGD。</li>
+  <li>Bounded Delay：在限定范围内其他节点同步结果，未及时同步的节点可等下一次更新</li>
+</ul>
+
+<h3 id="76-mapreduce-计算泛型的主要流程是什么">76、 MapReduce 计算泛型的主要流程是什么？</h3>
+
+<p>MapReduce计算泛型的主要流程如下：</p>
+
+<p><strong>Map阶段</strong></p>
+
+<ol>
+  <li><strong>Map函数处理</strong>：对输入的数据进行处理，将其转换为中间键值对。</li>
+  <li><strong>中间键值对生成</strong>：Map函数生成的中间键值对被分区并排序，以便后续的Reduce阶段能够更高效地处理数据。</li>
+</ol>
+
+<p><strong>Shuffle阶段</strong></p>
+
+<ol>
+  <li><strong>分区和排序</strong>：中间键值对根据键进行分区和排序，以便将具有相同键的键值对传递给同一个Reducer节点。</li>
+</ol>
+
+<p><strong>Reduce阶段</strong></p>
+
+<ol>
+  <li><strong>Reduce函数处理</strong>：对具有相同键的中间键值对进行处理和汇总，生成最终的输出结果。</li>
+</ol>
+
+<p>整个流程是基于Map和Reduce两个主要函数的，Map函数用于处理输入数据并生成中间键值对，Reduce函数用于对中间键值对进行处理和汇总。在Shuffle阶段，中间键值对被分区、排序和传递给Reducer节点。这种泛型的处理流程使得MapReduce能够适用于各种类型的数据处理任务。</p>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231226102833326.png" alt="image-20231226102833326" /></p>
+
+<h3 id="77-mapreduce-计算泛型的主要特点是什么">77、 MapReduce 计算泛型的主要特点是什么？</h3>
+
+<ul>
+  <li>可编程性：用户编写简单，系统帮用户完成了大多数任务（映射、调度、同步、容错
+等）</li>
+  <li>通用性：对各种大数据应用都能很好使用</li>
+  <li>可扩展性
+缺点： -&gt;导致了后来 Spark 的诞生</li>
+  <li>没有数据局部性</li>
+  <li>每一 map/reduce 操作都必须在下一阶段开始前完成（即都是同步的）</li>
+  <li>不能存内操作，每一轮迭代完都要写入磁盘</li>
+</ul>
+
+<hr />
+
+<h3 id="new和传统的高性能计算相比mapreduce的优势是什么">new：和传统的高性能计算相比，MapReduce的优势是什么</h3>
+
+<p>MapReduce是一种编程模型，用于在云计算系统上处理大数据。与传统的高性能计算（HPC）相比，MapReduce具有以下优势：</p>
+
+<ol>
+  <li><strong>易于开发</strong>：MapReduce编程模型使得开发可扩展的并行应用程序变得更加容易。这意味着开发人员可以更快地构建能够处理大规模数据的应用程序。</li>
+  <li><strong>适应大规模数据</strong>：MapReduce模型可以有效地处理大规模数据集，这是传统计算机和服务器所无法胜任的。这使得MapReduce在处理大数据时具有明显的优势。</li>
+  <li><strong>并行处理</strong>：MapReduce模型支持并行处理，可以将计算任务分解成多个独立的任务并行执行，从而提高了计算速度和效率。</li>
+  <li><strong>容错性</strong>：MapReduce框架具有很强的容错性，能够处理大规模集群中的节点故障，确保计算任务的可靠完成。</li>
+  <li><strong>灵活性</strong>：MapReduce模型可以适应不同类型的应用程序，包括数据挖掘、图分析等多种领域，因此具有较高的灵活性和通用性。</li>
+</ol>
+
+<p>总的来说，MapReduce相对于传统的高性能计算具有更好的可扩展性、适应大规模数据和并行处理能力，因此在处理大数据时具有明显的优势。</p>
+
+<hr />
+
+<p>new：Map和Reduce的原理是什么？</p>
+
+<p>MapReduce是一种用于处理大规模数据的编程模型。它包括两个主要的阶段：Map和Reduce。</p>
+
+<p><strong>Map阶段</strong></p>
+
+<p>在Map阶段，输入的数据被分割成小块，然后由多个Mapper节点并行处理。每个Mapper节点将输入数据转换为中间键值对（key-value pairs）。这个阶段的目的是对数据进行过滤、排序和转换，以便为Reduce阶段做准备。</p>
+
+<p><strong>Reduce阶段</strong></p>
+
+<p>在Reduce阶段，中间键值对被按照键（key）进行分组，然后传递给多个Reducer节点。每个Reducer节点对具有相同键的数据进行汇总和处理，生成最终的输出结果。</p>
+
+<p><strong>MapReduce的工作流程</strong></p>
+
+<ol>
+  <li><strong>Map阶段</strong>：每个Mapper节点将输入数据转换为中间键值对。</li>
+  <li><strong>Shuffle阶段</strong>：中间键值对根据键进行排序和分组，以便传递给Reducer节点。</li>
+  <li><strong>Reduce阶段</strong>：每个Reducer节点对具有相同键的数据进行处理和汇总，生成最终的输出结果。</li>
+</ol>
+
+<p>MapReduce的原理是基于这种分而治之的思想，通过将数据分解成小块并在多个节点上并行处理，最终将处理结果进行合并，从而实现对大规模数据的高效处理。</p>
+
+<hr />
+
+<h3 id="78-kubernetes-的主要组成是什么-主要功能又是什么-kubernetes-中的-service如何理解">78、 Kubernetes 的主要组成是什么？ 主要功能又是什么？ Kubernetes 中的 service如何理解？</h3>
+
+<p><img src="/img/in-post/DistributedSystem-Final-Review/image-20231228160102414.png" alt="image-20231228160102414" style="zoom: 33%;" /></p>
+
+<p><strong>master：</strong></p>
+
+<p>API Server：它提供了 Kubernetes 集群中各个组件之间的通信和管理接口，所有操作都需要通过 API Server 发起和处理</p>
+
+<p>etcd：Etcd 是 Kubernetes 集群中的分布式键值存储系统，用于保存集群中的所有状态信息和元数据。</p>
+
+<p>Controller Manager 是 Kubernetes 集群中的另一个核心组件，它负责监控和维护集群中所有资源对象的状态，以及进行自动化控制和管理操作。</p>
+
+<p>Scheduler 是 Kubernetes 集群中的另一个重要组件，主要负责根据集群中各个节点的负载情况，以及用户的调度策略，将新创建的 Pod 分配到合适的节点上。</p>
+
+<p><strong>node：</strong></p>
+
+<p>kubelet 是运行在每个 Node 节点上的代理程序，它负责与 Master 节点上的 API Server 进行通信，并根据 Master 节点下发的指令，调度和管理本地节点上的容器。</p>
+
+<p>kube-proxy 是 Kubernetes 集群中的网络代理组件，它主要负责实现集群内 Service 的负载均衡和访问控制等功能。</p>
+
+<p><a href="https://zhuanlan.zhihu.com/p/621593509">一文让你全面了解K8s(Kubernetes)</a>
+https://azure.microsoft.com/en-gb/resources/videos/the-illustrated-children-s-guide-tokubernetes/</p>
+
+<hr />
+
+<h4 id="工作流程">工作流程</h4>
+
+<ol>
+  <li>user 向 APIserver 发出指令</li>
+  <li>API 响应指令，通过一系列认证授权，把 pod 数据存储到 etcd，创建资源并初始化</li>
+  <li>controller 创建</li>
+  <li>scheduler 检测发现新的 pod 并绑定到合适的主机</li>
+  <li>将绑定结果存储到 etcd</li>
+  <li>kubelet 获取自身 node 上要运行的 pod 并与自身缓存相比较，新增加 pod</li>
+  <li>创建 pod</li>
+  <li>kube-proxy 为新创建的 pod 注册动态 DNS 到 CoreOS</li>
+  <li>controller 将当前 pod 状态与用户所期望的状态作比较，不同则修改为用户期待状态，若不行则删掉重新建 pod</li>
+</ol>
+
+<p>如何加快机器学习特别是深度学习的过程</p>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2024/01/02/GMM/" data-toggle="tooltip" data-placement="top" title="GMM的推导和理解">
+                        Previous<br>
+                        <span>GMM的推导和理解</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2024/01/05/MachineLearning-Final-Review/" data-toggle="tooltip" data-placement="top" title="中山大学机器学习与数据挖掘期末复习笔记">
+                        Next<br>
+                        <span>中山大学机器学习与数据挖掘期末复习笔记</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+
+                <!--   gitalk       -->
+                <div class="comment">
+                <div id="gitalk-container"></div>
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+                <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+                <script>
+                var gitalk = new Gitalk({
+                    id: location.pathname,
+                    clientID: '0db4b4c6d83c061f6b30',
+                    clientSecret: 'e1651c09f1a49b2b4a544cd584d3e8a55454a48a',
+                    repo: 'BlogComment',
+                    owner: 'jaredddddd',
+                    admin: ['jaredddddd'], 
+                    labels: ['Gitalk'],
+                })
+                gitalk.render('gitalk-container')
+                </script> 
+                </div>
+
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0036" 
+                    href="/archive/?tag=Computer-Organization"
+                    title="Computer-Organization"
+                    rel="21">Computer-Organization</a>
+        
+                <a data-sort="0018" 
+                    href="/archive/?tag=NOTES"
+                    title="NOTES"
+                    rel="39">NOTES</a>
+        
+                <a data-sort="0041" 
+                    href="/archive/?tag=Project"
+                    title="Project"
+                    rel="16">Project</a>
+        
+                <a data-sort="0042" 
+                    href="/archive/?tag=AI"
+                    title="AI"
+                    rel="15">AI</a>
+        
+                <a data-sort="0048" 
+                    href="/archive/?tag=OS"
+                    title="OS"
+                    rel="9">OS</a>
+        
+                <a data-sort="0052" 
+                    href="/archive/?tag=ML"
+                    title="ML"
+                    rel="5">ML</a>
+        
+                <a data-sort="0053" 
+                    href="/archive/?tag=PatternRecognition"
+                    title="PatternRecognition"
+                    rel="4">PatternRecognition</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Blog"
+                    title="Blog"
+                    rel="3">Blog</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Distributed-System"
+                    title="Distributed-System"
+                    rel="3">Distributed-System</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=ANN"
+                    title="ANN"
+                    rel="2">ANN</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CPU%E8%AE%BE%E8%AE%A1"
+                    title="CPU设计"
+                    rel="2">CPU设计</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CompilationPrinciple"
+                    title="CompilationPrinciple"
+                    rel="2">CompilationPrinciple</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     TeX: {
+       equationNumbers: {
+         autoNumber: "AMS"
+       }
+     },
+     SVG: {
+       scale: 90
+     },
+     tex2jax: {
+       inlineMath: [ ['$','$'] ],
+       displayMath: [ ['$$','$$'] ],
+       processEscapes: true,
+     }
+   });
+ </script>
+ <script type="text/javascript"
+         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+
+.post-container {
+    background: #fcfbfb; /* 背景颜色 */
+    border-radius: 25px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    padding-top: 40px; /* 特别增加顶部内边距 */
+    margin-top: 20px; /* 添加顶部外边距 */
+    /* margin-left: 40px; */
+    /* width: 900px; */
+}
+
+
+/* 在宽屏幕设备上应用特定样式 */
+@media (min-width: 1024px) {
+  .post-container {
+    margin-left: 40px; /* 向左扩展 */
+    width: 900px; /* 设置宽度 */
+  }
+  .side-catalog{
+    width: 250px;
+  }
+}
+
+.post-container:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* 当鼠标悬停时增加阴影效果 */
+}
+
+.side-catalog {
+    background: #ffffff; /* 背景颜色 */
+    border-radius: 15px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    margin-left: 10pt;
+    /* width: 200px; */
+
+}
+
+
+
+.catalog-container {
+    /* ... 其他样式 ... */
+    display: none; /* 默认不显示catalog */
+    transition: all 0.3s ease; /* 过渡效果 */
+    margin-top: 20px; /* 添加顶部外边距 */
+}
+
+</style>
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; LvKouKou Blog 2025
+                    <br>
+                    <!--  删掉了作者Hux Blog
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                    -->
+                    <!-- 不蒜子 -->
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                    您是Blog的第<span id="busuanzi_value_site_uv"></span>个小伙伴 </br>
+                     <span id="busuanzi_container_page_pv">
+                        本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<!-- 自己添加的 -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TNVD6PR5TQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNVD6PR5TQ');
+</script>
+<!-- 自己添加的 -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        // a = P.find('h1,h2,h3,h4,h5,h6');
+        a = P.find('h1,h2,h3,h4');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<!--鼠标点击爱心动画-->
+<script type="text/javascript" src="/js/love.js"></script>
+</body>
+
+</html>

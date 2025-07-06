@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @LvKouKou 的个人博客，与你一起发现更大的世界 | 要做一个想环游世界的程序员">
+    <meta name="keywords" content="LvKouKou, jaredddddd, @jaredddddd, LvKouKou Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <link
+  rel="stylesheet"
+  href="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+/>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  defer="defer"
+></script>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  defer="defer"
+  onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
+></script>
+    <script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/mathtex-script-type.min.js"
+  defer="defer"
+></script>
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="集成学习/元学习 Bagging&Boosting - LvKouKou的博客 | LV Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="集成学习
+
+">
+    
+    <meta property="article:published_time" content=" 2023-12-23T00:00:00Z">
+    
+    
+    <meta property="article:author" content="LvKouKou">
+    
+    
+    <meta property="article:tag" content="AI">
+    
+    <meta property="article:tag" content="ML">
+    
+    
+    <meta property="og:image" content="https://jaredddddd.github.io/img/LVKOUKOU.jpg">
+    <meta property="og:url" content="https://jaredddddd.github.io/2023/12/23/Ensemble-Learning/">
+    <meta property="og:site_name" content="LvKouKou的博客 | LV Blog">
+
+    <title>集成学习/元学习 Bagging&Boosting - LvKouKou的博客 | LV Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jaredddddd.github.io/2023/12/23/Ensemble-Learning/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* 打字机效果的样式 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #666 }
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid #666;
+            white-space: nowrap;
+            word-wrap: break-word;
+            letter-spacing: .1em;
+            width: fit-content;
+            margin: 0 auto;
+            animation: 
+                typing 2s steps(40, end), /* 打字机效果, 3s 完成打字, 每步40个字符 */
+                blink-caret .75s step-end infinite; /* 光标闪烁效果, 0.75s 完成一次闪烁  */
+        }
+
+        /* 添加包装容器样式 */
+        .typing-wrapper {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%; /* 确保不会超出父容器 */
+        }
+
+        /* 添加响应式样式 */
+        @media (max-width: 768px) {
+        .typing-effect {
+            font-size: 16px; /* 在手机上可以适当调整字体大小 */
+            letter-spacing: normal; /* 在手机上减小字间距 */
+        }
+    }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptions = document.getElementsByClassName('subheading');
+            if (descriptions.length > 0) {
+                const description = descriptions[0];
+                const text = description.textContent;
+                description.innerHTML = `<span class="typing-wrapper"><span class="typing-effect">${text}</span></span>`;
+            }
+        });
+    </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">LvKouKou Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/resume-home/">Resume</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/roadtrip/">On The Road</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="Searching...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!--//添加评论系统gitalk-->
+<link rel="stylesheet" href="../../../../css/gitalk.css">
+<script src="../../../../js/gitalk.min.js"></script>
+
+<!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=AI" title="AI">AI</a>
+                        
+                        <a class="tag" href="/archive/?tag=ML" title="ML">ML</a>
+                        
+                    </div>
+                    <h1>集成学习/元学习 Bagging&Boosting</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by LvKouKou on December 23, 2023</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="集成学习">集成学习</h1>
+
+<p>与相关研究的关系</p>
+
+<ul>
+  <li>多任务学习：同时学习多个任务</li>
+</ul>
+
+<blockquote>
+  <p>用多个模型学习一个任务</p>
+</blockquote>
+
+<ul>
+  <li>数据融合：直接整合原始数据</li>
+</ul>
+
+<blockquote>
+  <p>在模型层面整合信息</p>
+</blockquote>
+
+<p>每个基模型要不一样</p>
+
+<hr />
+
+<p>机器学习通常会被分为2大类：监督学习和非监督学习。在监督学习中，训练数据由输入和期望的输出组成，然后对非训练数据进行预测输出，也就是找出输入x与输出y之间的函数关系F：y = F(x)。根据输出的精确特性又可以分为分类和回归。分类和回归的区别在于输出变量的类型。</p>
+
+<ul>
+  <li>定量输出称为回归，或者说是连续变量预测。</li>
+  <li>定性输出称为分类，或者说是离散变量预测。</li>
+</ul>
+
+<p>举个例子：</p>
+
+<ul>
+  <li>预测明天的气温是多少度，这是一个回归任务。</li>
+  <li>预测明天是阴、晴还是雨，就是一个分类任务</li>
+</ul>
+
+<table>
+  <thead>
+    <tr>
+      <th>特性</th>
+      <th>分类</th>
+      <th>回归</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>输出特性</td>
+      <td>离散数据</td>
+      <td>连续数据</td>
+    </tr>
+    <tr>
+      <td>目的</td>
+      <td>寻找决策边界</td>
+      <td>找到最优拟合</td>
+    </tr>
+    <tr>
+      <td>评价方法</td>
+      <td>精度(arrcuracy)、混淆矩阵等</td>
+      <td>SSE（均方误差）</td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="一集成学习">一、集成学习</h1>
+
+<p>集成学习(Ensemble Learning)是指：在机器学习中，模型单独运行时可能表现不佳，但将多个模型组合起来时就会变得更强大，这种多个基础模型的组合称为集成模型或集成学习。</p>
+
+<ul>
+  <li>基础模型：差异越大，那么它们组合后的集成学习效果越好</li>
+  <li>集成学习：也可以理解为，<strong>各个基础模型都是处理不同问题的专家</strong>，组合在一起就可以取得更好的模型</li>
+</ul>
+
+<hr />
+
+<p>在机器学习的有监督学习算法中，我们的目标是学习出一个稳定的且在各个方面表现都较好的模型，但实际情况往往不这么理想，有时我们只能得到多个有偏好的模型（弱监督模型，在某些方面表现的比较好）。集成学习就是组合这里的多个弱监督模型以期得到一个更好更全面的强监督模型，<strong>集成学习潜在的思想是即便某一个弱分类器得到了错误的预测，其他的弱分类器也可以将错误纠正回来。</strong></p>
+
+<p>集成方法是将几种机器学习技术组合成一个预测模型的元算法，以达到<strong>减小方差（bagging）、偏差（boosting）</strong>或改进预测（stacking）的效果。</p>
+
+<blockquote>
+  <p>bagging可以减小方差（PPT12-30）</p>
+</blockquote>
+
+<p>集成学习在<strong>各个规模的数据集</strong>上都有很好的策略。</p>
+
+<ul>
+  <li>
+    <p>数据集大：划分成多个小数据集，学习多个模型进行组合</p>
+  </li>
+  <li>
+    <p>数据集小：利用Bootstrap方法进行抽样，得到多个数据集，分别训练多个模型再进行组合</p>
+  </li>
+</ul>
+
+<hr />
+
+<p>个体学习器集成的算法分为两类</p>
+
+<ul>
+  <li>同质（homogeneous）的，即集成中仅包含同种类型的一个体学习器，像“决策树集成”中就仅包含决策树，“神经网络集成”中就全是神经网络。同质集成中的个体学习器又称为基学习器（base learner），相应的学习算法也被称为基学习算法（base learning algorithm）。</li>
+  <li>异质（heterogenous）的，相对同质，异质集成中的个体学习其就是由不同的学习算法生成的，这是，个体学习器就被称为组件学习器（component learner）</li>
+</ul>
+
+<hr />
+
+<p>其中用的比较多的是同质学习器。同质学习器按照个体学习器之间是否存在依赖关系可以分为两类：</p>
+
+<p>(集合方法可分为两类)：</p>
+
+<ul>
+  <li>序列集成方法（个体学习器之间存在强依赖关系，一系列个体学习器基本都需要串行生成），其中参与训练的基础学习器按照顺序生成（例如 AdaBoost）。序列方法的原理是利用基础学习器之间的依赖关系。通过对之前训练中错误标记的样本赋值较高的权重，可以提高整体的预测效果。</li>
+  <li>并行集成方法（个体学习器之间不存在强依赖关系，一系列个体学习器可以并行生成），其中参与训练的基础学习器并行生成（例如 Random Forest）。并行方法的原理是利用基础学习器之间的独立性，通过平均可以显著降低错误。</li>
+</ul>
+
+<hr />
+
+<p>总结一下，集成学习法的特点：</p>
+
+<p>　　①  将多个分类方法聚集在一起，以提高分类的准确率。</p>
+
+<p>（这些算法可以是不同的算法，也可以是相同的算法。）</p>
+
+<p>　　②  集成学习法由训练数据构建一组基分类器，然后通过对每个基分类器的预测进行投票来进行分类</p>
+
+<p>　　③  严格来说，集成学习并不算是一种分类器，而是一种分类器结合的方法。</p>
+
+<p>　　④  通常一个集成分类器的分类性能会好于单个分类器</p>
+
+<p>　　⑤  如果把单个分类器比作一个决策者的话，集成学习的方法就相当于多个决策者共同进行一项决策。</p>
+
+<hr />
+
+<p>自然地，就产生两个问题：</p>
+
+<p>　　1）怎么训练每个算法？</p>
+
+<p>　　2）怎么融合每个算法？</p>
+
+<p>这篇博客介绍一下集成学习的几个方法：Bagging，Boosting</p>
+
+<p><img src="/img/in-post/EnsembleLearning/image-20231221002037377-1703322183896.png" alt="image-20231221002037377" style="zoom: 67%;" /></p>
+
+<h2 id="偏差和方差的关系">偏差和方差的关系</h2>
+
+<blockquote>
+  <p>baaging更加关注降低方差吗？而boosting更关注降低偏差</p>
+</blockquote>
+
+<p>在算法学习的时候，通常在bias和variance之间要有一个权衡。bias与variance的关系如下图，因而模型要想达到最优的效果，必须要兼顾bias和variance，也就是要采取策略使得两者比较平衡。</p>
+
+<p><img src="/img/in-post/EnsembleLearning/v2-9000c0e50e1a97d0d12e85dc93affa5f_r.jpg" alt="img" /></p>
+
+<p>从算法来看，Bagging关注的是多个基模型的投票组合，保证了模型的稳定，因而每一个基模型就要相对复杂一些以降低偏差（比如每一棵决策树都很深）；</p>
+
+<blockquote>
+  <p>意思是Bagging已经保证降低了方差，但是偏差无法保证，所以每个模型需要复杂一些以降低偏差，保证方差偏差不至于处于窘境</p>
+</blockquote>
+
+<p>而Boosting采用的策略是在每一次学习中都减少上一轮的偏差，因而在保证了偏差的基础上就要将每一个基分类器简化使得方差更小。</p>
+
+<blockquote>
+  <p>理解同上</p>
+</blockquote>
+
+<h2 id="1baggingbootstrap-aggregating装袋">1、Bagging（bootstrap aggregating，装袋）</h2>
+
+<blockquote>
+  <p>可以保持偏差不变，减小方差</p>
+</blockquote>
+
+<p>Bagging即套袋法（Bagging是bootstrap aggregating的简写），先说一下bootstrap，bootstrap也称为自助法，它是一种<strong>有放回的抽样方法</strong>，目的为了得到统计量的分布以及置信区间，其算法过程如下：</p>
+
+<blockquote>
+  <p>bootstrap会有约63.2的样本用于训练（PPT12-28）</p>
+</blockquote>
+
+<p>A）从原始样本集中抽取训练集。每轮从原始样本集中使用Bootstraping的方法抽取n个训练样本（在训练集中，有些样本可能被多次抽取到，而有些样本可能一次都没有被抽中）。共进行k轮抽取，得到k个训练集。（<strong>k个训练集之间是相互独立的</strong>）</p>
+
+<p>B）每次使用一个训练集得到一个模型，k个训练集共得到k个模型。（注：这里并没有具体的分类算法或回归方法，我们可以根据具体问题采用不同的分类或回归方法，如决策树、感知器等）</p>
+
+<p>C）对分类问题：将上步得到的k个模型采用投票的方式得到分类结果；对回归问题，计算上述模型的均值作为最后的结果。（所有模型的重要性相同）</p>
+
+<p><img src="/img/in-post/EnsembleLearning/f3311668728547ceaeda9f7ba2e63a73.png" alt="在这里插入图片描述" /></p>
+
+<p><strong>为了让更好地理解bagging方法，这里提供一个例子。</strong></p>
+
+<p>X 表示一维属性，Y 表示类标号（1或-1）测试条件：当x&lt;=k时，y=？；当x&gt;k时，y=？；k为最佳分裂点</p>
+
+<p>下表为属性x对应的唯一正确的y类别</p>
+
+<p>现在进行5轮随机抽样，结果如下k是随机给的</p>
+
+<p>　　<img src="/img/in-post/EnsembleLearning/image-20231220233917285.png" alt="image-20231220233917285" /></p>
+
+<p>每一轮随机抽样后，都生成一个分类器</p>
+
+<p>然后再将五轮分类融合</p>
+
+<p>　　<img src="/img/in-post/EnsembleLearning/1180120-20180713120026299-340122631.png" alt="img" /></p>
+
+<p>对比符号和实际类，我们可以发现：在该例子中，Bagging使得准确率可达90%</p>
+
+<hr />
+
+<h3 id="总结一下bagging方法">总结一下bagging方法：</h3>
+
+<p>①  Bagging通过<strong>降低基分类器的方差</strong>，改善了泛化误差
+②  其性能依赖于基分类器的稳定性；如果基分类器不稳定，bagging有助于降低训练数据的随机波动导致的误差；如果稳定，则集成分类器的误差主要由基分类器的偏倚引起
+③  由于每个样本被选中的概率相同，因此bagging并不侧重于训练数据集中的任何特定实例</p>
+
+<p>因此：“取偏差小 ↓ 、方差大 ↑ 的<strong>基础模型</strong>，将其聚合，得到偏差小、方差小的模型”</p>
+
+<h3 id="常用的集成算法类是随机森林">常用的集成算法类是随机森林。</h3>
+
+<blockquote>
+  <p>具有良好深度的决策树就是低偏差 ↓ 和 高方差 ↑ 的模型；因此用决策树做基础模型的</p>
+</blockquote>
+
+<p>例如<strong>随机森林（Random Forest）</strong>就属于Bagging。随机森林简单地来说就是用随机的方式建立一个森林，森林由很多的决策树组成，随机森林的每一棵决策树之间是没有关联的。</p>
+
+<p>在我们学习每一棵决策树的时候就需要<strong>用到Bootstrap方法</strong>。在随机森林中，有两个随机采样的过程：对输入数据的<strong>行（数据的数量）与列（数据的特征）</strong>都进行采样。对于行采样，采用有放回的方式，若有N个数据，则采样出N个数据（可能有重复），这样在训练的时候每一棵树都不是全部的样本，相对而言不容易出现overfitting；接着进行列采样从M个feature中选择出m个（m«M）。最近进行决策树的学习。</p>
+
+<p>预测的时候，随机森林中的每一棵树的都对输入进行预测，最后进行投票，哪个类别多，输入样本就属于哪个类别。这就相当于前面说的，每一个分类器（每一棵树）都比较弱，但组合到一起（投票）就比较强了。</p>
+
+<p>因此，随机森林产生的偏差略有增加，但是由于对相关性较小的树计算平均值，<strong>估计方差减小了</strong>，导致模型的整体效果更好。</p>
+
+<p>　　<img src="/img/in-post/EnsembleLearning/1180120-20180713123844679-346592925.png" alt="img" /></p>
+
+<p>随机森林具有许多优点，例如随机森林可以不进行交叉验证操作，即由于随机森林是通过自助式的随机抽取样本来构建决策树，所以每个决策树的生成都会有一部分的样本未参与，把这部分样本视作第i棵决策树的袋外样本（OOB），并使用第i棵训练好的决策树模型进行预测，最后得到随机森林的袋外错误率（误分样本数占样本总数的比例），以此来评价随机森林的效果，从而达到交叉验证的效果。但是随机森林也存在一定的不足，如在小样本数据时，往往表现不佳；在处理回归问题时效果不如分类；当数据的噪音太大，模型结果易出现过拟合。</p>
+
+<hr />
+
+<ul>
+  <li>对于原始数据集的 行：进行Bootstrap抽样(有放回抽样)，大小为 m 的样本容量</li>
+  <li>对于原始数据集的 列：随机选择一个特征子集</li>
+  <li>在每个行抽样的数据集中，剩下的数据点(也称袋外点)可以用于相应子模型的交叉验证(以了解每个基础学习者的性能)</li>
+</ul>
+
+<ol>
+  <li>随着基础模型数量的增加 ↑ ，聚合的模型的方差减少 ↓</li>
+  <li>偏差(单个模型) ≈ 偏差(聚合后)</li>
+  <li>列采样率： $\frac{d’}{d}$；行采样率：  $\frac{m}{n}$ ；如果这两个比值减小，基础模型方差也减小，因此聚合模型的方差也会减少，一般情况固定，不需要认为优化</li>
+  <li>基础模型的个数 k ，为超参数，可以根据交叉验证进行确认最优</li>
+  <li>特征重要性：对每个基础模型的特征的信息增益求和，再在各特征中进行比较，较大信息增益为较重要特征</li>
+</ol>
+
+<p><strong>随机森林：</strong>列抽样+行抽样+决策树+聚合</p>
+
+<blockquote>
+  <p><a href="https://zhuanlan.zhihu.com/p/494333159">几何直观地 理解集成学习(Ensemble Learning)的四大类型</a></p>
+</blockquote>
+
+<h2 id="2boosting">2、Boosting</h2>
+
+<p><strong>在Bagging中</strong>：基础模型为 低偏差 ↓ ，高方差 ↑ ；如深度特别深的 决策树</p>
+
+<p><strong>在Boosting中</strong>：基础模型为 高偏差 ↑ ，低方差 ↓ ；如深度特别浅的 决策树(如：深度为2，3)</p>
+
+<h3 id="adaboost算法的几何理解">AdaBoost算法的几何理解</h3>
+
+<p>以下每一行都是一轮，每一轮都得出一个模型</p>
+
+<p><img src="/img/in-post/EnsembleLearning/image-20231221001555553.png" alt="image-20231221001555553" /></p>
+
+<p><img src="/img/in-post/EnsembleLearning/image-20231221001623440.png" alt="image-20231221001623440" /></p>
+
+<blockquote>
+  <p><a href="https://zhuanlan.zhihu.com/p/494333159">几何直观地 理解集成学习(Ensemble Learning)的四大类型</a></p>
+</blockquote>
+
+<hr />
+
+<p>Boosting算法也称为提升法，其主要思想是将多个弱学习器通过串行的方式进行训练，然后将所有弱学习器集成为一个强学习器。在Boosting算法中每个弱学习器之间并不独立，即第一个弱学习器在学习的时候对每个样本出现的权重均视为等同，而当下一个弱学习器学习时会计算上一个弱学习器的训练误差，重新更新每个样本的权重（把被错分的样本权重调高，增加样本的出现几率）。具体的，Boosting算法流程图如下：</p>
+
+<p><img src="/img/in-post/EnsembleLearning/b37912a9874043f0af0a7835e95e943b.png" alt="在这里插入图片描述" /></p>
+
+<p>其主要思想是将弱分类器组装成一个强分类器。在PAC（probably approximately correct，概率近似正确）学习框架下，则一定可以将弱分类器组装成一个强分类器。</p>
+
+<p>关于Boosting的两个核心问题：</p>
+
+<p>　　1）在每一轮如何改变训练数据的权值或概率分布？（注意是<strong>样本的权值</strong>）</p>
+
+<p>　　通过提高那些在前一轮被弱分类器分错样例的权值，减小前一轮分对样例的权值，来使得分类器对误分的数据有较好的效果。</p>
+
+<p>　　2）通过什么方式来组合弱分类器？（注意这里是<strong>基模型的权重</strong>）</p>
+
+<p>　　通过加法模型将弱分类器进行线性组合，比如：</p>
+
+<p>　　<strong>AdaBoost</strong>（Adaptive boosting）算法：刚开始训练时对每一个训练例赋相等的权重，然后用该算法对训练集训练t轮，每次训练后，对训练失败的训练例赋以较大的权重（样本权值），也就是让学习算法在每次学习以后更注意学错的样本，从而得到多个预测函数。通过拟合残差的方式逐步减小残差，将每一步生成的模型叠加得到最终模型。</p>
+
+<p>　　<strong>GBDT</strong>（Gradient Boost Decision Tree)，每一次的计算是为了减少上一次的残差，GBDT在残差减少（负梯度）的方向上建立一个新的模型。</p>
+
+<p>　　<img src="/img/in-post/EnsembleLearning/1180120-20180713122552774-1172049695.png" alt="img" /></p>
+
+<p>　　</p>
+
+<h1 id="二baggingboosting二者之间的区别">二、Bagging，Boosting二者之间的区别</h1>
+
+<h2 id="1bagging和boosting的区别">1、Bagging和Boosting的区别：</h2>
+
+<p>　　1）样本选择上：</p>
+
+<p>　　Bagging：训练集是在原始集中有放回选取的，从原始集中选出的各轮训练集之间是独立的。</p>
+
+<p>　　Boosting：每一轮的训练集不变，只是训练集中每个样例在分类器中的权重发生变化。而权值是根据上一轮的分类结果进行调整。</p>
+
+<p>　　2）<strong>样例</strong>权重：</p>
+
+<p>　　Bagging：使用均匀取样，每个样例的<strong>权重相等</strong></p>
+
+<p>　　Boosting：根据错误率不断调整样例的权值，错误率越大则权重越大。</p>
+
+<p>　　3）预测函数：</p>
+
+<p>　　Bagging：所有<strong>预测函数的权重相等</strong>。</p>
+
+<p>　　Boosting：每个弱分类器都有相应的权重，对于<strong>分类误差小的分类器会有更大的权重</strong>。</p>
+
+<blockquote>
+  <p>boosting中要区分要样本的权重和预测函数的权重</p>
+</blockquote>
+
+<p>　　4）并行计算：</p>
+
+<p>　　Bagging：各个预测函数可以并行生成</p>
+
+<p>　　Boosting：各个预 测函数<strong>只能顺序生成</strong>，因为后一个模型参数需要前一轮模型的结果。　</p>
+
+<h2 id="2决策树与这些算法框架进行结合所得到的新的算法">2、决策树与这些算法框架进行结合所得到的新的算法：</h2>
+
+<p>　　1）Bagging + 决策树 = 随机森林</p>
+
+<p>　　2）AdaBoost + 决策树 = 提升树</p>
+
+<p>　　3）Gradient Boosting + 决策树 = GBDT</p>
+
+<h1 id="参考资料">参考资料</h1>
+
+<ol>
+  <li>
+    <p><a href="https://www.cnblogs.com/zongfa/">理想几岁</a>:<a href="https://www.cnblogs.com/zongfa/p/9304353.html">机器学习–集成学习（Ensemble Learning）</a></p>
+  </li>
+  <li><a href="https://zhuanlan.zhihu.com/p/494333159">几何直观地 理解集成学习(Ensemble Learning)的四大类型</a></li>
+  <li><a href="https://blog.csdn.net/qq_42374697/article/details/127353977">关于集成学习算法的概述（Bagging、Boosting、Stacking、Blending）</a></li>
+  <li><a href="https://zhuanlan.zhihu.com/p/260959204">集成学习算法之Boosting</a>(这一篇质量不太高，抄周志华老师的西瓜书)</li>
+</ol>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2023/12/17/DSFileSystem/" data-toggle="tooltip" data-placement="top" title="分布式系统文件系统设计">
+                        Previous<br>
+                        <span>分布式系统文件系统设计</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2023/12/23/OpenWrt/" data-toggle="tooltip" data-placement="top" title="OpenWrt实现智能路由器">
+                        Next<br>
+                        <span>OpenWrt实现智能路由器</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+
+                <!--   gitalk       -->
+                <div class="comment">
+                <div id="gitalk-container"></div>
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+                <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+                <script>
+                var gitalk = new Gitalk({
+                    id: location.pathname,
+                    clientID: '0db4b4c6d83c061f6b30',
+                    clientSecret: 'e1651c09f1a49b2b4a544cd584d3e8a55454a48a',
+                    repo: 'BlogComment',
+                    owner: 'jaredddddd',
+                    admin: ['jaredddddd'], 
+                    labels: ['Gitalk'],
+                })
+                gitalk.render('gitalk-container')
+                </script> 
+                </div>
+
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0036" 
+                    href="/archive/?tag=Computer-Organization"
+                    title="Computer-Organization"
+                    rel="21">Computer-Organization</a>
+        
+                <a data-sort="0018" 
+                    href="/archive/?tag=NOTES"
+                    title="NOTES"
+                    rel="39">NOTES</a>
+        
+                <a data-sort="0041" 
+                    href="/archive/?tag=Project"
+                    title="Project"
+                    rel="16">Project</a>
+        
+                <a data-sort="0042" 
+                    href="/archive/?tag=AI"
+                    title="AI"
+                    rel="15">AI</a>
+        
+                <a data-sort="0048" 
+                    href="/archive/?tag=OS"
+                    title="OS"
+                    rel="9">OS</a>
+        
+                <a data-sort="0052" 
+                    href="/archive/?tag=ML"
+                    title="ML"
+                    rel="5">ML</a>
+        
+                <a data-sort="0053" 
+                    href="/archive/?tag=PatternRecognition"
+                    title="PatternRecognition"
+                    rel="4">PatternRecognition</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Blog"
+                    title="Blog"
+                    rel="3">Blog</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Distributed-System"
+                    title="Distributed-System"
+                    rel="3">Distributed-System</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=ANN"
+                    title="ANN"
+                    rel="2">ANN</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CPU%E8%AE%BE%E8%AE%A1"
+                    title="CPU设计"
+                    rel="2">CPU设计</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CompilationPrinciple"
+                    title="CompilationPrinciple"
+                    rel="2">CompilationPrinciple</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     TeX: {
+       equationNumbers: {
+         autoNumber: "AMS"
+       }
+     },
+     SVG: {
+       scale: 90
+     },
+     tex2jax: {
+       inlineMath: [ ['$','$'] ],
+       displayMath: [ ['$$','$$'] ],
+       processEscapes: true,
+     }
+   });
+ </script>
+ <script type="text/javascript"
+         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+
+.post-container {
+    background: #fcfbfb; /* 背景颜色 */
+    border-radius: 25px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    padding-top: 40px; /* 特别增加顶部内边距 */
+    margin-top: 20px; /* 添加顶部外边距 */
+    /* margin-left: 40px; */
+    /* width: 900px; */
+}
+
+
+/* 在宽屏幕设备上应用特定样式 */
+@media (min-width: 1024px) {
+  .post-container {
+    margin-left: 40px; /* 向左扩展 */
+    width: 900px; /* 设置宽度 */
+  }
+  .side-catalog{
+    width: 250px;
+  }
+}
+
+.post-container:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* 当鼠标悬停时增加阴影效果 */
+}
+
+.side-catalog {
+    background: #ffffff; /* 背景颜色 */
+    border-radius: 15px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    margin-left: 10pt;
+    /* width: 200px; */
+
+}
+
+
+
+.catalog-container {
+    /* ... 其他样式 ... */
+    display: none; /* 默认不显示catalog */
+    transition: all 0.3s ease; /* 过渡效果 */
+    margin-top: 20px; /* 添加顶部外边距 */
+}
+
+</style>
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; LvKouKou Blog 2025
+                    <br>
+                    <!--  删掉了作者Hux Blog
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                    -->
+                    <!-- 不蒜子 -->
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                    您是Blog的第<span id="busuanzi_value_site_uv"></span>个小伙伴 </br>
+                     <span id="busuanzi_container_page_pv">
+                        本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<!-- 自己添加的 -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TNVD6PR5TQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNVD6PR5TQ');
+</script>
+<!-- 自己添加的 -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        // a = P.find('h1,h2,h3,h4,h5,h6');
+        a = P.find('h1,h2,h3,h4');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<!--鼠标点击爱心动画-->
+<script type="text/javascript" src="/js/love.js"></script>
+</body>
+
+</html>

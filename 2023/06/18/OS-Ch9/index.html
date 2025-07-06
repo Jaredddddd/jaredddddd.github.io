@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @LvKouKou 的个人博客，与你一起发现更大的世界 | 要做一个想环游世界的程序员">
+    <meta name="keywords" content="LvKouKou, jaredddddd, @jaredddddd, LvKouKou Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <link
+  rel="stylesheet"
+  href="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+/>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  defer="defer"
+></script>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  defer="defer"
+  onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
+></script>
+    <script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/mathtex-script-type.min.js"
+  defer="defer"
+></script>
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="Chapter9 Processes - LvKouKou的博客 | LV Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="Objectives
+
+">
+    
+    <meta property="article:published_time" content=" 2023-06-18T00:00:00Z">
+    
+    
+    <meta property="article:author" content="LvKouKou">
+    
+    
+    <meta property="article:tag" content="OS">
+    
+    <meta property="article:tag" content="NOTES">
+    
+    
+    <meta property="og:image" content="https://jaredddddd.github.io/img/LVKOUKOU.jpg">
+    <meta property="og:url" content="https://jaredddddd.github.io/2023/06/18/OS-Ch9/">
+    <meta property="og:site_name" content="LvKouKou的博客 | LV Blog">
+
+    <title>Chapter9 Processes - LvKouKou的博客 | LV Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jaredddddd.github.io/2023/06/18/OS-Ch9/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* 打字机效果的样式 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #666 }
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid #666;
+            white-space: nowrap;
+            word-wrap: break-word;
+            letter-spacing: .1em;
+            width: fit-content;
+            margin: 0 auto;
+            animation: 
+                typing 2s steps(40, end), /* 打字机效果, 3s 完成打字, 每步40个字符 */
+                blink-caret .75s step-end infinite; /* 光标闪烁效果, 0.75s 完成一次闪烁  */
+        }
+
+        /* 添加包装容器样式 */
+        .typing-wrapper {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%; /* 确保不会超出父容器 */
+        }
+
+        /* 添加响应式样式 */
+        @media (max-width: 768px) {
+        .typing-effect {
+            font-size: 16px; /* 在手机上可以适当调整字体大小 */
+            letter-spacing: normal; /* 在手机上减小字间距 */
+        }
+    }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptions = document.getElementsByClassName('subheading');
+            if (descriptions.length > 0) {
+                const description = descriptions[0];
+                const text = description.textContent;
+                description.innerHTML = `<span class="typing-wrapper"><span class="typing-effect">${text}</span></span>`;
+            }
+        });
+    </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">LvKouKou Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/resume-home/">Resume</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/roadtrip/">On The Road</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="Searching...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!--//添加评论系统gitalk-->
+<link rel="stylesheet" href="../../../../css/gitalk.css">
+<script src="../../../../js/gitalk.min.js"></script>
+
+<!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=OS" title="OS">OS</a>
+                        
+                        <a class="tag" href="/archive/?tag=NOTES" title="NOTES">NOTES</a>
+                        
+                    </div>
+                    <h1>Chapter9 Processes</h1>
+                    
+                    <h2 class="subheading">第九章 虚拟内存管理！</h2>
+                    <span class="meta">Posted by LvKouKou on June 18, 2023</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<p>Objectives</p>
+
+<p>To describe the benefits of a virtual memorysystem</p>
+
+<p>To explain the concepts of demand paging,page-replacement algorithms, and allocationof page frames</p>
+
+<p>To discuss the principle of the working-setmodel</p>
+
+<p>描述虚拟内存系统的优点</p>
+
+<p>解释需求分页、页面替换算法和页面框架分配的概念</p>
+
+<p>讨论工作集模型的原理</p>
+
+<h1 id="1-背景-background">1. 背景 Background</h1>
+
+<p>Virtual memory – separation of user logical memoryfrom physical memory.</p>
+
+<p>◼ Only part of the program needs to be in memory forexecution</p>
+
+<p>◼ Logical address space can therefore be much largerthan physical address space</p>
+
+<p>◼ Allows address spaces to be shared by severalprocesses</p>
+
+<p>◼ Allows for more efficient process creation</p>
+
+<p>Virtual memory can be implemented via:</p>
+
+<p>◼ Demand paging</p>
+
+<p>◼ Demand segmentation</p>
+
+<p>虚拟内存 – 将用户逻辑内存与物理内存分离。</p>
+
+<p>◼ 只有部分程序需要在内存中执行</p>
+
+<p>◼ 因此，逻辑地址空间可以比物理地址空间大得多</p>
+
+<p>◼ 允许多个进程共享地址空间</p>
+
+<p>◼ 允许更高效的流程创建</p>
+
+<p>虚拟内存可以通过以下方式实现：</p>
+
+<p>◼ 需求分页</p>
+
+<p>◼ 需求分段</p>
+
+<hr />
+
+<p>两个特点：</p>
+
+<p>◼ 进程中所有存储器访问都是<strong>逻辑地址</strong>，这些逻辑地址在运行时被转换为物理地址；（MMU将虚拟地址转为物理地址）</p>
+
+<p>◼ 一个进程可以划分为许多块， 在执行过程中， 这些块不需要连续地位于主存中。（可通过分页来管理）</p>
+
+<p>两个效果：</p>
+
+<p>◼ 在主存中保留多个进程：</p>
+
+<p>​	 由于对任何特定的进程都<strong>仅仅装入它的某些块</strong>， 因此就有足够的空间放置更多进程。</p>
+
+<p>◼ 进程可以比主存的全部空间还大</p>
+
+<p>​	 通过分段或分页的虚拟内存， 程序员可以获得巨大的<strong>主存（特指物理内存）</strong>， 大小与磁盘储存器相关。</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch9.assets/image-20230606181121836.png" alt="image-20230606181121836" /></p>
+
+<p>在具有层次结构存储器的计算机系统中，采用自动实现部分装入和部分对换功能（主存和磁盘之间的对换），为用户提供一个比物理主存容量大得多的，可寻址的一种“主存储器”。</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch9.assets/image-20230606181217299.png" alt="image-20230606181217299" style="zoom: 80%;" /></p>
+
+<p>虚拟内存(virtualmemory)将用户逻辑内存与物理内存分开。这在现有物理内存有限的情况下，为程序员提供了巨大的虚拟内存(如图 9-1所示)。虚拟内存使得编程更加容易因为程序员不再需要担心有限的物理内存空间，只需要关注所要解决的问题。</p>
+
+<p>进程的虚拟地址空间(virtual address space)就是进程如何在内存中存放的逻辑(或虚拟)视图。通常，进程从某一逻辑地址(如地址0)开始，连续存放，如图 9-2 所示。根据第8章所述，物理地址可以按来组织，并且分配给进程的物理顿也可以不连续。这就需要内存管理单元(MMU)将逻辑页映射到内存的物理页顿。</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch9.assets/image-20230606181825709.png" alt="image-20230606181825709" /></p>
+
+<h1 id="2-请求调页-demand-paging">2. 请求调页 Demand Paging</h1>
+
+<p>另一种策略是，仅在需要时才加载页面。这种技术被称为<strong>请求调页(demand paging)</strong>，常常用于虚拟内存系统。</p>
+
+<p>Bring a page into memory only when it is needed</p>
+
+<p>​	◼ Less I/O needed</p>
+
+<p>​	◼ Less memory needed</p>
+
+<p>​	◼ Faster response</p>
+
+<p>​	◼ More users</p>
+
+<p> Page is needed -&gt; reference to it</p>
+
+<p>​	◼ invalid reference -&gt; abort</p>
+
+<p>​	◼ not-in-memory -&gt; bring to memory</p>
+
+<p> Lazy swapper – never swaps a page into memoryunless page will be needed</p>
+
+<p>​	◼ Swapper that deals with pages is a pager</p>
+
+<p>仅在需要时将页面放入内存中(优点：)</p>
+
+<p>​	◼ 所需的 I/O 更少</p>
+
+<p>​	◼ 所需内存更少</p>
+
+<p>​	◼ 更快的响应</p>
+
+<p>​	◼ 更多用户</p>
+
+<p> 需要页面 - &gt;引用它（何时算需要呢？）</p>
+
+<p>​	◼ 无效引用 （即不在物理内存中）-&gt; 中止</p>
+
+<p>​	◼ 不在内存中 - &gt;带到内存中</p>
+
+<p> 懒惰交换器 – 从不将页面交换到内存中，除非需要页面（即只有需要的时候才交换，才从磁盘中取出放入到主存中）</p>
+
+<p>​	◼ 处理页面的交换器是一个调页程序</p>
+
+<p>交换器操纵整个进程，而调页程序(pager)只涉及进程的页面，因此，在讨论请求调页时，我们使用“调页程序”，而不是“交换器”。</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch9.assets/image-20230606221837768.png" alt="image-20230606221837768" /></p>
+
+<h2 id="21-基本概念">2.1 基本概念</h2>
+
+<p><strong>Valid-Invalid Bit</strong></p>
+
+<p> With each page table entry a valid–invalid bit is associated(v -&gt; in-memory, i -&gt; not-in-memory)</p>
+
+<p> Initially valid–invalid bit is set to i on all entries</p>
+
+<p> Example of a page table snapshot:</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch9.assets/image-20230606221933326.png" alt="image-20230606221933326" /></p>
+
+<p> During address translation, if valid–invalid bit in page table entry is I -&gt; page fault</p>
+
+<p> 每个页表条目都关联一个有效-无效位（v -&gt; 在内存中，i -&gt; 不在内存中）</p>
+
+<p> 初始有效 – 所有条目上的无效位都设置为 i</p>
+
+<p> 页表快照示例：</p>
+
+<p> 在地址转换过程中，如果页表条目中的有效-无效位为 i-&gt;页错误</p>
+
+<hr />
+
+<p>Page Table When Some Pages Are Not in Main Memory</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch9.assets/image-20230606222113036.png" alt="image-20230606222113036" /></p>
+
+<hr />
+
+<p>Page Fault :</p>
+
+<p> If there is a reference to a page, first reference to that page will trap to operating system:page fault</p>
+
+<ol>
+  <li>
+    <p>Operating system looks at another table to decide:</p>
+
+    <p>◼ Invalid reference -&gt; abort</p>
+
+    <p>◼ Just not in memory</p>
+  </li>
+  <li>
+    <p>Get empty frame</p>
+  </li>
+  <li>
+    <p>Swap page into frame</p>
+  </li>
+  <li>
+    <p>Reset tables</p>
+  </li>
+  <li>
+    <p>Set validation bit = v</p>
+  </li>
+  <li>
+    <p>Restart the instruction that caused the page fault</p>
+  </li>
+</ol>
+
+<p>但是，如果进程试图访问那些尚未调入内存中的页面时，情况会如何呢?对标记为无效的页面访问会产生缺页错误(page fault)。分页硬件在通过页表转换地址时会注意到无效位被设置，从而陷人操作系统。这种陷阱是由于操作系统未能将所需的页面调入内存引起的。处理这种缺页错误的程序很简单(图9-6):</p>
+
+<ol>
+  <li>检查这个进程的内部表(通常与 PCB(Process Control Block，进程控制块)一起保存)，以确定该引用是有效的还是无效的内存访问。</li>
+  <li>如果引用无效，那么终止进程。如果引用有效但是尚未调入页面，那么现在就应调入。</li>
+  <li>找到一个空闲帧(例如，从空闲顿链表上得到一个)。</li>
+  <li>调度一个磁盘操作，以将所需页面读到刚分配的帧。</li>
+  <li>当磁盘读取完成时，修改进程的内部表和页表，即设置验证位 = v，以指示该页现在处于内存中。</li>
+  <li>重新启动被陷阱中断的指令。该进程现在能访问所需的页面，就好像它总是在内存中。</li>
+</ol>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch9.assets/image-20230606222622045.png" alt="image-20230606222622045" /></p>
+
+<h2 id="22-请求调页的性能-performance-of-demand-paging">2.2 请求调页的性能 Performance of Demand Paging</h2>
+
+<p> Page Fault Rate 0 &lt;= p &lt;= 1.0</p>
+
+<p>​	◼ if p = 0 no page faults</p>
+
+<p>​	◼ if p = 1, every reference is a fault</p>
+
+<p> Effective Access Time (EAT)</p>
+
+<p>EAT = (1 – p) x memory access+ p x (page fault overhead + swap page out + swap page in + restart overhead )</p>
+
+<p> 页面错误率 0 &lt;= p &lt;= 1.0</p>
+
+<p>​	◼ 如果 p = 0 无页面错误</p>
+
+<p>​	◼ 如果 p = 1，则每个引用都是错误</p>
+
+<p> 有效访问时间</p>
+
+<p>EAT = （1 – p） * 内存访问 + p *（<strong>页面错误中断处理 + 换出 + 换入 + 重启动</strong>）</p>
+
+<p>EAT = （1 – p） * 内存访问 + p * <strong>缺页错误时间</strong></p>
+
+<p>（缺页错误时间 =  页面错误中断处理 + 换出 + 换入 + 重启动）</p>
+
+<hr />
+
+<p> Memory access time = 200 nanoseconds</p>
+
+<p> Average page-fault service time = 8 milliseconds</p>
+
+<p> EAT = (1 – p) x 200 + p (8 milliseconds) = (1 – p） x 200 + p x 8,000,000 = 200 + p x 7,999,800</p>
+
+<p> If one access out of 1,000 causes a page fault, then EAT = 8.2 microseconds.</p>
+
+<p> 内存访问时间 = 200 纳秒</p>
+
+<p> 平均页面错误服务时间 = 8 毫秒</p>
+
+<p> EAT = （1 – p） x 200 + p （8 毫秒） = （1 – p ）x 200 + p x 8，000，000 = 200 + p x 7，999，800</p>
+
+<p> 如果 1，000 次访问中的一次导致页面错误，则 EAT = 8.2 微秒。</p>
+
+<hr />
+
+<h1 id="process-creation">Process Creation</h1>
+
+<p> Virtual memory allows other benefits during process creation:</p>
+
+<ul>
+  <li>Copy-on-Write</li>
+  <li>Memory-Mapped Files (later)</li>
+</ul>
+
+<p> 虚拟内存在进程创建过程中具有其他优势：</p>
+
+<ul>
+  <li>写入时复制</li>
+  <li>内存映射文件（更高版本）</li>
+</ul>
+
+<h1 id="3-写时复制-copy-on-write">3. 写时复制 Copy-on-Write</h1>
+
+<p> Copy-on-Write (COW) allows both parentand child processes to initially share thesame pages in memory
+	If either process modifies a shared page,only then is the page copied</p>
+
+<p> COW allows more efficient processcreation as only modified pages are copied</p>
+
+<p> Free pages are allocated from a pool of zeroed-out pages</p>
+
+<p> 写入时复制 （COW） 允许父进程和子进程最初共享内存中的相同页面
+ 如果任一进程修改了共享页面，则仅复制页面</p>
+
+<p> COW 允许更高效的流程创建，因为只复制修改的页面</p>
+
+<p> 空页面是从清零页面池中分配的</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch9.assets/image-20230606223913599.png" alt="image-20230606223913599" /></p>
+
+<hr />
+
+<p>书上内容：</p>
+
+<p>然后，子进程会修改复制的页面，而不是属于父进程的页面。显然，当使用写时复制技术时，仅复制任何一进程修改的页面，所有未修改的页面可以由父进程和子进程共享。</p>
+
+<p>当确定采用写时复制来复制页面时，重要的是注意空闲页面的分配位置。许多操作系统为这类请求提供了一个空闲的页面池(page pool)。当进程的堆栈或堆要扩展时或有写时复制页面需要管理时，通常分配这些空闲页面。操作系统分配这些页面通常采用称为按需填零zero-fll-on-demand)的技术。按需填零页面在需要分配之前先填零，因此清除了以前的内容</p>
+
+<hr />
+
+<h1 id="what-happens-if-there-is-no-free-frame">What happens if there is no free frame?</h1>
+
+<h1 id="如何找到空闲帧如果没有空闲帧怎么办">如何找到空闲帧？如果没有空闲帧怎么办？</h1>
+
+<p> Page replacement – find some page inmemory, but not really in use, swap it out</p>
+
+<p>​	◼ algorithm</p>
+
+<p>​	◼ performance – want an algorithm whichwill result in minimum number of pagefaults</p>
+
+<p> Same page may be brought into memoryseveral times</p>
+
+<p> 页面替换 – 在内存中找到一些页面，但并未真正使用，将其换出</p>
+
+<p>​	◼ 算法</p>
+
+<p>​	◼ 性能 – 想要一种算法，这将导致最少的页面错误数量</p>
+
+<p> 同一页面可能会多次进入内存（频繁的换入换出会导致大量的页面错误，所以如何选择合适的换出页面是一个值得思考的问题）</p>
+
+<h1 id="4-页面置换算法-page-replacement">4. 页面置换算法 Page Replacement</h1>
+
+<p> Prevent over-allocation of memory by modifyingpage-fault service routine to include pagereplacement</p>
+
+<p> Use modify (dirty) bit to reduce overhead ofpage transfers – only modified pages arewritten to disk</p>
+
+<p> Page replacement completes separationbetween logical memory and physical memory– large virtual memory can be provided on asmaller physical memory</p>
+
+<p> 通过修改页面错误服务例程以包含页面替换来防止内存过度分配</p>
+
+<p> 使用修改（脏）位来减少页面传输的开销 - 仅将修改的页面写入磁盘</p>
+
+<p> 页面替换完成了逻辑内存和物理内存之间的分离 – 可以在较小的物理内存上提供大型虚拟内存</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch9.assets/image-20230606224510219.png" alt="image-20230606224510219" /></p>
+
+<h2 id="41-基本页面置换-basic-page-replacement">4.1 基本页面置换 Basic Page Replacement</h2>
+
+<ol>
+  <li>
+    <p>Find the location of the desired page on disk</p>
+  </li>
+  <li>
+    <p>Find a free frame:</p>
+
+    <ul>
+      <li>If there is a free frame, use it</li>
+      <li>If there is no free frame, use a page replacement algorithm to select a victim frame</li>
+    </ul>
+  </li>
+  <li>
+    <p>Bring the desired page into the (newly) free frame; update the page and frame tables</p>
+  </li>
+  <li>
+    <p>Restart the process</p>
+  </li>
+  <li>
+    <p>在磁盘上查找所需页面的位置</p>
+  </li>
+  <li>
+    <p>查找可用帧：</p>
+
+    <p>如果有空闲帧，请使用它</p>
+
+    <p>如果没有空闲帧，请使用<strong>页面替换算法</strong>选择牺牲帧</p>
+  </li>
+  <li>
+    <p>将所需的页面带入（新）自由框架;更新页面和框架表</p>
+  </li>
+  <li>
+    <p>重新启动进程</p>
+  </li>
+</ol>
+
+<hr />
+
+<p>书上的内容：</p>
+
+<p>页面置换:
+1.找到所需页面的磁盘位置。</p>
+
+<p>2.找到一个空闲帧:</p>
+
+<p>​	a.如果有空闲帧，那么就使用它。</p>
+
+<p>​	b.如果没有空闲顿，那么就使用页面置换算法来选择一个牺牲(victimframe)。</p>
+
+<p>​	c.将牺牲帧的内容写到磁盘上，修改对应的页表和帧表。</p>
+
+<p>3.将所需页面读人(新的)空闲帧，修改页表和帧表。</p>
+
+<p>4.从发生缺页错误位置，继续用户进程。</p>
+
+<p>==请注意，如果没有空闲帧，那么需要两个页面传输(一个调出，一个调人)。这种情况实际上加倍了缺页错误处理时间，并相应地增加了有效访问时间。==</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch9.assets/image-20230606225105074.png" alt="image-20230606225105074" />=</p>
+
+<hr />
+
+<p> Want lowest page-fault rate</p>
+
+<p> Evaluate algorithm by running it on a particularstring of memory references (reference string)and computing the number of page faults on thatstring</p>
+
+<p> In all our examples, the reference string is1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5</p>
+
+<p> 想要<strong>最低的页面错误率</strong></p>
+
+<p> 通过在特定的内存引用字符串（引用字符串）上运行算法并计算该字符串上的页面错误数来评估算法</p>
+
+<p> 在我们的所有示例中，引用字符串为 1， 2， 3， 4， 1， 2， 5， 1， 2， 3， 4， 5</p>
+
+<hr />
+
+<p>Graph of Page Faults Versus The Number of Frames  ：</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch9.assets/image-20230606225319895.png" alt="image-20230606225319895" /></p>
+
+<h2 id="42-first-in-first-out-fifo-algorithm">4.2 First-In-First-Out (FIFO) Algorithm</h2>
+
+<p>算法： <strong>总是淘汰最先调入主存的那一页</strong>，或者说在主存中驻留时间最长的那一页（常驻的除外）。</p>
+
+<p>理由： 最早调入内存的页面，其不再被访问的可能性最大。</p>
+
+<p>特点：实现简单、适合线性访问、对其他情况效率不高</p>
+
+<p>异常情况：<strong>在某些情况下会出现分配给进程的页面数增多，缺页次数反而增加的奇怪现象</strong></p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch9.assets/image-20230606225400185.png" alt="image-20230606225400185" /></p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch9.assets/image-20230606225541069.png" alt="image-20230606225541069" /></p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch9.assets/image-20230606225556381.png" alt="image-20230606225556381" /></p>
+
+<h2 id="43-最优页面算法-optimal-algorithm">4.3 最优页面算法 Optimal Algorithm</h2>
+
+<p> Replace page that will not be used for longest periodof time</p>
+
+<p> 4 frames example1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch9.assets/image-20230606225702756.png" alt="image-20230606225702756" /></p>
+
+<p> How do you know this?</p>
+
+<p> Used for measuring how well your algorithm performs</p>
+
+<p> 替换不会长时间使用的页面</p>
+
+<p> 4帧示例1， 2， 3， 4， 1， 2， 5， 1， 2， 3， 4， 5</p>
+
+<p> 怎么知道不会长时间使用的页面的？</p>
+
+<p> 用于衡量算法的性能</p>
+
+<hr />
+
+<p>算法： 调入一页而必须淘汰一个旧页时， 所淘汰的页应该是以后不再访问的页或距现在最长时间后再访问的页。</p>
+
+<p>特点： 不是实际可行的算法， 可用来作为衡量各种具体算法的标准， 具有理论意义。</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch9.assets/image-20230606225810064.png" alt="image-20230606225810064" /></p>
+
+<h2 id="44-lru页面置换-least-recently-used-lru-algorithm">4.4 LRU页面置换 Least Recently Used (LRU) Algorithm</h2>
+
+<p> Reference string: 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch9.assets/image-20230606225845811.png" alt="image-20230606225845811" /></p>
+
+<p> Counter implementation</p>
+
+<p>​	◼ Every page entry has a counter; every timepage is referenced through this entry, copy theclock into the counter</p>
+
+<p>​	◼ When a page needs to be changed, look at thecounters to determine which are to change</p>
+
+<p> 计数器实现</p>
+
+<p>◼ 每个页面条目都有一个计数器;每个时间页面都通过此条目引用，将时钟复制到计数器中</p>
+
+<p>◼ 当页面需要更改时，请查看计数器以确定要更改的内容</p>
+
+<hr />
+
+<p>算法： 淘汰的页面是在最近一段时间里较久未被访问的那页。</p>
+
+<p>原理： 根据程序局部性原理， 那些刚被使用过的页面， 可能马上还要被使用， 而在较长时间里未被使用的页面， 可能不会马上使用到。</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch9.assets/image-20230606225944375.png" alt="image-20230606225944375" /></p>
+
+<h2 id="45-计数算法-counting-algorithms">4.5 计数算法 Counting Algorithms</h2>
+
+<p> Keep a counter of the number of references that have been made to each page</p>
+
+<p> LFU Algorithm: replaces page with smallest count</p>
+
+<p> MFU Algorithm: based on the argument that the page with the smallest count was probably just brought in and has yet to be used</p>
+
+<p> 保留对每个页面的引用数量的计数器</p>
+
+<p> LFU（最不经常使用）算法：替换计数最小的页面</p>
+
+<p> MFU（最经常使用）算法：基于以下论点：计数最小的页面可能刚刚引入并且尚未使用</p>
+
+<h1 id="5-帧分配-allocation-of-frames">5. 帧分配 Allocation of Frames</h1>
+
+<p> Each process needs minimum number of pages</p>
+
+<p> Example: IBM 370 – 6 pages to handle SS MOVEinstruction:</p>
+
+<p>​	◼ instruction is 6 bytes, might span 2 pages</p>
+
+<p>​	◼ 2 pages to handle from</p>
+
+<p>​	◼ 2 pages to handle to</p>
+
+<p> Two major allocation schemes</p>
+
+<p>​	◼ fixed allocation</p>
+
+<p>​	◼ priority allocation</p>
+
+<p>​</p>
+
+<p> 每个进程需要最少的页数</p>
+
+<p> 示例：IBM 370 – 处理 SS 移动指令的 6 页：</p>
+
+<p>​	◼ 指令为 6 个字节，可能跨越 2 页</p>
+
+<p>​	◼ 2 页处理自</p>
+
+<p>​	◼ 要处理的 2 页</p>
+
+<p> 两大分配方案</p>
+
+<p>​	◼ 固定分配（给每个进程固定分配空间）</p>
+
+<p>​	◼ 优先级分配</p>
+
+<h2 id="53-全局分配和局部分配-global-vs-local-allocation">5.3 全局分配和局部分配 Global vs. Local Allocation</h2>
+
+<p> Global replacement – process selects a replacement frame from the set of all frames; one process can take a frame from another</p>
+
+<p> Local replacement – each process selects from only its own set of allocated frames</p>
+
+<p> 全局替换 – 过程从所有帧集中选择一个替换帧;一个进程可以从另一个进程中获取帧</p>
+
+<p> 本地替换 – 每个进程仅从自己的一组分配帧中进行选择</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch9.assets/image-20230606230457071.png" alt="image-20230606230457071" /></p>
+
+<h1 id="6-系统抖动颠簸现象">6. 系统抖动/颠簸现象</h1>
+
+<p> If a process does not have “enough” pages, thepage-fault rate is very high. This leads to:</p>
+
+<p>​	◼ low CPU utilization</p>
+
+<p>​	◼ operating system thinks that it needs toincrease the degree of multiprogramming</p>
+
+<p>​	◼ another process added to the system</p>
+
+<p> Thrashing = a process is busy swapping pagesin and out</p>
+
+<p> 如果进程没有“足够”的页面，则页面错误率非常高。这导致：</p>
+
+<p>​	◼ 低 CPU 利用率</p>
+
+<p>​	◼ 操作系统认为需要提高多进程并发程度</p>
+
+<p>​	◼ 添加到系统的另一个进程</p>
+
+<p> ==抖动 = 进程正忙于交换页面进出==</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch9.assets/image-20230606230631968.png" alt="image-20230606230631968" /></p>
+
+<h2 id="demand-paging-and-thrashing">Demand Paging and Thrashing</h2>
+
+<p> Why does demand paging work?Locality model</p>
+
+<p>​	◼ Process migrates from one locality to another</p>
+
+<p>​	◼ Localities may overlap</p>
+
+<p> Why does thrashing occur?</p>
+
+<p>​	Σsize of locality &gt; total memory size</p>
+
+<p> 为什么需求分页有效？局部性模型</p>
+
+<p>​	◼ 进程从一个位置迁移到另一个位置</p>
+
+<p>​	◼ 地点可能重叠</p>
+
+<p> 为什么会发生系统抖动？</p>
+
+<p>​	Σ局部大小&gt;总内存大小</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch9.assets/image-20230606231039989.png" alt="image-20230606231039989" /></p>
+
+<h2 id="62-工作集模型-working-set-model">6.2 工作集模型 Working-Set Model</h2>
+
+<p> ▲=  working-set window = a fixed number of pagereferences</p>
+
+<p>Example: 10,000 instruction</p>
+
+<p> WSSi (working set of Process Pi) = total number of pages referenced in the most recent ▲ (varies in time)</p>
+
+<p>◼ if ▲ too small will not encompass entire locality</p>
+
+<p>◼ if ▲ too large will encompass several localities</p>
+
+<p>◼ if ▲ = ∞ -&gt; will encompass entire program</p>
+
+<p> D = Σ WSSi = total demand frames</p>
+
+<p> if D &gt; m -&gt; Thrashing</p>
+
+<p> Policy if D &gt; m, then suspend one of the processes</p>
+
+<p> ▲= 工作集窗口 = 固定数量的页面引用</p>
+
+<p>示例：10，000 条指令</p>
+
+<p> WSSi（流程 Pi 的工作集）= 最近 ▲ 中引用的总页数（随时间变化）</p>
+
+<p>◼ 如果 ▲ 太小将无法涵盖整个地区</p>
+
+<p>◼ 如果 ▲ 太大将包含多个地区</p>
+
+<p>◼ 如果 ▲ = ∞ -&gt; 将包含整个程序</p>
+
+<p> D = Σ WSSi = 总需求帧</p>
+
+<p> 如果 D &gt; m -&gt; 系统抖动</p>
+
+<p> 策略如果 D &gt; m，则暂停其中一个进程</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch9.assets/image-20230606232125460.png" alt="image-20230606232125460" /></p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch9.assets/image-20230606232139576.png" alt="image-20230606232139576" /></p>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2023/06/04/OS-Ch8/" data-toggle="tooltip" data-placement="top" title="Chapter8 Memory Management">
+                        Previous<br>
+                        <span>Chapter8 Memory Management</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2023/07/07/Emotion-Classification/" data-toggle="tooltip" data-placement="top" title="单层神经网络文本情感分类&朴素贝叶斯文本情感分类">
+                        Next<br>
+                        <span>单层神经网络文本情感分类&朴素贝叶斯文本情感分类</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+
+                <!--   gitalk       -->
+                <div class="comment">
+                <div id="gitalk-container"></div>
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+                <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+                <script>
+                var gitalk = new Gitalk({
+                    id: location.pathname,
+                    clientID: '0db4b4c6d83c061f6b30',
+                    clientSecret: 'e1651c09f1a49b2b4a544cd584d3e8a55454a48a',
+                    repo: 'BlogComment',
+                    owner: 'jaredddddd',
+                    admin: ['jaredddddd'], 
+                    labels: ['Gitalk'],
+                })
+                gitalk.render('gitalk-container')
+                </script> 
+                </div>
+
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0036" 
+                    href="/archive/?tag=Computer-Organization"
+                    title="Computer-Organization"
+                    rel="21">Computer-Organization</a>
+        
+                <a data-sort="0018" 
+                    href="/archive/?tag=NOTES"
+                    title="NOTES"
+                    rel="39">NOTES</a>
+        
+                <a data-sort="0041" 
+                    href="/archive/?tag=Project"
+                    title="Project"
+                    rel="16">Project</a>
+        
+                <a data-sort="0042" 
+                    href="/archive/?tag=AI"
+                    title="AI"
+                    rel="15">AI</a>
+        
+                <a data-sort="0048" 
+                    href="/archive/?tag=OS"
+                    title="OS"
+                    rel="9">OS</a>
+        
+                <a data-sort="0052" 
+                    href="/archive/?tag=ML"
+                    title="ML"
+                    rel="5">ML</a>
+        
+                <a data-sort="0053" 
+                    href="/archive/?tag=PatternRecognition"
+                    title="PatternRecognition"
+                    rel="4">PatternRecognition</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Blog"
+                    title="Blog"
+                    rel="3">Blog</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Distributed-System"
+                    title="Distributed-System"
+                    rel="3">Distributed-System</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=ANN"
+                    title="ANN"
+                    rel="2">ANN</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CPU%E8%AE%BE%E8%AE%A1"
+                    title="CPU设计"
+                    rel="2">CPU设计</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CompilationPrinciple"
+                    title="CompilationPrinciple"
+                    rel="2">CompilationPrinciple</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     TeX: {
+       equationNumbers: {
+         autoNumber: "AMS"
+       }
+     },
+     SVG: {
+       scale: 90
+     },
+     tex2jax: {
+       inlineMath: [ ['$','$'] ],
+       displayMath: [ ['$$','$$'] ],
+       processEscapes: true,
+     }
+   });
+ </script>
+ <script type="text/javascript"
+         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+
+.post-container {
+    background: #fcfbfb; /* 背景颜色 */
+    border-radius: 25px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    padding-top: 40px; /* 特别增加顶部内边距 */
+    margin-top: 20px; /* 添加顶部外边距 */
+    /* margin-left: 40px; */
+    /* width: 900px; */
+}
+
+
+/* 在宽屏幕设备上应用特定样式 */
+@media (min-width: 1024px) {
+  .post-container {
+    margin-left: 40px; /* 向左扩展 */
+    width: 900px; /* 设置宽度 */
+  }
+  .side-catalog{
+    width: 250px;
+  }
+}
+
+.post-container:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* 当鼠标悬停时增加阴影效果 */
+}
+
+.side-catalog {
+    background: #ffffff; /* 背景颜色 */
+    border-radius: 15px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    margin-left: 10pt;
+    /* width: 200px; */
+
+}
+
+
+
+.catalog-container {
+    /* ... 其他样式 ... */
+    display: none; /* 默认不显示catalog */
+    transition: all 0.3s ease; /* 过渡效果 */
+    margin-top: 20px; /* 添加顶部外边距 */
+}
+
+</style>
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; LvKouKou Blog 2025
+                    <br>
+                    <!--  删掉了作者Hux Blog
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                    -->
+                    <!-- 不蒜子 -->
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                    您是Blog的第<span id="busuanzi_value_site_uv"></span>个小伙伴 </br>
+                     <span id="busuanzi_container_page_pv">
+                        本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<!-- 自己添加的 -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TNVD6PR5TQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNVD6PR5TQ');
+</script>
+<!-- 自己添加的 -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        // a = P.find('h1,h2,h3,h4,h5,h6');
+        a = P.find('h1,h2,h3,h4');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<!--鼠标点击爱心动画-->
+<script type="text/javascript" src="/js/love.js"></script>
+</body>
+
+</html>

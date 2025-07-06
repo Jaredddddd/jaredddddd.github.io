@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @LvKouKou 的个人博客，与你一起发现更大的世界 | 要做一个想环游世界的程序员">
+    <meta name="keywords" content="LvKouKou, jaredddddd, @jaredddddd, LvKouKou Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <link
+  rel="stylesheet"
+  href="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+/>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  defer="defer"
+></script>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  defer="defer"
+  onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
+></script>
+    <script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/mathtex-script-type.min.js"
+  defer="defer"
+></script>
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="Chapter2-3 Assembly & Simulation 汇编与仿真 - LvKouKou的博客 | LV Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="2-3 Assembly &amp; Simulation  汇编与仿真
+
+">
+    
+    <meta property="article:published_time" content=" 2022-10-13T00:00:00Z">
+    
+    
+    <meta property="article:author" content="LvKouKou">
+    
+    
+    <meta property="article:tag" content="Computer-Organization">
+    
+    <meta property="article:tag" content="NOTES">
+    
+    
+    <meta property="og:image" content="https://jaredddddd.github.io/img/LVKOUKOU.jpg">
+    <meta property="og:url" content="https://jaredddddd.github.io/2022/10/13/2-3-Assembly&Simulation/">
+    <meta property="og:site_name" content="LvKouKou的博客 | LV Blog">
+
+    <title>Chapter2-3 Assembly & Simulation 汇编与仿真 - LvKouKou的博客 | LV Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jaredddddd.github.io/2022/10/13/2-3-Assembly&Simulation/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* 打字机效果的样式 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #666 }
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid #666;
+            white-space: nowrap;
+            word-wrap: break-word;
+            letter-spacing: .1em;
+            width: fit-content;
+            margin: 0 auto;
+            animation: 
+                typing 2s steps(40, end), /* 打字机效果, 3s 完成打字, 每步40个字符 */
+                blink-caret .75s step-end infinite; /* 光标闪烁效果, 0.75s 完成一次闪烁  */
+        }
+
+        /* 添加包装容器样式 */
+        .typing-wrapper {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%; /* 确保不会超出父容器 */
+        }
+
+        /* 添加响应式样式 */
+        @media (max-width: 768px) {
+        .typing-effect {
+            font-size: 16px; /* 在手机上可以适当调整字体大小 */
+            letter-spacing: normal; /* 在手机上减小字间距 */
+        }
+    }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptions = document.getElementsByClassName('subheading');
+            if (descriptions.length > 0) {
+                const description = descriptions[0];
+                const text = description.textContent;
+                description.innerHTML = `<span class="typing-wrapper"><span class="typing-effect">${text}</span></span>`;
+            }
+        });
+    </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">LvKouKou Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/resume-home/">Resume</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/roadtrip/">On The Road</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="Searching...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!--//添加评论系统gitalk-->
+<link rel="stylesheet" href="../../../../css/gitalk.css">
+<script src="../../../../js/gitalk.min.js"></script>
+
+<!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=Computer-Organization" title="Computer-Organization">Computer-Organization</a>
+                        
+                        <a class="tag" href="/archive/?tag=NOTES" title="NOTES">NOTES</a>
+                        
+                    </div>
+                    <h1>Chapter2-3 Assembly & Simulation 汇编与仿真</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by LvKouKou on October 13, 2022</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="2-3-assembly--simulation--汇编与仿真">2-3 Assembly &amp; Simulation  汇编与仿真</h1>
+
+<h2 id="1-assembler-汇编器">1. Assembler 汇编器</h2>
+
+<ul>
+  <li>Input: 汇编语⾔代码(e.g. MAL) (e.g., foo.s)</li>
+  <li>Output: Object Code, information tables (TAL(True Assembly Language)) (e.g., foo.o)</li>
+  <li>
+    <p>Reads and Uses Directives 指示性语句</p>
+  </li>
+  <li>Replace Pseudo-instructions 替换伪指令</li>
+  <li>Produce Machine Language ⽣成机器语⾔</li>
+  <li>Creates Object File ⽣成⽬标⽂件</li>
+</ul>
+
+<h2 id="2-assembly-source-language-汇编源文件">2. Assembly Source Language 汇编源文件</h2>
+
+<p>汇编源⽂件是符号表示的⽂本⽂件， 以字节编址连续装⼊内存</p>
+
+<p>e.g:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre>.data 0x10000000        规定 “当前”地址, i.e., 4个字节数据存放的起始地址
+.byte 1, 2, 3, 4		每个数据 1 byte 
+.byte 5, 6, 7, 8		另外4个字节数据
+.word 1, 2, 3, 4		4个字数据 (每个数据 4 bytes)
+.asciiz "Comp 411"		以0终⽌的ASCII 字符串，也就是这行占9个bytes，最后有个结束符号‘/0’
+.align 2				下⾯的16进制数据开始地址对⻬22， 即最后两位为00
+.word 0xfeedbeef		16进制表示的字数据
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>==易错点：.asciiz “Comp 411”		以0终⽌的ASCII 字符串，也就是这行占9个bytes，最后有个结束符号‘/0’==</p>
+
+<h2 id="3-assembler-directives-汇编指示性语句">3. Assembler Directives 汇编指示性语句</h2>
+
+<p>给汇编程序指示， 但不产⽣机器指令</p>
+
+<ul>
+  <li><strong>.text</strong>: 后⾯放置代码段(machine code)</li>
+  <li><strong>.data</strong>: 后⾯放置⽤户的数据段 (binary rep of data in source file)</li>
+  <li><strong>.globl sym</strong>: 声明 sym 全局性， 可被其它⽂件引⽤</li>
+  <li><strong>.string str</strong>:将字符串 str 存储在内存中并以空值终⽌它</li>
+  <li><strong>.word w1…wn</strong>: 将 n 个 32 位数值存储在连续的内存字中，允许我们初始化内存中的连续字</li>
+</ul>
+
+<p><strong>Thing to note:</strong></p>
+
+<ul>
+  <li>“.data”汇编指令将以下字放⼊数据段</li>
+  <li>“.globl” directives 使“sum” 和 “i” 变量可以<strong>全局访问</strong></li>
+  <li>“.space” directives 为<strong>每个变量分配4个字节</strong></li>
+  <li>与“.word”相⽐, “.space” <strong>不用初始化变量值</strong></li>
+</ul>
+
+<h2 id="4-assembler-syntax---汇编语法">4. Assembler Syntax   汇编语法</h2>
+
+<ol>
+  <li>
+    <p>Assembler COMMENTS 汇编<strong>注释</strong>：</p>
+
+    <p>语句后⾯加‘#’ (sharp) to the end of the line is ignored</p>
+  </li>
+  <li>
+    <p>Assembler LABELS 汇编<strong>标签</strong> ：</p>
+
+    <p>符号表示内存地址，采⽤它们声明的地⽅的地址值，可以是数据标签也可以是指令标签</p>
+  </li>
+</ol>
+
+<pre><code class="language-assembly">.data 0x80000000
+item: .word 1,2,3,4 			#  data word 数组名为item 
+								#label item 表示数组中第⼀个字地址， 或者数组的名称
+.text 0x00010000
+start: add $3, $4, $2 	# an instruction label
+sll $3, $3, 8
+andi $3, $3, 0xff
+beq ..., ..., start
+</code></pre>
+
+<p><strong>tips</strong>：item + i × 4才是下一位地址，因为item每个数据是 4 bytes。 （.byte声明的数据才是每个数据1byte</p>
+
+<h2 id="5-assembler-mnemonics-汇编程序助记符">5. Assembler MNEMONICS 汇编程序助记符</h2>
+<p>指令的符号表示:(不包括所有指令 )</p>
+
+<pre><code class="language-assembly">add, addu, addi, addiu, sub, subu, and, andi, or, ori, xor, xori, nor, lui, sll, sllv, sra, srav, srl, srlv, div,divu, mult, multu, mfhi, mflo, mthi, mtlo, slt, sltu, slti, sltiu, beq, bgez, bgezal, bgtz, blez, bltzal, bltz, bne, j, jal, jalr, jr, lb, lbu, lh, lhu, lw, lwl, lwr, sb, sh, sw, swl, swr, rfe
+</code></pre>
+
+<h2 id="6-pseudoinstructions-伪指令">6. Pseudoinstructions 伪指令</h2>
+
+<p>不是指令的助记符，汇编器会将其转为真正的指令（<strong>要注意如何等价替换</strong>）</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>abs, mul, mulo, mulou, neg, negu, not, rem, remu, rol, ror, li, seq, sge, sgeu, sgt, sgtu, sle, sleu, sne, b, beqz, bge, bgeu, bgt, bgtu, ble, bleu, blt, bltu, bnez, la, ld, ulh, ulhu, ulw, sd, ush, usw, move, syscall, break, nop
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>常见伪指令：</p>
+
+<ul>
+  <li>
+    <p>la 将常量加载到寄存器中</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>见下面图片2
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>li 将立即数加载到寄存器中</p>
+  </li>
+  <li>
+    <p>move  将一个寄存器中内容移到另一个寄存器中</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>move $d,$s              becomes  addi $d,$s,0
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+</ul>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/2-3/image-20221010171807359.png" alt="image-20221010171807359" /></p>
+
+<p>la的替换</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/2-3/image-20221010171930938.png" alt="image-20221010171930938" /></p>
+
+<h2 id="7-procedures-and-stacks--子程序和堆栈">7. Procedures and Stacks  子程序和堆栈</h2>
+
+<p>为子程序设计的2条指令：</p>
+
+<ul>
+  <li>jal 跳转到子程序</li>
+  <li>jr 用于返回主程序</li>
+</ul>
+
+<p><strong>主程序(Caller)</strong>  ：能提供参数给子程序。</p>
+
+<ul>
+  <li>$a0 -a3（寄存器4-7）:专门用于传参数，规定这4个寄存器位传递参数寄存器</li>
+</ul>
+
+<p><strong>子程序(Callee)</strong>   ：完成一系列操作，执行后的结果放在主程序能获得的地方，然后返回主程序。</p>
+
+<ul>
+  <li>$v0 - v1（寄存器2-3）:两个放返回值的寄存器</li>
+  <li>$ra（寄存器31）：放返回地址的寄存器（是调用子程序的下一条指令的地址）</li>
+</ul>
+
+<p><strong>叶子子程序(LEAF function)</strong>：不再调⽤其它子程序。</p>
+
+<p>Q1：分配了4个参数寄存器， 多于4个怎么办?还有局部变量?</p>
+
+<p>Q2：子程序还能调⽤其它函数子程序吗?那只有一个$ra怎么办？</p>
+
+<p>A：用堆栈解决</p>
+
+<p>### 7.1 Procedure Call and Stack(过程调用和栈)</p>
+
+<p><strong>过程调用的执行步骤（假定过程P调用过程Q）</strong> ：</p>
+
+<ol>
+  <li>将参数放到Q能访问到的地⽅</li>
+  <li>将P中的返回地址存到特定的地⽅， 将控制转移到过程Q</li>
+  <li>为Q的局部变量分配空间（局部变量临时保存在栈中）</li>
+  <li>执⾏过程Q</li>
+  <li>将Q执⾏的返回结果放到P能访问到的地⽅</li>
+  <li>取出返回地址， 将控制转移到P， 即返回到P中执⾏</li>
+</ol>
+
+<h3 id="72-stack">7.2 Stack</h3>
+
+<ul>
+  <li>
+    <p>是⼀个“先进后出”队列</p>
+  </li>
+  <li>
+    <p>需⼀个栈指针sp指向栈顶元素</p>
+  </li>
+  <li>
+    <p>每个元素⻓度⼀致</p>
+  </li>
+  <li>
+    <p>用“⼊栈”（push） 和“出栈”（pop） 操作访问栈元素</p>
+  </li>
+  <li>
+    <p>只有堆栈顶部是直接可见的， 即“栈顶”  （自上向下生长）</p>
+  </li>
+</ul>
+
+<h3 id="73-procedure-frame-栈帧-or-activation-record-活动记录">7.3 Procedure frame 栈帧 or activation record 活动记录:</h3>
+
+<p>保存寄存器内容和局部变量的堆栈段</p>
+
+<p>fp为帧指针</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/2-3/image-20221010175542155.png" alt="image-20221010175542155" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/2-3/image-20221010175659820.png" alt="image-20221010175659820" /></p>
+
+<p>注意Arg[5]和Arg[4]的相对位置</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/2-3/image-20221106165958641.png" alt="image-20221106165958641" /></p>
+
+<h3 id="74-mips-stack-convention">7.4 MIPS Stack Convention</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/2-3/image-20221010175643476.png" alt="image-20221010175643476" /></p>
+
+<h3 id="75-mips寄存器使用情况的软件约定假定p调用q">7.5 MIPS寄存器使用情况的软件约定（假定P调用Q）</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/2-3/image-20221010175931069.png" alt="image-20221010175931069" /></p>
+
+<h3 id="76-过程调用时mips中的栈和栈帧的变化">7.6 过程调用时MIPS中的栈和栈帧的变化</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/2-3/image-20221010180019130.png" alt="image-20221010180019130" /></p>
+
+<h3 id="77-stack-management-primitives--堆栈管理">7.7 Stack Management Primitives  堆栈管理</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/2-3/image-20221010180219254.png" alt="image-20221010180219254" /></p>
+
+<p>(2-3ppt中40页有一个例子)</p>
+
+<h3 id="78-递归调用">7.8 递归调用</h3>
+
+<p><strong>调用前</strong>
+⼀个函数的运⾏期间调用另⼀个函数时， 在运⾏被调用函数之前， 系统需要完成3件事情：
+（1） 将所有的实参、 返回地址等信息传递给被调用函数保存；
+（2） 为被调用函数的局部变量分配存储区；
+（3） 将控制转移到被调函数的⼊⼝。</p>
+
+<p><strong>递归调用调用中</strong>
+而从被调用函数返回调用函数之前， 系统也应完成3件⼯作：
+（1） 保存被调函数的计算结果；
+（2） 释放被调函数的数据区；
+（3） 依照被调函数保存的返回地址将控制转移到调用函数。 当有多个函数构成嵌套调用时， 按照后调用先返回的原则。
+函数的调用原则和数据结构栈的实现是相⼀致。 也说明<strong>函数调用是通过栈实现的</strong></p>
+
+<p><strong>A Procedure’s Storage Needs</strong></p>
+
+<ul>
+  <li>主程序需传递的参数， 存⼊a0-a3,存储返回地址到ra。</li>
+  <li>子程序如果用到s0-s7， 则存⼊堆栈，（可以任意用t0-t9） 把返回值存⼊v0-v1， ⼦程序如果⼜调用子程序则需<strong>把上级调用的ra值放⼊堆栈</strong>， 涉及的变量也需要存入堆栈， 返回时弹出 。</li>
+</ul>
+
+<p><strong>例子：</strong></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/2-3/image-20221010181208278.png" alt="image-20221010181208278" /></p>
+
+<h3 id="79总结">7.9总结</h3>
+
+<h4 id="调用者约定">调用者约定</h4>
+
+<p>调⽤者的约定（主程序）:</p>
+
+<ul>
+  <li>存储后面子程序用到的临时寄存器内容到堆栈 (t0-t9, a0-a3, and v0-v1)</li>
+  <li>前四个传递参数存⼊a0-a3, 后面需要传递的参数按照规定的顺序放⼊堆栈. Why?</li>
+  <li>用jal 指令调用子程序， (返回地址放⼊ ra).</li>
+  <li>子程序返回值在 v0-v1 中进行访问。</li>
+</ul>
+
+<h4 id="被调用者约定">被调用者约定</h4>
+
+<p>被调⽤者的约定（子程序）:</p>
+
+<ol>
+  <li>为要保存的寄存器、 局部变量和溢出的 args分配堆栈帧空间</li>
+  <li>保存要使⽤的需保存的寄存器:(ra, sp, fp, gp, s0-s7)</li>
+  <li>如果 CALLEE 有局部变量 - 或者 - 需要访问堆栈上的 args， 保存CALLER 的帧指针并将 fp 设置为 CALLEE 堆栈的第⼀个条⽬</li>
+  <li>执⾏⼦程序</li>
+  <li>放返回值到 v0-v1</li>
+  <li>恢复存储的寄存器</li>
+  <li>恢复 sp 到原来的值</li>
+  <li>⽤ jr $ra 返回主程序</li>
+</ol>
+
+<hr />
+
+<ul>
+  <li>
+    <p>主程序要存到堆栈的内容：t0-t9, a0-a3, and v0-v1</p>
+  </li>
+  <li>
+    <p>子程序要存到堆栈的内容：ra, sp, fp, gp, s0-s7</p>
+  </li>
+</ul>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2022/10/12/2-2-2-MIPS-Architecture/" data-toggle="tooltip" data-placement="top" title="Chapter2-2-2 MIPS Architecture">
+                        Previous<br>
+                        <span>Chapter2-2-2 MIPS Architecture</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2022/10/14/2-4-Assembly&Compilation/" data-toggle="tooltip" data-placement="top" title="Chapter2-4 Assembly & Compilation">
+                        Next<br>
+                        <span>Chapter2-4 Assembly & Compilation</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+
+                <!--   gitalk       -->
+                <div class="comment">
+                <div id="gitalk-container"></div>
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+                <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+                <script>
+                var gitalk = new Gitalk({
+                    id: location.pathname,
+                    clientID: '0db4b4c6d83c061f6b30',
+                    clientSecret: 'e1651c09f1a49b2b4a544cd584d3e8a55454a48a',
+                    repo: 'BlogComment',
+                    owner: 'jaredddddd',
+                    admin: ['jaredddddd'], 
+                    labels: ['Gitalk'],
+                })
+                gitalk.render('gitalk-container')
+                </script> 
+                </div>
+
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0036" 
+                    href="/archive/?tag=Computer-Organization"
+                    title="Computer-Organization"
+                    rel="21">Computer-Organization</a>
+        
+                <a data-sort="0018" 
+                    href="/archive/?tag=NOTES"
+                    title="NOTES"
+                    rel="39">NOTES</a>
+        
+                <a data-sort="0041" 
+                    href="/archive/?tag=Project"
+                    title="Project"
+                    rel="16">Project</a>
+        
+                <a data-sort="0042" 
+                    href="/archive/?tag=AI"
+                    title="AI"
+                    rel="15">AI</a>
+        
+                <a data-sort="0048" 
+                    href="/archive/?tag=OS"
+                    title="OS"
+                    rel="9">OS</a>
+        
+                <a data-sort="0052" 
+                    href="/archive/?tag=ML"
+                    title="ML"
+                    rel="5">ML</a>
+        
+                <a data-sort="0053" 
+                    href="/archive/?tag=PatternRecognition"
+                    title="PatternRecognition"
+                    rel="4">PatternRecognition</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Blog"
+                    title="Blog"
+                    rel="3">Blog</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Distributed-System"
+                    title="Distributed-System"
+                    rel="3">Distributed-System</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=ANN"
+                    title="ANN"
+                    rel="2">ANN</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CPU%E8%AE%BE%E8%AE%A1"
+                    title="CPU设计"
+                    rel="2">CPU设计</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CompilationPrinciple"
+                    title="CompilationPrinciple"
+                    rel="2">CompilationPrinciple</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     TeX: {
+       equationNumbers: {
+         autoNumber: "AMS"
+       }
+     },
+     SVG: {
+       scale: 90
+     },
+     tex2jax: {
+       inlineMath: [ ['$','$'] ],
+       displayMath: [ ['$$','$$'] ],
+       processEscapes: true,
+     }
+   });
+ </script>
+ <script type="text/javascript"
+         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+
+.post-container {
+    background: #fcfbfb; /* 背景颜色 */
+    border-radius: 25px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    padding-top: 40px; /* 特别增加顶部内边距 */
+    margin-top: 20px; /* 添加顶部外边距 */
+    /* margin-left: 40px; */
+    /* width: 900px; */
+}
+
+
+/* 在宽屏幕设备上应用特定样式 */
+@media (min-width: 1024px) {
+  .post-container {
+    margin-left: 40px; /* 向左扩展 */
+    width: 900px; /* 设置宽度 */
+  }
+  .side-catalog{
+    width: 250px;
+  }
+}
+
+.post-container:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* 当鼠标悬停时增加阴影效果 */
+}
+
+.side-catalog {
+    background: #ffffff; /* 背景颜色 */
+    border-radius: 15px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    margin-left: 10pt;
+    /* width: 200px; */
+
+}
+
+
+
+.catalog-container {
+    /* ... 其他样式 ... */
+    display: none; /* 默认不显示catalog */
+    transition: all 0.3s ease; /* 过渡效果 */
+    margin-top: 20px; /* 添加顶部外边距 */
+}
+
+</style>
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; LvKouKou Blog 2025
+                    <br>
+                    <!--  删掉了作者Hux Blog
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                    -->
+                    <!-- 不蒜子 -->
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                    您是Blog的第<span id="busuanzi_value_site_uv"></span>个小伙伴 </br>
+                     <span id="busuanzi_container_page_pv">
+                        本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<!-- 自己添加的 -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TNVD6PR5TQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNVD6PR5TQ');
+</script>
+<!-- 自己添加的 -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        // a = P.find('h1,h2,h3,h4,h5,h6');
+        a = P.find('h1,h2,h3,h4');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<!--鼠标点击爱心动画-->
+<script type="text/javascript" src="/js/love.js"></script>
+</body>
+
+</html>

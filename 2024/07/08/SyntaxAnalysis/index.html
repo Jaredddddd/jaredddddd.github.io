@@ -1,0 +1,2583 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @LvKouKou 的个人博客，与你一起发现更大的世界 | 要做一个想环游世界的程序员">
+    <meta name="keywords" content="LvKouKou, jaredddddd, @jaredddddd, LvKouKou Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <link
+  rel="stylesheet"
+  href="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+/>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  defer="defer"
+></script>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  defer="defer"
+  onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
+></script>
+    <script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/mathtex-script-type.min.js"
+  defer="defer"
+></script>
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="语法分析 - LvKouKou的博客 | LV Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="语法分析关键知识点小结
+
+">
+    
+    <meta property="article:published_time" content=" 2024-07-08T00:00:00Z">
+    
+    
+    <meta property="article:author" content="LvKouKou">
+    
+    
+    <meta property="article:tag" content="CompilationPrinciple">
+    
+    <meta property="article:tag" content="NOTES">
+    
+    
+    <meta property="og:image" content="https://jaredddddd.github.io/img/LVKOUKOU.jpg">
+    <meta property="og:url" content="https://jaredddddd.github.io/2024/07/08/SyntaxAnalysis/">
+    <meta property="og:site_name" content="LvKouKou的博客 | LV Blog">
+
+    <title>语法分析 - LvKouKou的博客 | LV Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jaredddddd.github.io/2024/07/08/SyntaxAnalysis/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* 打字机效果的样式 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #666 }
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid #666;
+            white-space: nowrap;
+            word-wrap: break-word;
+            letter-spacing: .1em;
+            width: fit-content;
+            margin: 0 auto;
+            animation: 
+                typing 2s steps(40, end), /* 打字机效果, 3s 完成打字, 每步40个字符 */
+                blink-caret .75s step-end infinite; /* 光标闪烁效果, 0.75s 完成一次闪烁  */
+        }
+
+        /* 添加包装容器样式 */
+        .typing-wrapper {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%; /* 确保不会超出父容器 */
+        }
+
+        /* 添加响应式样式 */
+        @media (max-width: 768px) {
+        .typing-effect {
+            font-size: 16px; /* 在手机上可以适当调整字体大小 */
+            letter-spacing: normal; /* 在手机上减小字间距 */
+        }
+    }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptions = document.getElementsByClassName('subheading');
+            if (descriptions.length > 0) {
+                const description = descriptions[0];
+                const text = description.textContent;
+                description.innerHTML = `<span class="typing-wrapper"><span class="typing-effect">${text}</span></span>`;
+            }
+        });
+    </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">LvKouKou Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/resume-home/">Resume</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/roadtrip/">On The Road</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="Searching...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!--//添加评论系统gitalk-->
+<link rel="stylesheet" href="../../../../css/gitalk.css">
+<script src="../../../../js/gitalk.min.js"></script>
+
+<!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=CompilationPrinciple" title="CompilationPrinciple">CompilationPrinciple</a>
+                        
+                        <a class="tag" href="/archive/?tag=NOTES" title="NOTES">NOTES</a>
+                        
+                    </div>
+                    <h1>语法分析</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by LvKouKou on July 8, 2024</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="语法分析关键知识点小结">语法分析关键知识点小结</h1>
+
+<h1 id="ll">LL</h1>
+
+<p>自顶向下解析 可以细分为 两种： 递归下降解析 和（ ） ，其中递归下降解析又有两种实现方式，回溯法和 预测解析 ，其中预测解析通过预读字符来实现，其预读的个数也作为一个环境变量。</p>
+
+<p>预读k个字符的预测解析 法 被称为:</p>
+
+<p>LL(k)文法， 其中第一个L表示从左向右扫描输入字符串 ；第二个L表示LeftMost(最左推导)</p>
+
+<p>k表示预读 k个字符。</p>
+
+<h2 id="如何判断文法是不是有二义性">如何判断文法是不是有二义性</h2>
+
+<blockquote>
+  <p>==尝试的时候就看，没有确定优先级和结合性一般就会导致二义性了==</p>
+</blockquote>
+
+<p>定义 10 用二义性甩. 如果对于一个文法，存在一个句子，对这个句子可以构造两棵不同的分析树，那么我们称这个文法为二义的</p>
+
+<p>所以找到两个不同分析树即可，例如：</p>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240409223311707.png" alt="image-20240409223311707" /></p>
+
+<h3 id="优先级和结合性">优先级和结合性：</h3>
+
+<blockquote>
+  <p>参考：<a href="https://blog.csdn.net/sandalphon4869/article/details/103423292">编译原理（三）语法分析：3.二义性与二义性的消除</a></p>
+</blockquote>
+
+<p>若文法G对同一句子产生不止一棵分析树，则称G是二义的。</p>
+
+<blockquote>
+  <p>例3.7 句子id+id*id和id+id+id可能的分析树
+<code class="language-plaintext highlighter-rouge">E→E+E | E*E |（E）| -E | id</code></p>
+</blockquote>
+
+<p>深度越深，越远离开始节点，<a href="https://so.csdn.net/so/search?q=优先级&amp;spm=1001.2101.3001.7020">优先级</a>越高。
+非终结符在终结符(如+)的左边是左结合，右边是右结合。
+<img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/20191206145651402.png" alt="在这里插入图片描述" /></p>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/24326825-0aa2e31475b1f08a.png" alt="img" /></p>
+
+<h2 id="如何判断是不是ll文法">如何判断是不是LL文法</h2>
+
+<p>Top-down + predict = LL(K)</p>
+
+<p>如果有以下两项则不是LL(K)文法（lec_7,P35）</p>
+
+<ol>
+  <li>有共同前缀</li>
+  <li>有左递归</li>
+</ol>
+
+<p>幸运的是有办法可以消除这两个。</p>
+
+<h2 id="如何变为ll文法">如何变为LL文法</h2>
+
+<p>==建议先消除共同前缀，然后再消除左递归，例如hw2的1.5==</p>
+
+<h3 id="如何消除左递归">如何消除左递归</h3>
+
+<p>更一般情况下的直接左递归</p>
+
+<p>考虑如下文法：</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>A→Aα1</td>
+      <td>Aα2</td>
+      <td>…</td>
+      <td>Aαm</td>
+      <td>β1</td>
+      <td>β2</td>
+      <td>…</td>
+      <td>βn</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>产生的句子为：</p>
+
+<p>βiαj1αj2…</p>
+
+<p>所以，消除递归后文法为：</p>
+
+<p>A→(β1|β2|…|βn)A’ 用来产生以βi开头的句型/句子
+A’→(α1|α2|…|αm)A’|ε
+\(\begin{align*}
+    A &amp;\rightarrow A\alpha \\
+      &amp;\rightarrow A\alpha \alpha \\
+      &amp;\rightarrow A\alpha \alpha \alpha
+\end{align*}\)
+<img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240409224714958.png" alt="image-20240409224714958" style="zoom: 50%;" /></p>
+
+<hr />
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240409224655651.png" alt="image-20240409224655651" style="zoom: 50%;" /></p>
+
+<h4 id="易错点例子">易错点例子</h4>
+
+<p>==β为多个时==</p>
+
+<blockquote>
+  <p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240701170939385.png" alt="image-20240701170939385" /></p>
+</blockquote>
+
+<p>==没有β时==</p>
+
+<blockquote>
+  <p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240701170947186.png" alt="image-20240701170947186" /></p>
+</blockquote>
+
+<h3 id="如何消除共同前缀">如何消除共同前缀</h3>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240409225649592.png" alt="image-20240409225649592" style="zoom: 50%;" /></p>
+
+<h2 id="first集follow集和select集">First集、Follow集和Select集</h2>
+
+<p>定义 15</p>
+
+<ul>
+  <li>
+    <p>FIRST(α)为从α中推导出来的字符串<strong>第一个终端符号</strong>的集合</p>
+  </li>
+  <li>
+    <p>FOLLOW(A)集为可以出现在<strong>A右侧</strong>的<strong>终端符号</strong>的集合</p>
+
+    <blockquote>
+      <p>FOLLOW(A)是所有该文法开始符推导的句型中出现在<strong>紧跟A之后</strong>的终结符或 “#”。
+\(follow(A)=\{a|S\to...Aa...,a\in V_t\}\)
+其中S表示文法的开始符号，非终结符A后面跟着的<strong>终结符</strong>或<strong>‘#</strong>’集合，且是紧挨着A的</p>
+    </blockquote>
+  </li>
+</ul>
+
+<hr />
+
+<h3 id="如何求first集">如何求First集</h3>
+
+<p>求$First(X)$</p>
+
+<ol>
+  <li>
+    <p>如果$X$是<strong>终结符</strong>，则$First(X)={X}$</p>
+  </li>
+  <li>
+    <p>如果$X$是<strong>非终结符</strong>且存在$X\to \varepsilon $，则将$\varepsilon$加入到$First(X)$中</p>
+  </li>
+  <li>
+    <p>若$X→Y…$，且$Y$属于<strong>非终结符</strong>且$Y$不能推出$\varepsilon$，则将$FIRST(Y)/{\varepsilon}$加入到$FIRST(X)$中。</p>
+
+    <blockquote>
+      <p>也就是第一个<strong>非终结符</strong>的$First$集就不包含$\varepsilon$(换句话说第一个<strong>非终结符</strong>不能推出$\varepsilon$)</p>
+    </blockquote>
+  </li>
+  <li>
+    <p>如果$X$是非终结符且$X \to Y_1Y_2Y_3…Y_k$，则</p>
+
+    <ol>
+      <li>
+        <p>若$Y_1Y_2Y_3…Y_k$都是<strong>非终结符</strong>，且$Y_1Y_2Y_3…Y_{i-1}$的$FIRST$集合中均包含$\varepsilon$，则将$FIRST(Y_j)，(j=1,2…i)$的所有非$\varepsilon$元素加入到$FIRST(X)$中，</p>
+
+        <blockquote>
+          <p>==也就是找到第一个$First$集里不包含$\varepsilon$的的$Y_i$==，然后将$Y_0到Y_i$的$First$集合都加入到$First(X)$中。</p>
+
+          <blockquote>
+            <p>这里很容易忘记是要找到第一个不包含$\varepsilon$的symbol</p>
+          </blockquote>
+
+          <p><strong>例如</strong>：如果X是非终结符，有产生式形如$X\to ABCdEF…$(A,B,C为<strong>非终结符</strong>且包含ε，d为终结符，也就是说First(d)={d}不包含$\varepsilon$)，则需要把<strong>FIRST(A), FIRST(B),FIRST(C),First(d)={d}</strong>入到FIRST(X)中</p>
+        </blockquote>
+      </li>
+      <li>
+        <p>==特别地，若$Y_1Y_2Y_3…Y_k$均有$\varepsilon$产生式，则将$\varepsilon$加到$FIRST(X)$中。==</p>
+      </li>
+    </ol>
+  </li>
+</ol>
+
+<p>所以可以总结为直到找到后面不能推出空的，然后累加前面的所有的First集</p>
+
+<hr />
+
+<p><strong>技巧：</strong></p>
+
+<p>==First一般从下往上找。==</p>
+
+<p>如果要找A的First，我们要找A的定义式，即A在<strong>左边</strong>的式子，看着他的右边来找。</p>
+
+<hr />
+
+<h3 id="如何求follow集">如何求Follow集</h3>
+
+<p>如何求$Follow集$(==非终结符才有==)，所以求follow集的时候先找非终结符</p>
+
+<ol>
+  <li>
+    <p>如果是文法的开始符号S，把$$$加入到$Follow(S)$</p>
+  </li>
+  <li>
+    <p>如果有$A\toαBβ$，则把$First(β)/{ε}$加入到$Follow(B)$中.<strong>（first(β)/{ε}表示把first(β)中去掉ε)</strong></p>
+
+    <blockquote>
+      <p>也就是这里B后面第一个不为空，所以可以直接将后一个的First集加入到$Follow(B)$中</p>
+    </blockquote>
+  </li>
+  <li>
+    <p>如果有$A\to αB$或$A\to αBβ$，<strong>且$β\toε$</strong>（这个条件应该是First(β)包含ε），则把$Follow(A)$加入到$Follow(B)$中。</p>
+
+    <blockquote>
+      <p><strong>注意，</strong>A-&gt;αBβ，α可以是终结符也可以为非终结符也可以为空，没影响，因为Follow看的是B后面可以是什么符号，β可以为终结符或者非终结符，但是不能为空且B后面要有符号;</p>
+    </blockquote>
+  </li>
+</ol>
+
+<p>==注意这里要按顺序走完，满足2的同样有机会满足3，（有$β\toε$）==</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>如S-&gt;(L)</td>
+      <td>aL</td>
+      <td>LC</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>找Follow的三种情况：</p>
+
+<p>先在候选式（右边）中找到该<strong>非终结符</strong>，如L（注意例中只有一个定义，但找Follow要看到所有右边出现该非终结符的）</p>
+
+<ul>
+  <li>如果L的右边是<strong>终结符</strong>， 那么这个终结符加入L的$Follow$（其实这一个是第二个情况的一部分，因为如果L右边是终结符，也就是$β$是终结符，那么$First(β)={β}$，所以相当于是把这个终结符加入$Follow集$）</li>
+  <li>如果L的右边是<strong>非终结符</strong>， 那么把这个<strong>非终结符</strong>的$First$除去空加到L的Follow中</li>
+  <li>如果L处在最末尾（右边没有东西了），那么，$\to$左手边符号的$Follow$集加入到L的$Follow$集。</li>
+</ul>
+
+<hr />
+
+<p><strong>小结：</strong>
+FOLLOW集对于<strong>非终结符</strong>而言，是非终结符的全部后跟符号的集合，</p>
+
+<p>如果后跟终结符则加入，</p>
+
+<p>如果后跟非终结符，则加入该非终结符的不含空符号串的FIRST集，</p>
+
+<p>特别地，文法的<strong>开始符号</strong>的FOLLOW集需要额外的加入‘#’。</p>
+
+<p>1</p>
+
+<p><strong>技巧</strong></p>
+
+<p>==Follow一般从上往下找。==</p>
+
+<p>如果要找L的Follow，要从式子的<strong>右边</strong>找到<strong>非终结符</strong>L，然后来找L的Follow，这与First是不同的。</p>
+
+<h3 id="如何求select集">如何求Select集</h3>
+
+<p><strong>定义</strong>:给定上下文无关文法的产生式$A→α, A∈VN,α∈V*$</p>
+
+<p>如何求：（α是一个整体，例如<img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240701205715627.png" alt="image-20240701205715627" />，其中第一个A可以推出空，所以还需要求B的first，所以First(AB)={a,b}）</p>
+
+<ol>
+  <li>若α不能推导出ε则：SELECT(A→α)=FIRST(α) 　</li>
+  <li>如果α能推导出ε则：SELECT(A→α)=（FIRST(α) –{ε}）∪FOLLOW(A)</li>
+</ol>
+
+<blockquote>
+  <p>也可以</p>
+
+  <ol>
+    <li>
+      <p>先只考虑first集</p>
+    </li>
+    <li>
+      <p>然后考虑如果 ε 在 FIRST(α) 中，或者 α=ε，则 a 在 FOLLOW(A) 中（ε-产生式）</p>
+
+      <blockquote>
+        <p>如果 ε 在 FIRST(α) 中并且 $ 在 FOLLOW(A) 中，则将 A 与 α 一起添加到 M[A, $]</p>
+      </blockquote>
+    </li>
+  </ol>
+
+  <p>例如：</p>
+
+  <p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240701000422788.png" alt="image-20240701000422788" /></p>
+</blockquote>
+
+<p>易错点的例题（  来自HW2-3(1)  ）：</p>
+
+<blockquote>
+  <p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240701170440626.png" alt="image-20240701170440626" /></p>
+</blockquote>
+
+<p>需要注意的是，SELECT集是针对<strong>产生式</strong>而言的。</p>
+
+<p><strong>意义</strong>：给定输入的表达式字符串，需要根据表达式的字符串中的字符用来寻找正确的产生式，即<strong>输入的表达式字串中的字符</strong>作为key，<strong>产生式</strong>作为value，那么这个select集就是构造的map</p>
+
+<p>例子：</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre></td><td class="rouge-code"><pre><span class="n">G</span><span class="p">(</span><span class="n">E</span><span class="p">)</span><span class="o">:</span>
+<span class="n">E</span><span class="o">-&gt;</span><span class="n">TE</span><span class="err">'</span>
+<span class="n">E</span><span class="err">'</span><span class="o">-&gt;+</span><span class="n">TE</span><span class="err">'</span> <span class="o">|</span> <span class="err">ε</span>
+<span class="n">T</span><span class="o">-&gt;</span><span class="n">FT</span><span class="err">'</span>
+<span class="n">T</span><span class="err">'</span><span class="o">-&gt;*</span><span class="n">FT</span><span class="err">'</span> <span class="o">|</span> <span class="err">ε</span>
+<span class="n">F</span><span class="o">-&gt;</span><span class="p">(</span><span class="n">E</span><span class="p">)</span> <span class="o">|</span> <span class="n">i</span>
+
+<span class="err">对应的</span><span class="n">first</span><span class="err">集合：</span>
+<span class="n">first</span><span class="p">(</span><span class="n">E</span><span class="p">)</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">,</span> <span class="p">(}</span>
+<span class="n">first</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">,</span> <span class="p">(}</span>
+<span class="n">first</span><span class="p">(</span><span class="n">E</span><span class="err">'</span><span class="p">)</span> <span class="o">=</span> <span class="p">{</span><span class="o">+</span><span class="p">,</span> <span class="err">ε</span><span class="p">}</span>
+<span class="n">first</span><span class="p">(</span><span class="n">T</span><span class="err">'</span><span class="p">)</span> <span class="o">=</span> <span class="p">{</span><span class="o">*</span><span class="p">,</span> <span class="err">ε</span><span class="p">}</span>
+<span class="n">first</span><span class="p">(</span><span class="n">F</span><span class="p">)</span> <span class="o">=</span> <span class="p">{(,</span> <span class="n">i</span><span class="p">}</span>
+
+<span class="err">对应的</span><span class="n">follow</span> <span class="err">集合：</span>
+<span class="n">follow</span><span class="p">(</span><span class="n">E</span><span class="p">)</span> <span class="o">=</span> <span class="p">{</span><span class="err">#</span><span class="p">,</span> <span class="p">)}</span> <span class="c1">// E作为开始符，且在F-&gt;(E) | i 产生式中，E后存在 ) 符号</span>
+<span class="n">follow</span><span class="p">(</span><span class="n">E</span><span class="err">'</span><span class="p">)</span> <span class="o">=</span> <span class="p">{</span><span class="err">#</span><span class="p">,</span> <span class="p">)}</span> <span class="c1">// 根据规则 A-&gt;αB，则E-&gt;TE'将follow(E)加入到follow(E')</span>
+<span class="n">follow</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="o">=</span> <span class="p">{</span><span class="o">+</span><span class="p">,</span> <span class="err">#</span><span class="p">,</span> <span class="p">)}</span> <span class="c1">// 有E-&gt;TE'，根据A-&gt;αBβ规则，有α为空，E'-&gt;ε，此时将follow(E)加入follow(T)，根据E'-&gt;+TE' | ε将first(+)\{ε}加入follow(T)</span>
+<span class="n">follow</span><span class="p">(</span><span class="n">T</span><span class="err">'</span><span class="p">)</span> <span class="o">=</span> <span class="p">{</span><span class="o">+</span><span class="p">,</span> <span class="err">#</span><span class="p">,</span> <span class="p">)}</span> <span class="c1">// T-&gt;FT'将follow(T)加入</span>
+<span class="n">follow</span><span class="p">(</span><span class="n">F</span><span class="p">)</span> <span class="o">=</span> <span class="p">{(</span><span class="o">*</span><span class="p">,</span><span class="o">+</span><span class="p">,</span><span class="err">#</span><span class="p">,)}</span> <span class="c1">// T-&gt;FT'，根据A-&gt;αBβ，α为空，T'-&gt;ε，将follow(T)加入;T'-&gt;*FT' | ε，根据A-&gt;αBβ，将first(T') / {ε} 加入</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>那么计算的Select集是</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="n">select</span><span class="p">(</span><span class="n">E</span><span class="o">-&gt;</span><span class="n">TE</span><span class="err">'</span><span class="p">)</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">,</span> <span class="p">(}</span> <span class="c1">// T无法推出ε，所以取first(T)</span>
+<span class="n">select</span><span class="p">(</span><span class="n">E</span><span class="err">'</span><span class="o">-&gt;+</span><span class="n">TE</span><span class="err">'</span><span class="p">)</span> <span class="o">=</span> <span class="p">{</span><span class="o">+</span><span class="p">}</span> <span class="c1">// 直接取first(+)</span>
+<span class="n">select</span><span class="p">(</span><span class="n">E</span><span class="err">'</span><span class="o">-&gt;</span><span class="err">ε</span><span class="p">)</span> <span class="o">=</span> <span class="p">{</span><span class="err">#</span><span class="p">,</span> <span class="p">)}</span> <span class="c1">// 注意候选式要分开计算，因为是ε所以取follow(E')</span>
+<span class="n">select</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="o">=</span> <span class="p">{(,</span><span class="n">i</span><span class="p">}</span> <span class="c1">// first(F)</span>
+<span class="n">select</span><span class="p">(</span><span class="n">T</span><span class="err">'</span><span class="o">-&gt;*</span><span class="n">FT</span><span class="err">'</span><span class="p">)</span> <span class="o">=</span> <span class="p">{</span><span class="o">*</span><span class="p">}</span> <span class="c1">// first(*)</span>
+<span class="n">select</span><span class="p">(</span><span class="n">T</span><span class="err">'</span><span class="o">-&gt;</span><span class="err">ε）</span> <span class="o">=</span> <span class="p">{</span><span class="o">+</span><span class="p">,</span> <span class="err">#</span><span class="p">,</span> <span class="p">)}</span> <span class="c1">// follow(T')</span>
+<span class="n">select</span><span class="p">(</span><span class="n">F</span><span class="o">-&gt;</span><span class="p">(</span><span class="n">E</span><span class="p">))</span> <span class="o">=</span> <span class="p">{(}</span> <span class="c1">// first(()</span>
+<span class="n">select</span><span class="p">(</span><span class="n">F</span><span class="o">-&gt;</span><span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">}</span> <span class="c1">// first(i)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>参考：<a href="https://blog.csdn.net/wzy1120433847/article/details/121866976">First集 Follow集 Select集 知识点+例题</a></p>
+
+<h3 id="利用select集构建parse-table">利用select集构建Parse Table</h3>
+
+<p>根据select表决定放在哪一列</p>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240630235526319.png" alt="image-20240630235526319" /></p>
+
+<h2 id="如何判断是否符合ll1文法">如何判断是否符合LL(1)文法</h2>
+
+<p>确定文法是否为 LL(1) 的两种方法：</p>
+
+<ol>
+  <li>
+    <p>构造LL(1)表，检查如果每个格子中只有一条产生式，那么则是LL(1)</p>
+  </li>
+  <li>
+    <p>观察所有Select集，若<strong>左部相同的产生式</strong>的Select集的交集为空，则符合LL(1)文法，否则不满足。</p>
+  </li>
+</ol>
+
+<h2 id="如何构造ll1的预测语法表">如何构造LL(1)的预测语法表</h2>
+
+<ol>
+  <li>变为适合LL文法</li>
+  <li>计算First集和Follow集</li>
+  <li>根据First集和Follow集计算Select表</li>
+  <li>根据Select表画出预测语法表</li>
+</ol>
+
+<p>用Select表将每个产生式放到产生式<strong>左部非终结符</strong>所对应的行，列表中各个<strong>终结符所对应的列</strong></p>
+
+<p>例如：</p>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240410223835753.png" alt="image-20240410223835753" style="zoom: 43%;" /></p>
+
+<h2 id="如何使用ll1的预测语法表">如何使用LL(1)的预测语法表、</h2>
+
+<p>X为栈顶symbol，a为目前input buffer中处理的token</p>
+
+<ol>
+  <li>
+    <p>比较（Match）：<strong>栈顶X</strong>为<strong>终结符</strong>出栈查表<strong>对比</strong></p>
+
+    <ol>
+      <li>$X==a==$$，那么返回<strong>success</strong></li>
+      <li>$X==a！=$$，那么属于中间过程，将X和a弹出即可</li>
+      <li>$X！=a$$，paser halt and input is <strong>rejected</strong></li>
+    </ol>
+  </li>
+  <li>
+    <p>展开（Expand）：<strong>栈顶X</strong>为<strong>非终结符</strong>出栈<strong>展开</strong></p>
+
+    <ol>
+      <li>
+        <p>如果MA[X,a] == ‘X-&gt;RHS’，那么X出栈，RHS入栈，input buffer中不变</p>
+
+        <blockquote>
+          <p>入栈的时候是逆序入栈，例如X-&gt;BcD
+其实也就是最左推导，最左边符号需要先被展开/比较，所以需要在靠近栈顶的位置。</p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>之前的栈</th>
+                <th>之后的栈</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td> </td>
+                <td>B</td>
+              </tr>
+              <tr>
+                <td> </td>
+                <td>c</td>
+              </tr>
+              <tr>
+                <td>X</td>
+                <td>D</td>
+              </tr>
+              <tr>
+                <td>…</td>
+                <td>…</td>
+              </tr>
+              <tr>
+                <td>$</td>
+                <td>$</td>
+              </tr>
+            </tbody>
+          </table>
+        </blockquote>
+      </li>
+      <li>
+        <p>如果MA[X,a] == empty，paser halt and input is <strong>rejected</strong></p>
+      </li>
+    </ol>
+  </li>
+</ol>
+
+<h1 id="lr">LR</h1>
+
+<p>LR 文法，<strong>自底向上</strong>的语法分析</p>
+
+<hr />
+
+<p>首先介绍 <strong>规约</strong> 的概念 ，自底向上的分析 和 自顶向下是反过来的，每次操作都是将 语法符号序列 转为非终结符 。（这与 自顶向下<strong>非终结符</strong>展开为<strong>语法符号序列</strong>恰好相反）</p>
+
+<blockquote>
+  <p>也就是从右往左替换，例如A-&gt;B，LL中是A被B替换，而LR中是用A替换B</p>
+</blockquote>
+
+<p><strong>自底向上</strong> 对应 <strong>反向最右推导</strong>(<strong>自顶向下</strong> 对应 <strong>最左推导</strong>)</p>
+
+<hr />
+
+<p>例如：下面举个例子:
+\(id*id=&gt;dF*id=&gt;T*id=&gt;T*T=&gt;T=&gt;E\)
+如果反过来:
+\(E=&gt;T=&gt;T*F=&gt;T*id=&gt;F*id=&gt;id*id\)
+发现正好是一个最右推导</p>
+
+<p>例子（lec-10）：</p>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240504160449367.png" alt="image-20240504160449367" style="zoom:50%;" /></p>
+
+<hr />
+
+<p><strong>先科普下LR语法分析器的优势:</strong></p>
+
+<ol>
+  <li>更通用：对于几乎所有程序设计语言，只要能写出上下文无关文法，就能够造出识别该语言的LR语法分析器。确实存在非LR的上下文无关文法，但常见程序设计语言都可以避免这种文法。</li>
+  <li>已知的最通用的 <strong>无回溯</strong> 移入-规约分析技术，其实现十分高效。</li>
+  <li>能尽早的发现语法错误，可以解决左递归问题</li>
+  <li>LR的语言是LL语言的 真超集(也就是$LL \subseteq  LR$)。LR文法的要求比LL文法要求宽松，且与LL一样高效</li>
+</ol>
+
+<p>缺点：手工构造LR分析器的工作量非常大，但是可以利用LR语法分析器生成工具。比如Yacc等。</p>
+
+<hr />
+
+<p><strong>分界点用 # 标记</strong>(#号左边即为已经处理过的，右边为还没处理的)</p>
+
+<ul>
+  <li># 仅作为标示，不是字符串的一部分</li>
+  <li>最初，所有输入都是未经检查的,例如： $ # x1 x2 . . .xn$[输入尚未有任何解析]</li>
+</ul>
+
+<hr />
+
+<p>自下而上的解析也称为 Shift-Reduce 解析</p>
+
+<ul>
+  <li>
+    <p>涉及两种类型的操作：Shift和Reduce</p>
+
+    <blockquote>
+      <p>回顾：LL（自顶向下）中也是只有两种动作：expend和compare</p>
+    </blockquote>
+  </li>
+  <li>
+    <p>Shift[移入]：向右移动 # 一个位置[向左侧移入终结符，推进解析]</p>
+  </li>
+  <li>
+    <p>ABC<strong>#x</strong>yz ⇒ ABC<strong>x#</strong>yz</p>
+  </li>
+  <li>
+    <p>Reduce[归约]：逆向使用产生式[左侧串的右端进行归约]（#号左边的句柄规约）</p>
+
+    <ul>
+      <li>如果 E → Cx 是产生式，那么：AB<strong>Cx</strong>#yz ⇒ AB<strong>E</strong>#yz</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<p>我们用栈来实现，</p>
+
+<p>#号左边字符串存储到堆栈中，堆栈的顶部是 #[#号左右串的分界]</p>
+
+<ul>
+  <li>
+    <p>Shift就是将终结符放到栈中</p>
+  </li>
+  <li>
+    <p>Reduce 执行以下操作（例如右产生式LHS -&gt; RHS）：</p>
+
+    <ol>
+      <li>从堆栈中弹出零个或多个符号[pop出了产生式RHS]</li>
+      <li>在堆栈上推进非终结符[push进了产生式LHS]</li>
+    </ol>
+
+    <blockquote>
+      <p>其实就是反向使用产生式LHS &lt;- RHS</p>
+    </blockquote>
+  </li>
+</ul>
+
+<hr />
+
+<p>下面介绍 <strong>移入-规约 语法分析技术 ，实际上这是自底向上分析的基本算法框架</strong>，</p>
+
+<p>其包含两个组件：1个栈 ， 1个输入缓冲区 ；</p>
+
+<p>主要由4 个操作组成：</p>
+
+<p><strong>1）移入</strong>：将下一个输入 符号 移入 栈顶</p>
+
+<p><strong>2）规约</strong> ：规约是对栈中的语法符号串进行规约，被规约的串右侧位于栈顶，语法分析器确定串左端</p>
+
+<p><strong>3）接收</strong> ：宣布语法分析过程成功完成</p>
+
+<p><strong>4）报错</strong> ：发现语法错误，执行错误恢复程序。</p>
+
+<p>移入-规约 技术的关键在于 决定 何时进行 规约， 何时进行移入操作，这将在后文的具体实现中介绍方法。</p>
+
+<h2 id="句柄">句柄</h2>
+
+<p>一个关键的问题是何时进行Shift何时进行Reduce？</p>
+
+<p>只有<strong>栈顶</strong>是<strong>句柄</strong>的时候才Reduce，其他时候都是Shift</p>
+
+<p>实际上句柄就是产生式的替换 ，</p>
+
+<p>如果有$ S=&gt;^{rm*}\alpha A\omega =&gt;^{rm}\alpha \beta \omega$</p>
+
+<p>则我们称$ A-&gt;\beta $是 $\alpha\beta\omega $的一个句柄，为了简化起见，有时直接把 $\beta $称为句柄，其中 $\omega $只包含终结符号（最右推导，所以右边这里其实是已经处理完的，也即最右推导中已被完全展开 ，左边的尚未被完全展开 )。</p>
+
+<blockquote>
+  <p>回顾： $\omega $只包含终结符号，也就是<strong>句子</strong>，<strong>句型</strong>既包含终结符也包含非终结符</p>
+</blockquote>
+
+<p>所以自顶向上分析的技术可以看成不断的替换<strong>句柄</strong>为<strong>非终结符</strong> 的过程。</p>
+
+<hr />
+
+<p>如何找到句柄？</p>
+
+<ul>
+  <li>最右句型：最右句型是指在语法分析过程中，通过逐步应用产生式规则，从初始符号开始逐步推导出的一系列符号串中的<strong>最后一个</strong>。在自底向上的语法分析（如移进-归约分析）中，最右句型是分析<strong>栈顶部的符号串</strong></li>
+  <li>短语：一个句型的语法树中<strong>任一子树</strong>的叶结点所组成的符号串都是该句型的短语</li>
+  <li>直接短语：只用一步就可以推导出</li>
+</ul>
+
+<p><strong>句柄是最左直接短语：</strong></p>
+
+<p>例子1：</p>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240504162935876.png" alt="image-20240504162935876" /></p>
+
+<p>例子2：</p>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240504163108393.png" alt="image-20240504163108393" /></p>
+
+<hr />
+
+<p>==句柄一定只出现在栈顶==</p>
+
+<h2 id="一些概念">一些概念</h2>
+
+<blockquote>
+  <p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240701180526280.png" alt="image-20240701180526280" /></p>
+</blockquote>
+
+<p>例子：</p>
+
+<blockquote>
+  <p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240701180548844.png" alt="image-20240701180548844" /></p>
+</blockquote>
+
+<h2 id="活前缀可动前缀">活前缀/可动前缀</h2>
+
+<p>定义：一个可行前缀是一个最右句型的前缀，并且它没有越过该最右句型的最右句柄的右端</p>
+
+<p>举例：S =&gt; bBa =&gt; b<strong>bA</strong>a，这里句柄是 bA，因此可行前缀包括 bA 的所有前缀：b, bb,</p>
+
+<p>bbA），但不能是 bbAa（因为越过了句柄）</p>
+
+<h2 id="二义文法">二义文法</h2>
+
+<p>有多个可能的动作，会导致冲突</p>
+
+<p>例如：既可以像左边一样规约，也可以向右边一样移进</p>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240504163623225.png" alt="image-20240504163623225" /></p>
+
+<p>Can have conflicts[冲突可能发生]</p>
+
+<ul>
+  <li>如果Shift或Reduce是合法的，则存在<strong>Shift-Reduce conflict[移入-归约冲突]</strong></li>
+  <li>如果有两个合法的Reduce，则有一个<strong>Reduce-Reduce conflict[归约-归约冲突]</strong></li>
+  <li><strong>没有Shift-Shift冲突这种东西</strong></li>
+</ul>
+
+<hr />
+
+<p>自底向上有很多种实现方式，但是我们只学LR类解析器，例如：LR(0), LR(1), SLR, LALR</p>
+
+<p>LR（k）：LR 解析器系列的成员</p>
+
+<ul>
+  <li>L：从左到右扫描输入</li>
+  <li>R：反向构造最右边的推导</li>
+  <li>k：向前看k个
+    <ul>
+      <li>k = 0 或 1 特别有意义，默认为 1</li>
+    </ul>
+  </li>
+</ul>
+
+<p>LR比LL更加powerful且一样高效</p>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240504174545143.png" alt="image-20240504174545143" /></p>
+
+<p>LR 解析器使用两个表：action表和goto表，这两个表通常合并在一起</p>
+
+<ul>
+  <li>
+    <p>action表指定终结符的条目（遇到终结符看action表）</p>
+  </li>
+  <li>
+    <p>goto表指定非终结符的条目（遇到非终结符看goto表）</p>
+
+    <blockquote>
+      <p>其实是reduce之后看goto表，reduce得出的结果是非终结符，所以也可以说遇到非终结符看goto表</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p><strong>Action table[动作表]</strong>（也就是用s+a确定下一个动作，a是终结符）</p>
+
+<ul>
+  <li>Action[s， a] 告诉解析器当堆栈是 S，终结符 A 是下一个输入token
+    <ul>
+      <li>可能的操作：shift、reduce、accept、error</li>
+    </ul>
+  </li>
+</ul>
+
+<p><strong>Goto Table[跳转表]</strong>（也就是查看action表后发现是Reduce操作，Reduce发生后用S+x确定下一个状态，x是非终结符）</p>
+
+<ul>
+  <li>Goto[s， X] 表示要放置在堆栈顶部的新状态，在非终结符X 的Reduce之后，状态 s 位于
+堆栈</li>
+</ul>
+
+<h2 id="如何使用解析表">如何使用解析表</h2>
+
+<p>PPT：lec11</p>
+
+<p>表条目的意思：</p>
+
+<ul>
+  <li>s<strong>i</strong>：及先执行shift，然后转移到 state i</li>
+  <li>r<strong>j</strong>：用j号产生式来归约，规约之后要去goto表找对应状态加到stack中</li>
+  <li>ACC：接受</li>
+  <li>空白：错误</li>
+</ul>
+
+<p>最终目标是栈中只有$</p>
+
+<h2 id="如何构建解析表">如何构建解析表</h2>
+
+<ol>
+  <li>求出item(根据增广文法求)</li>
+  <li>由S’-&gt;S求出I0(这里需要用到求closure的方法，每一个$I_{k}$都是先根据$I_{k-1}$中的item，找到转移symbol可得到的下一个状态的item，然后看<strong>点</strong>后面的符号，在全部的production中找到可以的符号再加入到$I_{k}$中)</li>
+  <li>然后一步步求出全部的I得到DFA</li>
+  <li>根据DFA构建ACTION表和GOTO表</li>
+</ol>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240504175519565.png" alt="image-20240504175519565" /></p>
+
+<h2 id="增广文法">增广文法</h2>
+
+<table>
+  <tbody>
+    <tr>
+      <td>首先引入，<strong>增广文法</strong>的概念，这个比较简单。G的增广文法G’是 G加上一个新的 开始符S’,并且加入产生式 :$ S’-&gt;S$ (S为G的开始符) 得到的文法。其目的是告诉语法分析器合适结束（当要运行规则$ S’-&gt;S $时结束），==同时还要把同时又多个可能的拆开，例如$S \to AB</td>
+      <td>a$ 拆为 $S \to AB, S \to a$==</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p>对文法进行增广的目的是为了区分开某些右部含有开始符号的文法，在归约过程中能分清是否已归约到文法的最初开始符，还是在文法右部出现的开始符号，增广文法的开始符号S′只在左部出现，这样确保了不会混淆。</p>
+</blockquote>
+
+<p>也就是添加了一个0号规则保证ACC的唯一性</p>
+
+<h2 id="s0-initial-state">S0 initial state</h2>
+
+<p>也就是加入了增广文法之后的item set</p>
+
+<p>例子：
+\(S \to AB | a\\
+A \to a | ε \\
+B \to b\)
+那么initial stage $S_0$是:
+\({ S’\to .S, S \to .AB, S \to .a, A \to .a, A \to . }\)</p>
+
+<hr />
+
+<hr />
+
+<p>下面介绍具体实现，构造LR语法分析器的关键就在于 识别 何时该 移入，何时该规约。</p>
+
+<p>LR语法分析器通过维护一些状态，来做出 移入-规约 决策。</p>
+
+<p>那么这些状态是什么？ 是 item 的集合。</p>
+
+<h2 id="如何求文法的项目item">如何求文法的项目item</h2>
+
+<p>那么 item 是什么？：一个文法G的LR(0)item（简称item）是G的一个<strong>产生式</strong>再加上位于其中的某<strong>点</strong>，比如，</p>
+
+<ul>
+  <li>$A-&gt;XYZ $有4个item:</li>
+</ul>
+
+\[A-&gt;\dot \ XYZ\\ A-&gt;X\dot\ YZ\\ A-&gt;XY\dot\ Z \\ A-&gt;XYZ\dot \\\]
+
+<ul>
+  <li>$A-&gt;\epsilon$ 只有一个item:</li>
+</ul>
+
+\[A-&gt; \dot\\]
+
+<p>item的通俗理解是: 表明了在语法分析 过程中 ，我们已经<strong>看到了 一个产生式的哪些部分</strong></p>
+
+<p>举例来说:</p>
+
+<ol>
+  <li>$A-&gt;\dot\ XYZ $在接下来的输入中期望看到从$XYZ$推导而得到的串</li>
+  <li>$A-&gt;X\dot\ YZ $表明我们刚刚在输入中看到了一个可以由$X$推导得到的串，并且希望看到从$YZ$推导得到的串。</li>
+  <li>$A-&gt;XYZ \dot\ $表示已经看到了产生式体 $XYZ $可以，可以执行规约了。</li>
+</ol>
+
+<p>==如何求项目：如何求项目：就给每个规则加一个点以后然后挪位置，挪一个位置就得到一个项目，操作完了以后你就得到了一堆项目==</p>
+
+<p>item的集合叫LR parser的<strong>configuration set[配置集]</strong></p>
+
+<hr />
+
+<p><strong>根据项集族，可以构建 DFA（确定有穷自动机）</strong> -&gt; 利用该自动机，就可以自动作出决策（移入 or 规约）</p>
+
+<blockquote>
+  <p>明确来说，自动机的每个状态对应item set族中的一个item set,</p>
+</blockquote>
+
+<hr />
+
+<p>下面来研究如何 构造LR(0）的项集族。</p>
+
+<blockquote>
+  <ul>
+    <li><strong>项</strong>就是上文的<strong>item</strong>,已经有明确定义</li>
+    <li><strong>item set</strong>或者<strong>项集</strong>，表示 item的集合，</li>
+    <li><strong>item set族</strong>或者<strong>项集族</strong>，意思就是集合的集合 。</li>
+  </ul>
+
+  <p>DFA的每个状态对应 LR(0)项集族中的一个元素，也就是一个项集</p>
+</blockquote>
+
+<hr />
+
+<hr />
+
+<h2 id="项目集闭包closure-of-item-sets">项目集闭包（closure of item sets）</h2>
+
+<blockquote>
+  <p>也是期待意义等价</p>
+</blockquote>
+
+<blockquote>
+  <p>求闭包是要先根据$I_{k-1}$得到$I_k$(对应到图里面，走横线上的才看上一个框)，然后对$I_k$中的item求闭包(求闭包的时候（用点后面那个符号扩展继续推）要看<strong>所有的产生式</strong>。)</p>
+</blockquote>
+
+<p>下面引入 <strong>项集的闭包</strong>的概念</p>
+
+<p>如果I是文法G的一个项集，那么$ CLOSURE(I) $通过以下算法生成:</p>
+
+<ol>
+  <li>
+    <p>令其为$I$（也就是把$I$中每一项都会被加到$ CLOSURE(I) $中  ） ;</p>
+  </li>
+  <li>
+    <p>如果 $A\to\alpha \dot\ B\beta $位于$CLOSURE(I)$ 中，且 $B\to\gamma $是一个产生式，将$ B\to\dot\ \gamma $加入$CLOSURE(I)$(如果有了就不加)</p>
+
+    <blockquote>
+      <p>也就是点后面的那个符号还能推出什么（这一步要查看<strong>所有产生式</strong>），都加到$ CLOSURE(I) $中</p>
+    </blockquote>
+  </li>
+  <li>
+    <p>不断应用规则2，直到没有新项可以加入$CLOUSURE(I)$.</p>
+  </li>
+</ol>
+
+<blockquote>
+  <p>对应到图里面，走横线上的才看上一个框，求闭包的时候（用点后面那个符号扩展继续推）要看<strong>所有的产生式</strong>。</p>
+</blockquote>
+
+<p>例子1：已知文法G[E]如下:
+(1) E -&gt; E+T
+(2) E -&gt; T
+(3) T -&gt;( E )
+(4) T -&gt; d</p>
+
+<p>可以直到它的拓广文法G’ [E’]为 ：
+(0) E’ -&gt; E
+(1) E -&gt; E+T
+(2) E -&gt; T
+(3) T -&gt; ( E )
+(4) T -&gt; d</p>
+
+<p>令I0 = CLOSURE({E’-&gt;.E})</p>
+
+<p>则I0 = {
+E’ -&gt; • E，(这一步是根据{E’-&gt;• E}得到的)</p>
+
+<blockquote>
+  <p>剩下这些是求闭包产生的，要看全部产生式</p>
+</blockquote>
+
+<p>E -&gt; • E+T，
+E -&gt; • T，
+T -&gt; •( E ),
+T -&gt; • d
+}</p>
+
+<p>例子2：</p>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240504180616098.png" alt="image-20240504180616098" /></p>
+
+<hr />
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240504181307301.png" alt="image-20240504181307301" /></p>
+
+<hr />
+
+<hr />
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240504181409872.png" alt="image-20240504181409872" /></p>
+
+<p>表条目的意思：</p>
+
+<ul>
+  <li>s<strong>i</strong>：及先执行shift，然后转移到 state i</li>
+  <li>r<strong>j</strong>：用j号产生式来归约</li>
+  <li>ACC：接受</li>
+  <li>空白：错误</li>
+</ul>
+
+<p>最终目标是栈中只有$</p>
+
+<hr />
+
+<p>在实际工程实践中，分两种项,</p>
+
+<p>1)核心项: 包含初始项 $S’\to\dot\ S $以及<strong>点不在最左端</strong>的所有项</p>
+
+<p>2)非核心项: 除了 $S’\to\dot\ S $之外的点在最左端的所有项</p>
+
+<p>由于，我们感兴趣的（也就是实际中能出现）的每一个项集 都是某个<strong>内核项</strong>的闭包，则如果抛弃非内核项，就可以用很少的内存来表示项集</p>
+
+<p>【注：以上的意思就是，实际工程出现的项集都是<strong>内核项集</strong>的闭包， 所以只需要用内核项集来表示 真实项集（节省内存），需要的时候执行一次闭包运算即可】</p>
+
+<hr />
+
+<h2 id="goto函数状态转移函数">Goto函数（状态转移函数）</h2>
+
+<p>下面引入 <strong>GOTO函数</strong> 的概念</p>
+
+<p>GOTO (I,X) = CLOSURE(J)</p>
+
+<p>GOTO(I,X)：返回可以通过推进X到达的状态。</p>
+
+<p>GOTO(I,X) 输入I 为项集 ，X为语法符号。其取值为是一个项集,定义为:</p>
+
+<p>I中所有形如 $[A\to\alpha\dot\ X\beta] $的项【这里括号只是强调是一个项】所对应的项$[A\to\alpha X\dot\ \beta] $的集合的闭包 。</p>
+
+<blockquote>
+  <p>也就是先归约/识别之后再求闭包，表示对于一个状态项目集中的一个项目A -&gt; α• Xβ，在下一个输入字符是X的情况下，一定到另一个新状态 A -&gt; αX•β。</p>
+
+  <p>例如：</p>
+
+  <p>(0) E’ -&gt; E
+(1) E -&gt; E+T
+(2) E -&gt; T
+(3) T -&gt; ( E )
+(4) T -&gt; d</p>
+
+  <p>那么$GOTO(I_0,E)=CLOSURE{E’ -&gt; E \cdot ,E -&gt; E\cdot+T}$</p>
+</blockquote>
+
+<p>显然，GOTO定义了DFA的转换关系。自动机的状态对应于项目集，goto(I， X)指定输入 X 下 I 的状态转换</p>
+
+<p>有了以上概念，我们可以来构造增广语法G’的 LR(0)项集族C了(实际就是构建DFA)</p>
+
+<p>例子：</p>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240504214809285.png" alt="image-20240504214809285" /></p>
+
+<p>算法如下:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre>void items(G') {
+C={CLOSURE({[S'-&gt;.S]})};
+repeat
+for (C中的每个项集I)
+	for(每个文法符号X)
+		if(GOTO(I,X)非空 且不在 C中)
+			将GOTO(I,X)加入 C中;
+	until 在某一轮中没有新 项集 被加入 C
+}
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="lr0-有限状态机的构造">LR(0) 有限状态机的构造</h2>
+
+<p>从 LR(0) FSM 的初态出发 ，先求出初态项目集的闭包（CLOSURE({S’-&gt;.S})），然后应用上述转移函数，通过项目分析每种输入字符下的状态转移，若为新状态，则就求出新状态下的项目集的闭包，可逐步构造出完整的 LR(0) FSM。</p>
+
+<p>LR(0) FSM 的构造举例
+给定文法G[E]：
+(1) E -&gt; E+T
+(2) E -&gt; T
+(3) T -&gt; ( E )
+(4) T -&gt; d</p>
+
+<p>构造LR(0) FSM
+① G[E]的拓广文法，得到G’ [E’]：
+(0) E’ -&gt; E
+(1) E -&gt; E+T
+(2) E -&gt; T
+(3) T -&gt; ( E )
+(4) T -&gt; d</p>
+
+<p>②构造G’[E’] 的 LR(0) FSM</p>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/20181229131739897" alt="2869373-16bab55cf10501de.png" /></p>
+
+<h2 id="lr0-有限状态机的构造方法">LR(0) 有限状态机的构造方法</h2>
+
+<ol>
+  <li>用闭包函数（CLOSURE）来求DFA一个状态的项目集</li>
+  <li>求LR(0) FSM 的状态转移函数GOTO函数</li>
+  <li>LR(0) 有限状态机的构造</li>
+</ol>
+
+<h2 id="lr0分析表的构造">LR(0)分析表的构造</h2>
+
+<p>ACTION 表项和 GOTO表项可按如下方法构造：</p>
+
+<p><strong>a 为终结符,A为非终结符</strong></p>
+
+<ul>
+  <li>若项目$A -&gt;α • aβ$属于 $I_k$ 且 $GO (I_k, a)= I_j$, 期望字符<strong>a 为终结符</strong>，则置$ACTION[k, a] =sj $(j表示<strong>新状态</strong>的下标/状态号);</li>
+  <li>若项目$A -&gt;α • Aβ属于 I_k$，且$GO (I_k, A)= I_j$,期望字符 <strong>A为非终结符</strong>，则置$GOTO(k, A)=j$ （j就是下一个状态的下标/状态号）</li>
+  <li>若项目$A -&gt;α •$属于$I_k$, 那么对任何终结符a, 置$ACTION[k, a]=rj$；其中，假定$A-&gt;α$为文法G 的第j个产生式；</li>
+  <li>若项目$S’ -&gt;S • $属于$I_k$, 则置$ACTION[k, #]$为“acc”;</li>
+  <li>分析表中凡不能用上述规则填入信息的<strong>空白格</strong>均置上“出错标志”</li>
+</ul>
+
+<blockquote>
+  <p>用人话说就是：</p>
+
+  <ol>
+    <li>不是句柄且栈顶为终结符：如果圆点不在<strong>项目k</strong>最后且圆点后的<strong>期待字符a为终结符</strong>，则<strong>ACTION[k, a] =sj (</strong>j表示新状态Ij)；</li>
+    <li>不是句柄且栈顶为非终结符：如果圆点不在项目k最后且圆点后的期待字符<strong>A为非终结符</strong>，则<strong>GOTO(k, A)=j</strong> (j表示文法中第j个产生式)；</li>
+    <li>是句柄则归约：如果圆点在<strong>项目k</strong>最后且k不是S’ -&gt;S，那么对==所有==<strong>终结符a</strong>，<strong>ACTION[k, a]=rj</strong> (j表示文法中第j个产生式)；</li>
+    <li>如果圆点在项目k最后且k是<strong>S’ -&gt;S</strong>，则ACTION[k, #]为“acc”;</li>
+  </ol>
+</blockquote>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240504224645920.png" alt="image-20240504224645920" style="zoom: 67%;" /></p>
+
+<p>例子：</p>
+
+<p>考虑文法G[S] :
+S → （S） | a</p>
+
+<p>相应的LR(0) FSM如下，构造其LR(0)分析表。</p>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/20181229131739956" alt="2869373-24792d5abfee9bbe.png" /></p>
+
+<p>LR(0) FSM</p>
+
+<p>从I0看，</p>
+
+<ul>
+  <li>$S’-&gt;·S$，期望字符是非终结符S，根据上面的<strong>规则2</strong>，得到GOTO(0,S)=1；</li>
+  <li>$S-&gt;·(S)$，期望字符是终结符( ，根据上面的<strong>规则1</strong>，得到ACTION(0,()=S2；</li>
+  <li>$S -&gt; ·a$，期望字符是终结符a，根据上面规则1，得到ACTION(0,a) = S3</li>
+</ul>
+
+<p>从I1看</p>
+
+<ul>
+  <li>$S’-&gt;S·$，根据<strong>规则4</strong>，置ACTION[1, #]为“acc”;</li>
+</ul>
+
+<p>从I2看，</p>
+
+<ul>
+  <li>$S-&gt;(·S)$，期望字符是非终结符S，根据上面的规则2，得到GOTO(1,S)=4；</li>
+  <li>$S-&gt;·(S)$，期望字符是终结符( ，根据上面的<strong>规则1</strong>，得到ACTION(0,()=S2；</li>
+  <li>$S -&gt; ·a$，期望字符是终结符a，根据上面规则1，得到ACTION(0,a) = S3</li>
+</ul>
+
+<p>从I3看，</p>
+
+<ul>
+  <li>$S-&gt;a·$，根据<strong>规则3</strong>，置ACTION[3, a]为r2;</li>
+</ul>
+
+<p>从I4看</p>
+
+<ul>
+  <li>$S-&gt;(S·)$，期望字符是终结符) ，根据上面的<strong>规则1</strong>，得到ACTION(0,))=S5；</li>
+</ul>
+
+<p>从I5看</p>
+
+<ul>
+  <li>$S-&gt;(S)·$，根据<strong>规则3</strong>，置ACTION[5, ）]为r1;</li>
+</ul>
+
+<p>看完所有$I$和里面的所有item，即可得到下表</p>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/201812291317408" alt="2869373-ae315fcdb75b399c.png" /></p>
+
+<p>例子2：</p>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240504225653296.png" alt="image-20240504225653296" style="zoom:67%;" /></p>
+
+<hr />
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240504232939266.png" alt="image-20240504232939266" /></p>
+
+<h2 id="如何使用lr0-的parser-table">==如何使用LR(0) 的parser table==</h2>
+
+<blockquote>
+  <p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240701201704154.png" alt="image-20240701201704154" /></p>
+</blockquote>
+
+<h3 id="shift">shift</h3>
+
+<blockquote>
+  <p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240701201949186.png" alt="image-20240701201949186" /></p>
+</blockquote>
+
+<h3 id="reduce">reduce</h3>
+
+<blockquote>
+  <p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240701201934772.png" alt="image-20240701201934772" /></p>
+</blockquote>
+
+<hr />
+
+<blockquote>
+  <p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240701202155813.png" alt="image-20240701202155813" /></p>
+</blockquote>
+
+<h2 id="slrsimple-lr-">SLR(Simple LR )</h2>
+
+<blockquote>
+  <p>参考：<a href="https://www.cnblogs.com/getianao/p/10195492.html">编译原理系列之六 自底向上的LR分析法(2) – SLR(1)分析</a></p>
+</blockquote>
+
+<p>LR(0)文法的要求是</p>
+
+<ol>
+  <li>不同时含有移进项目和归约项目，即<strong>不存在移进-归约冲突</strong> 。</li>
+  <li>不含有两个以上归约项目，即<strong>不存在归约-归约冲突</strong>。</li>
+</ol>
+
+<p>例如项目集$Ii$中存在： <code class="language-plaintext highlighter-rouge">Ii ＝{A-&gt;α•bγ ， B→ γ•，C→β• }</code>，此时就同时存在移进-归约冲突和归约-归约；因为你不知道下一步是选择归约还是移进，选择归约的话选择哪个产生式归约。</p>
+
+<p>而事实上一般文法满足这种要求有一定难度，但是假如在归约时出现了移进-归约冲突或者归约-归约冲突，我们可以通过在待分析的字符串中向后再看一位，大多数情况下通过这一位字符就可以确定，选择哪一个表达式归约，或是移进操作。</p>
+
+<p>这种方法就叫做SLR(1)分析法，即简单的LR(1)分析法。</p>
+
+<hr />
+
+<h3 id="如何判断能否用slr1解决冲突">如何判断能否用SLR(1)解决冲突</h3>
+
+<p>假如LR(0) 项目集规范族中有项目集 Ii 含有移进-归约冲突和归约-归约冲突： <code class="language-plaintext highlighter-rouge">Ii ＝{A1-&gt;α1•b1γ1 ，… ， Am-&gt;m•bm γm， B1-&gt;β 1 • ，…， Bn-&gt; β n • }</code>，若集合<code class="language-plaintext highlighter-rouge">{b1 ，b2，… ，bm }</code>、<code class="language-plaintext highlighter-rouge">FOLLOW(B1)</code> 、 <code class="language-plaintext highlighter-rouge">FOLLOW(B2)</code> ，…，<code class="language-plaintext highlighter-rouge">FOLLOW(Bn)</code><strong>均两两不相交</strong>，则可用SLR(1)解决方法解决分析表上第i行上的冲突问题。</p>
+
+<h3 id="如何构建slr1的表">如何构建SLR(1)的表</h3>
+
+<p>与LR(0)相比表的结构一致但是动作填充不同，只有下一个token再FOLLOW集中才<strong>归约</strong>：</p>
+
+<p>假设下一个移进的字符为<code class="language-plaintext highlighter-rouge">b</code>，</p>
+
+<ul>
+  <li>若<code class="language-plaintext highlighter-rouge">b∈ {b1 ，b2，… ，bm }</code>，则移进输入符；</li>
+  <li>若<code class="language-plaintext highlighter-rouge">b∈FOLLOW(Bj) ，j＝1 ，… ，n，</code>则用<code class="language-plaintext highlighter-rouge">Bj-&gt; βj</code> 归约；</li>
+</ul>
+
+<p>综上，我们可以在构建分析表时做出如下改变(<strong>只有填rj时才有变化</strong>)：</p>
+
+<ul>
+  <li>
+    <p>若项目<code class="language-plaintext highlighter-rouge">A -&gt;α • aβ</code>属于 $I_k $且 <code class="language-plaintext highlighter-rouge">GO (Ik, a)= Ij,</code> 期望字符a 为终结符，则置<code class="language-plaintext highlighter-rouge">ACTION[k, a] =sj</code> (j表示新状态Ij);</p>
+  </li>
+  <li>
+    <p>若项目<code class="language-plaintext highlighter-rouge">A -&gt;α • Aβ</code>属于 $I_k $，且<code class="language-plaintext highlighter-rouge">GO (Ik, A)= Ij</code>,期望字符 A为非终结符，则置<code class="language-plaintext highlighter-rouge">GOTO(k, A)=j</code></p>
+  </li>
+  <li>
+    <p>==若项目<code class="language-plaintext highlighter-rouge">A -&gt;α •</code>属于$I_k $, 那么对任何<strong>终结符a</strong>，<strong>只有满足a属于follow(A)时</strong>，才 置<code class="language-plaintext highlighter-rouge">ACTION[k, a]=rj</code>；其中，假定<code class="language-plaintext highlighter-rouge">A-&gt;α</code>为文法G 的第j个产生式；==</p>
+
+    <blockquote>
+      <p>LR(0)中是不管怎么样，全部终结符a都有ACTION[k, a]=rj，这里是只有满足a属于follow(A)时才可以置ACTION[k, a]=rj</p>
+    </blockquote>
+  </li>
+  <li>
+    <p>若项目<code class="language-plaintext highlighter-rouge">S’ -&gt;S •</code> 属于$I_k $, 则置<code class="language-plaintext highlighter-rouge">ACTION[k, #]=“acc”</code>;</p>
+  </li>
+  <li>
+    <p>分析表中凡不能用上述规则填入信息的空白格均置上“出错标志”</p>
+  </li>
+</ul>
+
+<h3 id="slr1分析的例子">SLR(1)分析的例子</h3>
+
+<blockquote>
+  <p>算术表达式文法G[E]：
+E→E +T | T
+T→T * F | F
+F→ （E）| i
+求此文法的识别规范句型活前缀的DFA，分析句子i+i *i。</p>
+</blockquote>
+
+<ol>
+  <li>将文法拓广为G’[E’]：
+(0) E’ -&gt;E
+(1) E-&gt; E +T
+(2) E -&gt;T
+(3) T -&gt;T * F
+(4) T -&gt;F
+(5) F -&gt;(E)
+(6) F -&gt;i</li>
+  <li>构造识别规范句型活前缀的DFA</li>
+</ol>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/20181229131728485" alt="2869373-ad08b869d250fc67.png" style="zoom: 50%;" /></p>
+
+<p>DFA</p>
+
+<ol>
+  <li>
+    <p>判断有无冲突：</p>
+
+    <p>I1 ，I2 ，I9有移进_归约冲突。
+I1:E´ -&gt;E· E -&gt;E·+T
+I2: E -&gt;T · T -&gt;T · *F
+I9: E -&gt;E+T· T -&gt;T · *F</p>
+  </li>
+  <li>
+    <p>==考虑能否用SLR(1)方法解决冲突：==</p>
+
+    <p>对于I1: <code class="language-plaintext highlighter-rouge">{ E´ -&gt;E· E -&gt;E·+T}</code> 因为：<code class="language-plaintext highlighter-rouge">{+} ∩ FOLLOW(E´)= {+} ∩ {＃} ＝∅</code>, 所以可用SLR(1)方法 解决I1的冲突。</p>
+
+    <p>对于I2: <code class="language-plaintext highlighter-rouge">{E -&gt;T· T -&gt;T·*F}</code> 因为：<code class="language-plaintext highlighter-rouge">{*} ∩ FOLLOW(E)= {*} ∩ {＃，）,+} ＝ ∅</code> 所以可用SLR(1)方法解决I2的冲突。</p>
+
+    <p>对于I9: <code class="language-plaintext highlighter-rouge">{E -&gt;E+T· T -&gt;T ·*F}</code> 因为：<code class="language-plaintext highlighter-rouge">{*} ∩ FOLLOW(E)= ∅</code>, 所以可用SLR(1)方法解决I9的冲突。</p>
+  </li>
+  <li>
+    <p>构建分析表：</p>
+  </li>
+</ol>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/20181229131728536" alt="2869373-f48f0b76db25c414.png" style="zoom: 67%;" /></p>
+
+<p>分析表</p>
+
+<p>6.句子i+i *i的分析过程：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>步骤</th>
+      <th>状态栈</th>
+      <th>符号栈</th>
+      <th>输入符</th>
+      <th>剩余输入串</th>
+      <th>查表</th>
+      <th>操作</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>0</td>
+      <td>#</td>
+      <td>i</td>
+      <td>i+i*i#</td>
+      <td>Action[0,i]=S5</td>
+      <td>移进i</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>0 5</td>
+      <td># i</td>
+      <td>+</td>
+      <td>+i*i#</td>
+      <td>Action[5,+]=r6,GOTO(0,F)=3</td>
+      <td>用F -&gt; i 归约</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>0 3</td>
+      <td># F</td>
+      <td>+</td>
+      <td>+i*i#</td>
+      <td>Action[3,+]=r4,GOTO(0,T)=2</td>
+      <td>用F -&gt; T归约</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>0 2</td>
+      <td># T</td>
+      <td>+</td>
+      <td>+i*i#</td>
+      <td>Action[2,+]=r4,GOTO(0,E)=1</td>
+      <td>用F -&gt; E归约</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>0 1</td>
+      <td># E</td>
+      <td>+</td>
+      <td>+i*i#</td>
+      <td>Action[1,+]=S6</td>
+      <td>移进+</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>0 1 6</td>
+      <td># E +</td>
+      <td>i</td>
+      <td>i*i#</td>
+      <td>Action[6,i]=S6</td>
+      <td>移进+</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>0 1 6 5</td>
+      <td># E + i</td>
+      <td>*</td>
+      <td>*i#</td>
+      <td>Action[5,*]=r6,GOTO(6,F)=3</td>
+      <td>用F -&gt; i 归约</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>0 1 6 3</td>
+      <td># E + F</td>
+      <td>*</td>
+      <td>*i#</td>
+      <td>Action[3,*]=r6,GOTO(6,T)=9</td>
+      <td>用F -&gt; F 归约</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>0 1 6 9</td>
+      <td># E + T</td>
+      <td>*</td>
+      <td>*i#</td>
+      <td>Action[9,*]=S7</td>
+      <td>移进*</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>0 1 6 9 7</td>
+      <td># E + T *</td>
+      <td>i</td>
+      <td>i#</td>
+      <td>Action[7,i]=S5</td>
+      <td>移进i</td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td>0 1 6 9 7 5</td>
+      <td># E + T * i</td>
+      <td>#</td>
+      <td>#</td>
+      <td>Action[5,#]=r6,GOTO(7,F)=10</td>
+      <td>用F -&gt; i 归约</td>
+    </tr>
+    <tr>
+      <td>12</td>
+      <td>0 1 6 9 7 10</td>
+      <td># E + T * F</td>
+      <td>#</td>
+      <td>#</td>
+      <td>Action[10,#]=r3,GOTO(6,T)=9</td>
+      <td>用T -&gt; T+F归约</td>
+    </tr>
+    <tr>
+      <td>13</td>
+      <td>0 1 6 9</td>
+      <td># E + T</td>
+      <td>#</td>
+      <td>#</td>
+      <td>Action[9,#]=r1,GOTO(0,E)=1</td>
+      <td>用E -&gt; E+T归约</td>
+    </tr>
+    <tr>
+      <td>14</td>
+      <td>0 1</td>
+      <td># E</td>
+      <td>#</td>
+      <td>#</td>
+      <td>Action[1,#]=acc</td>
+      <td>接受</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="lr1">LR(1)</h2>
+
+<h3 id="slr1的问题">SLR(1)的问题</h3>
+
+<blockquote>
+  <p>仍有Shift-reduce conflict</p>
+</blockquote>
+
+<p><strong>无效归约问题：</strong></p>
+
+<p>在SLR(1)分析中，我们考虑了<strong>所归约非终结符</strong>的 <strong>Follow</strong> 符号，这可以分析出怎么选择归约或移进，但是在选择<strong>归约</strong>的情况中里，我们只是确认了移进符号是属于非终结符的Follow集的，而没有确认<strong>移进后</strong>是否是表达式文法规范句型的活前缀，也就是<strong>未考虑非终结符 Follow 集中的符号是否也是句柄的 Follow 符号</strong>；这样虽然不会影响判断结果，但产生了无效归约，减低了效率。</p>
+
+<blockquote>
+  <p>例：现在符号栈中的元素是<code class="language-plaintext highlighter-rouge">βα</code>，移进符号是<code class="language-plaintext highlighter-rouge">a</code>，已知有归约项目<code class="language-plaintext highlighter-rouge">A-&gt;α</code>，并且<code class="language-plaintext highlighter-rouge">a</code>属于<code class="language-plaintext highlighter-rouge">follow(A)</code>而<code class="language-plaintext highlighter-rouge">a</code>不属于<code class="language-plaintext highlighter-rouge">follow(βα)</code>；此时我们的做法是归约然后移进，之后的符号栈中的元素是<code class="language-plaintext highlighter-rouge">βAa</code>，而<code class="language-plaintext highlighter-rouge">βAa</code>不是文法规范句型的活前缀。</p>
+
+  <p>如果我们能判断出<code class="language-plaintext highlighter-rouge">a!∈follow(βA)</code>，就可以判断出出错了。</p>
+</blockquote>
+
+<p><strong>局限性问题：</strong></p>
+
+<p>SLR（1）分析的要求是：<code class="language-plaintext highlighter-rouge">Ii ＝{A1-&gt;α1•b1γ1 ，… ， Am-&gt;m•bm γm， B1-&gt;β 1 • ，…， Bn-&gt; β n • }</code>，若集合<code class="language-plaintext highlighter-rouge">{b1 ，b2，… ，bm }</code>、<code class="language-plaintext highlighter-rouge">FOLLOW(B1)</code> 、 <code class="language-plaintext highlighter-rouge">FOLLOW(B2)</code> ，…，<code class="language-plaintext highlighter-rouge">FOLLOW(Bn)</code>均<strong>两两</strong>不相交。和上面的道理相似，<strong>没有考虑非终结符 Follow 集中的符号是否也是句柄的 Follow 符号</strong>，导致虽然follow集出现了相交，但是事实上正确的符号串是不会出现某些 follow集中的符号的，从而不能判断。</p>
+
+<p>已知：增广文法 G’ [ S ]:
+(0) S -&gt; E
+(1) E -&gt; (L , E )
+(2) E -&gt; F
+(3) L -&gt; L , E
+(4) L -&gt; E
+(5) F -&gt; ( F )
+(6) F -&gt; d</p>
+
+<p>有G’ [S] 的 LR（0）FSM：</p>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/2869373-f658195d208efeb7.png" alt="2869373-f658195d208efeb7.png" /></p>
+
+<p>G’ [S] 的 LR（0）FSM</p>
+
+<blockquote>
+  <p>在I7中出现了<code class="language-plaintext highlighter-rouge">{)}∩follow(E)={)}</code>的情况，所以不能进行SLR（1）分析；但是I7中的情况是<code class="language-plaintext highlighter-rouge">(·F,E)</code>，此时的<code class="language-plaintext highlighter-rouge">follow(E)</code>中没有<code class="language-plaintext highlighter-rouge">）</code>而应该是<code class="language-plaintext highlighter-rouge">,</code>。</p>
+</blockquote>
+
+<hr />
+
+<h3 id="lr1分析法原理">LR（1）分析法原理</h3>
+
+<h4 id="规范-lr1-项">规范 LR(1) 项</h4>
+
+<p>还记得 LR(0) 项长什么样子吗？LR(1) 项和它挺像的。对于某个产生式 𝐴→𝛼𝛽 ，和它对应的其中一个 LR(1) 项就是 [𝐴→𝛼·𝛽,𝑎] ，其中 𝑎 是这个项的<strong>向前看符号</strong>（lookahead）。如果 LR(1) 中的点号不在项的最右侧，向前看符号没有任何意义；当点号在最右端时，向前看符号表示，<strong>只有下一个输入的符号和 𝑎 一致时，我们才归约这个产生式</strong>。</p>
+
+<hr />
+
+<p>我们在求项目集的时候，每个项目的末尾添加一个<strong>非终结符$</strong>并以<code class="language-plaintext highlighter-rouge">,</code>分隔开来，来表示<strong>在当前情况下</strong>用该产生式进行规约时所期望的下一个字符，称之为<strong>向前搜索符</strong>，来替代follow集。</p>
+
+<blockquote>
+  <p>首先，明白了在 LR(1) 分析法中展望是为了解决其他分析法解决不了的问题。简单的说就是，状态会出现冲突，我们不能只通过后 1 个输入串符号，直接确定选用哪个产生式，这是严重的错误。</p>
+
+  <p>所以 <strong>展望（向前搜索符）</strong> 是通过展望后面的内容，所以展望对应的终结符，应该 <strong>属于该非终结符的 FOLLOW 集（确切的说，属于 FOLLOW 集中的具体哪个个终结符，应该根据产生式的推导过程确定，通过语法树来分析，是比较直观的方法。也可以直接通过求该非终结符后的 FIRST 集来确定，但要注意是对谁求 FIRST 集，可表示为 FIRST(βa)，例题中会提到）</strong>，来帮助唯一确定选择产生式。</p>
+
+  <blockquote>
+    <p><strong>拓展注：这里提到的 FOLLOW 集和 FIRST 集不是冲突的，因为我们要求的向前搜索符时 FOLLOW 集的子集，有时候不能确定，所以用 FIRST(βa)， β 表示由谁哪个非终结符推导的，这个非终结符的后面的剩余串，a 表示它上一个状态中的向前搜索符。它俩拼接起来的串，对该串求 FIRST 集。
+那么可能会有疑问，利用上一个状态？那第一个状态呢？第一个状态是固定的 S’→S,#
+其实 # 就是 S 的 FOLLOW 集中的唯一的元素，它也是开始符号的向前搜索符
+所以说 FOLLOW 集和 FIRST(βa) 是都可以求的，FIRST(βa) 是准确的向前搜索符，它是 FOLLOW 集的一部分</strong></p>
+  </blockquote>
+
+  <p>在 LR(1) 中，用</p>
+
+  <blockquote>
+    <p><strong>状态, 终结符</strong>
+例如：S’ → # （#表示开始符号FOLLOW集会提到那个符号，有的地方用 $，是一样的 ）</p>
+  </blockquote>
+
+  <p>这种形式是表式展望，终结符就是展望的后面的终结符，具体的下面例题中还会提到。</p>
+</blockquote>
+
+<p>在检查是否可用.LR（1）分析法的时候，要求是<code class="language-plaintext highlighter-rouge">Ii</code>＝<code class="language-plaintext highlighter-rouge">{A1-&gt;α1•b1 γ1,a1</code>，… ， <code class="language-plaintext highlighter-rouge">Am-&gt;m•bm γm,am</code> ， <code class="language-plaintext highlighter-rouge">B1-&gt;β 1 •,c1</code>，…，<code class="language-plaintext highlighter-rouge">Bn-&gt; β n •,cn</code> }，若集合<code class="language-plaintext highlighter-rouge">{b1}</code> ，<code class="language-plaintext highlighter-rouge">{b2}</code>，… ，<code class="language-plaintext highlighter-rouge">{bm}</code>、<code class="language-plaintext highlighter-rouge">{c1}</code> ，<code class="language-plaintext highlighter-rouge">{c2}</code>，… ，<code class="language-plaintext highlighter-rouge">{cm}</code>均两两不相交。满足这样要求的文法称之为<strong>LR（1）文法</strong>：。</p>
+
+<p>通过比较``{b1}<code class="language-plaintext highlighter-rouge">，</code>{b2}<code class="language-plaintext highlighter-rouge">，… ，</code>{bm}<code class="language-plaintext highlighter-rouge">、</code>{c1}<code class="language-plaintext highlighter-rouge">，</code>{c2}<code class="language-plaintext highlighter-rouge">，… ，</code>{cm}`和待移进字符就能分析出当前应该进行的操作。</p>
+
+<h4 id="如何求lr1的closure也就是求i">如何求LR(1)的Closure(也就是求I)</h4>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240505220849944.png" alt="image-20240505220849944" style="zoom: 80%;" /></p>
+
+<blockquote>
+  <p>tips：走横线上过去的，逗号后面都是直接加展望符$，只有求闭包的时候才需要求First集</p>
+
+  <p>并且是来自谁就求谁的first(va)</p>
+
+  <p>例如上图中$S\to\cdot XX$是由$S’\to\cdot S$推出来的，那么就是First(ε$)=$</p>
+
+  <p>$X\to\cdot aX$和$X\to\cdot b$来自$S\to\cdot XX$，那么就是First(X$)=a/b</p>
+
+  <blockquote>
+    <p>这里求连续多个的first集时，就是要找到第一个不能推出空的符号才停，然后累加之前所有符号的first集（与求first集一样）</p>
+  </blockquote>
+</blockquote>
+
+<p>例：增广文法 G’ [ S ]:
+(0) S -&gt; E
+(1) E -&gt; (L , E )
+(2) E -&gt; F
+(3) L -&gt; L , E
+(4) L -&gt; E
+(5) F -&gt; ( F )
+(6) F -&gt; d</p>
+
+<p>构造增广文法G’ [S] 的 LR（1）FSM：</p>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/2869373-9a66aa8e872964c0.png" alt="2869373-9a66aa8e872964c0.png" /></p>
+
+<p>G’ [S] 的 LR（1）FSM（1）</p>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/2869373-7dba1dc8361a36ad.png" alt="2869373-7dba1dc8361a36ad.png" /></p>
+
+<p>G’ [S] 的 LR（1）FSM（2）</p>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/2869373-900f044983c4a63b.png" alt="2869373-900f044983c4a63b.png" /></p>
+
+<p>G’ [S] 的 LR（1）FSM（3）</p>
+
+<h3 id="lr1构建表">LR(1)构建表</h3>
+
+<p>只有r的填写不同，只写到展望的符号的格子中</p>
+
+<blockquote>
+  <p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240701225627813.png" alt="image-20240701225627813" /></p>
+</blockquote>
+
+<h3 id="lrk分析">LR（k）分析</h3>
+
+<p>同理可推广到LR（k）分析：</p>
+
+<p>形如： <code class="language-plaintext highlighter-rouge">[A -&gt;α . β , a1a2…ak ]</code>，其中a1a2…ak 为向前搜索符号串。</p>
+
+<p>移进项目形如：<code class="language-plaintext highlighter-rouge">[ A -&gt;α . aβ， a1 a2 … ak]</code> ；待约项目形如：<code class="language-plaintext highlighter-rouge">[A -&gt;α . Bβ， a1 a2 … ak]</code>； 归约项目形如：<code class="language-plaintext highlighter-rouge">[A -&gt;α . ，a1 a2 … ak]</code> 。</p>
+
+<p>但LR（k）分析只有理论意义，因为LR（1）FSM 的状态数已经很大，k&gt;1 的情形难以想象。</p>
+
+<h2 id="lalr1分析会引入rr冲突">LALR（1）分析（会引入RR冲突）</h2>
+
+<blockquote>
+  <p>lec_14-split</p>
+</blockquote>
+
+<p>LALR是Lookahead LR，是LR(1)和SLR(1)的折中</p>
+
+<p>合并LR(1)中的相似状态（相似状态是：core相同，展望不同，展望就是LR(1)新加入的逗号后的部分，需要根据first集来求的）</p>
+
+<p>LALR的特点是FSM<strong>形式上与LR(1)相同，大小上与LR(0)/SLR相当，分析能力介于SLR和LR(1)二者之间</strong>
+\(SLR&lt;LALR(1)&lt;LR(1)\)
+合并后的展望符集合仍为FOLLOW集的子集，LALR相对于LR(1)<strong>会延迟错误的发现</strong>，因此其分析能力会低于LR(1)分析法。但其对信息的划分比SLR分析法更细致，因此它延迟发生的错误要比SLR分析要少分析能力也就比SLR分析要强。</p>
+
+<h3 id="1基本概念">1.基本概念</h3>
+
+<ul>
+  <li>
+    <p>LR（1）项目的“心”（core）：</p>
+
+    <p>LR（1）项目 <code class="language-plaintext highlighter-rouge">[A -&gt; α . β , a]</code> 中的<code class="language-plaintext highlighter-rouge">A -&gt; α . β</code> 部分称为该项目的“心“ 。</p>
+  </li>
+  <li>
+    <p>同心集：</p>
+  </li>
+  <li>
+    <p>对于LR（1）FSM 的两个状态，如果只考虑每个项目的 “心”，它们是完全相同的项目集合，那么这两个状态互为同心集。</p>
+  </li>
+</ul>
+
+<h4 id="2lalr1分析法原理">2.LALR（1）分析法原理</h4>
+
+<p>我们可以发现LR（1）分析的有限状态机中，项目集的数量十分的多。这是因为许多在LR（0）分析中循环的项目集在LR（1）分析中由于<code class="language-plaintext highlighter-rouge">·</code>的位置变化导致向前搜索集也产生了变化，从而产生了许多同心集。<strong>而LALR（1）分析法正是对这些同心集进行了合并。</strong></p>
+
+<p>暴风(<em>Brute</em> <em>Force</em>)算法：</p>
+
+<ol>
+  <li>构造增广文法的 LR（1）FSM 状态 。（FSM=有限状态机）</li>
+  <li>合并“同心”的状态（同心项目的搜索符集合相并） 得到LALR(1) FSM 的状态 。</li>
+  <li>LALR(1) FSM 状态由 GO 函数得到的后继状态是所有被合并的“同心”状态的后继状态之并 。</li>
+</ol>
+
+<p>注意：</p>
+
+<ul>
+  <li>
+    <p>合并同心状态后，不会产生新的<strong>移进-归约</strong>冲突，但==可能产生新的<strong>归约-归约</strong>冲突==。</p>
+  </li>
+  <li>
+    <p>一个LR（1）文法，==如果将其LR（1）FSM的 同心状态<strong>合并后所得到的新状态无归约-归约 冲突，则该文法是一个 LALR（1）文法</strong> 。==</p>
+
+    <p>例：增广文法 G’ [ S ]:
+(0) S -&gt; E
+(1) E -&gt; (L , E )
+(2) E -&gt; F
+(3) L -&gt; L , E
+(4) L -&gt; E
+(5) F -&gt; ( F )
+(6) F -&gt; d</p>
+
+    <p>构造增广文法G’ [S] 的 LALR(1) FSM</p>
+  </li>
+</ul>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/2869373-80c9b8a85f90cca0.png" alt="2869373-80c9b8a85f90cca0.png" /></p>
+
+<p>G’ [S] 的 LALR(1) FSM</p>
+
+<hr />
+
+<p>合并的例子：</p>
+
+<div style="display: flex;">
+    <div style="flex: 50%; padding: 5px;">
+        <img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240516152035442.png" alt="Image 1" style="width:100%" />
+        <p style="text-align: center;">(a)</p>
+    </div>
+    <div style="flex: 50%; padding: 5px;">
+        <img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240516152057441.png" alt="Image 2" style="width:100%" />
+        <p style="text-align: center;">(b)</p>
+    </div>
+</div>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240516152417421.png" alt="image-20240516152417421" style="zoom: 40%;" /></p>
+
+<p>==合并状态后，不会产生新的<strong>移进-归约</strong>冲突(SR)，但可能产生新的<strong>归约-归约</strong>冲突(RR)，只有不产生冲突时才符合LALR(1)==</p>
+
+<div style="display: flex;">
+    <div style="flex: 50%; padding: 5px;">
+        <img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240516153058562.png" alt="Image 1" style="width:100%" />
+        <p style="text-align: center;">(a)为什么不会有SR冲突</p>
+    </div>
+    <div style="flex: 50%; padding: 5px;">
+        <img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240516152959762.png" alt="Image 2" style="width:100%" />
+        <p style="text-align: center;">(b)RR冲突的例子</p>
+    </div>
+</div>
+
+<p>虽然合并同心项目可能会产生归约-归约冲突，但不会产生移入-归约冲突，是因为同心项目集在合并时只是<strong>合并展望符集合</strong>，而展望符只在归约时起作用在移入是不起作用的，因此只要合并前项目不存在移入-归约冲突的话合并后也不存在移入-归约冲突。</p>
+
+<hr />
+
+<p>合并同心项集后，虽然不产生冲突，但可能==会推迟错误的发现==</p>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/webp.webp" alt="img" /></p>
+
+<p>过程：</p>
+
+<ol>
+  <li>因为状态9合并至状态4，当输入d$时d移入栈后会进入状态4。</li>
+  <li>d归约成A后，d跟状态4出栈，A进栈，状态栈露出状态0。</li>
+  <li>0状态遇到A后进入状态2，状态2进栈。</li>
+  <li>接着$进栈，状态2遇到$后报错。</li>
+</ol>
+
+<p>可见如果状态4在跟状态9合并前，在进入状态4前就已经报错。而合并后却进行额外的操作直至进入状态2才报错。可见合并同心项目集后确实推迟了错误的发现。</p>
+
+<p>实际上合并同心项目时合并的其实是对应项的展望符集合，而移入动作与展望符没有任何关系，因此合并展望符集合不会影响移入操作的正确性。</p>
+
+<h3 id="lalr小结">LALR小结</h3>
+
+<p><img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/image-20240701230249983.png" alt="image-20240701230249983" /></p>
+
+<h1 id="总结">总结</h1>
+
+<div style="display: flex;">
+    <div style="flex: 50%; padding: 5px;">
+        <img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1hpeG8wNjI4,size_16,color_FFFFFF,t_70.png" alt="Image 1" style="width:100%" />
+        <p style="text-align: center;">(a)</p>
+    </div>
+    <div style="flex: 50%; padding: 5px;">
+        <img src="/img/in-post/CompilationPrinciple/SyntaxAnalysis/2.png" alt="Image 2" style="width:100%" />
+        <p style="text-align: center;">(b)</p>
+    </div>
+</div>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2024/07/07/LexicalAnalysis/" data-toggle="tooltip" data-placement="top" title="词法分析">
+                        Previous<br>
+                        <span>词法分析</span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+
+                <!--   gitalk       -->
+                <div class="comment">
+                <div id="gitalk-container"></div>
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+                <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+                <script>
+                var gitalk = new Gitalk({
+                    id: location.pathname,
+                    clientID: '0db4b4c6d83c061f6b30',
+                    clientSecret: 'e1651c09f1a49b2b4a544cd584d3e8a55454a48a',
+                    repo: 'BlogComment',
+                    owner: 'jaredddddd',
+                    admin: ['jaredddddd'], 
+                    labels: ['Gitalk'],
+                })
+                gitalk.render('gitalk-container')
+                </script> 
+                </div>
+
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0036" 
+                    href="/archive/?tag=Computer-Organization"
+                    title="Computer-Organization"
+                    rel="21">Computer-Organization</a>
+        
+                <a data-sort="0018" 
+                    href="/archive/?tag=NOTES"
+                    title="NOTES"
+                    rel="39">NOTES</a>
+        
+                <a data-sort="0041" 
+                    href="/archive/?tag=Project"
+                    title="Project"
+                    rel="16">Project</a>
+        
+                <a data-sort="0042" 
+                    href="/archive/?tag=AI"
+                    title="AI"
+                    rel="15">AI</a>
+        
+                <a data-sort="0048" 
+                    href="/archive/?tag=OS"
+                    title="OS"
+                    rel="9">OS</a>
+        
+                <a data-sort="0052" 
+                    href="/archive/?tag=ML"
+                    title="ML"
+                    rel="5">ML</a>
+        
+                <a data-sort="0053" 
+                    href="/archive/?tag=PatternRecognition"
+                    title="PatternRecognition"
+                    rel="4">PatternRecognition</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Blog"
+                    title="Blog"
+                    rel="3">Blog</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Distributed-System"
+                    title="Distributed-System"
+                    rel="3">Distributed-System</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=ANN"
+                    title="ANN"
+                    rel="2">ANN</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CPU%E8%AE%BE%E8%AE%A1"
+                    title="CPU设计"
+                    rel="2">CPU设计</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CompilationPrinciple"
+                    title="CompilationPrinciple"
+                    rel="2">CompilationPrinciple</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     TeX: {
+       equationNumbers: {
+         autoNumber: "AMS"
+       }
+     },
+     SVG: {
+       scale: 90
+     },
+     tex2jax: {
+       inlineMath: [ ['$','$'] ],
+       displayMath: [ ['$$','$$'] ],
+       processEscapes: true,
+     }
+   });
+ </script>
+ <script type="text/javascript"
+         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+
+.post-container {
+    background: #fcfbfb; /* 背景颜色 */
+    border-radius: 25px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    padding-top: 40px; /* 特别增加顶部内边距 */
+    margin-top: 20px; /* 添加顶部外边距 */
+    /* margin-left: 40px; */
+    /* width: 900px; */
+}
+
+
+/* 在宽屏幕设备上应用特定样式 */
+@media (min-width: 1024px) {
+  .post-container {
+    margin-left: 40px; /* 向左扩展 */
+    width: 900px; /* 设置宽度 */
+  }
+  .side-catalog{
+    width: 250px;
+  }
+}
+
+.post-container:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* 当鼠标悬停时增加阴影效果 */
+}
+
+.side-catalog {
+    background: #ffffff; /* 背景颜色 */
+    border-radius: 15px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    margin-left: 10pt;
+    /* width: 200px; */
+
+}
+
+
+
+.catalog-container {
+    /* ... 其他样式 ... */
+    display: none; /* 默认不显示catalog */
+    transition: all 0.3s ease; /* 过渡效果 */
+    margin-top: 20px; /* 添加顶部外边距 */
+}
+
+</style>
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; LvKouKou Blog 2025
+                    <br>
+                    <!--  删掉了作者Hux Blog
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                    -->
+                    <!-- 不蒜子 -->
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                    您是Blog的第<span id="busuanzi_value_site_uv"></span>个小伙伴 </br>
+                     <span id="busuanzi_container_page_pv">
+                        本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<!-- 自己添加的 -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TNVD6PR5TQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNVD6PR5TQ');
+</script>
+<!-- 自己添加的 -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        // a = P.find('h1,h2,h3,h4,h5,h6');
+        a = P.find('h1,h2,h3,h4');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<!--鼠标点击爱心动画-->
+<script type="text/javascript" src="/js/love.js"></script>
+</body>
+
+</html>

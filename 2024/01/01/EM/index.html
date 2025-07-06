@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @LvKouKou 的个人博客，与你一起发现更大的世界 | 要做一个想环游世界的程序员">
+    <meta name="keywords" content="LvKouKou, jaredddddd, @jaredddddd, LvKouKou Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <link
+  rel="stylesheet"
+  href="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+/>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  defer="defer"
+></script>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  defer="defer"
+  onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
+></script>
+    <script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/mathtex-script-type.min.js"
+  defer="defer"
+></script>
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="EM算法的理解和详细推导 - LvKouKou的博客 | LV Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="EM算法
+
+">
+    
+    <meta property="article:published_time" content=" 2024-01-01T00:00:00Z">
+    
+    
+    <meta property="article:author" content="LvKouKou">
+    
+    
+    <meta property="article:tag" content="AI">
+    
+    <meta property="article:tag" content="ML">
+    
+    
+    <meta property="og:image" content="https://jaredddddd.github.io/img/LVKOUKOU.jpg">
+    <meta property="og:url" content="https://jaredddddd.github.io/2024/01/01/EM/">
+    <meta property="og:site_name" content="LvKouKou的博客 | LV Blog">
+
+    <title>EM算法的理解和详细推导 - LvKouKou的博客 | LV Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jaredddddd.github.io/2024/01/01/EM/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* 打字机效果的样式 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #666 }
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid #666;
+            white-space: nowrap;
+            word-wrap: break-word;
+            letter-spacing: .1em;
+            width: fit-content;
+            margin: 0 auto;
+            animation: 
+                typing 2s steps(40, end), /* 打字机效果, 3s 完成打字, 每步40个字符 */
+                blink-caret .75s step-end infinite; /* 光标闪烁效果, 0.75s 完成一次闪烁  */
+        }
+
+        /* 添加包装容器样式 */
+        .typing-wrapper {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%; /* 确保不会超出父容器 */
+        }
+
+        /* 添加响应式样式 */
+        @media (max-width: 768px) {
+        .typing-effect {
+            font-size: 16px; /* 在手机上可以适当调整字体大小 */
+            letter-spacing: normal; /* 在手机上减小字间距 */
+        }
+    }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptions = document.getElementsByClassName('subheading');
+            if (descriptions.length > 0) {
+                const description = descriptions[0];
+                const text = description.textContent;
+                description.innerHTML = `<span class="typing-wrapper"><span class="typing-effect">${text}</span></span>`;
+            }
+        });
+    </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">LvKouKou Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/resume-home/">Resume</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/roadtrip/">On The Road</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="Searching...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!--//添加评论系统gitalk-->
+<link rel="stylesheet" href="../../../../css/gitalk.css">
+<script src="../../../../js/gitalk.min.js"></script>
+
+<!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=AI" title="AI">AI</a>
+                        
+                        <a class="tag" href="/archive/?tag=ML" title="ML">ML</a>
+                        
+                    </div>
+                    <h1>EM算法的理解和详细推导</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by LvKouKou on January 1, 2024</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="em算法">EM算法</h1>
+
+<p>EM算法，全称Expectation Maximization Algorithm，译作最大期望化算法或期望最大算法，它是一种迭代算法，用于含有隐变量（hidden variable）的概率参数模型的最大似然估计或极大后验概率估计。</p>
+
+<p>结论：</p>
+
+<p>E-step：计算期望</p>
+
+\[\mathcal{Q}\big(\theta;\theta^{(t)}\big)=\mathbb{E}_{p(\mathbf{z}\mid \mathbf{x};\mathbf{\theta}^{(t)}}\big[\log p(\mathbf{x},\mathbf{z};\mathbf{\theta})\big]
+=\int_Z P(Z\mid X,\theta^{(t)}) \log P(X,Z\mid \theta) dZ\\
+PPT中以离散为例子，所以是\sum_{z}P(Z\mid X,\theta^{(t)})替换\int_Z P(Z\mid X,\theta^{(t)})\]
+
+<p>M-step:更新参数</p>
+
+\[\boldsymbol{\theta}^{(t+1)}=\arg\max_\theta Q(\boldsymbol{\theta};\boldsymbol{\theta}^{(t)})\]
+
+<hr />
+
+<h2 id="总述">总述</h2>
+
+<p>期望最大（Expectation Maximization）算法是一种从不完全数据或有数据丢失的数据集（存在隐含变量）中求解概率模型参数的最大似然估计方法。EM算法是机器学习十大算法之一，或许确实是因它在实际中的效果很好吧。</p>
+
+<p><a href="http://www.csuldw.com/assets/articleImg/2015-12-02-EM_Clustering_of_Old_Faithful_data.gif">演示</a></p>
+
+<h2 id="定义">定义</h2>
+
+<p>EM算法，全称Expectation Maximization Algorithm，译作最大期望化算法或期望最大算法，它是一种迭代算法，用于含有隐变量（hidden variable）的概率参数模型的最大似然估计或极大后验概率估计。</p>
+
+<h2 id="例子">例子</h2>
+
+<h3 id="感性例子a">感性例子A：</h3>
+
+<h4 id="例子简介">例子简介：</h4>
+
+<p>假设现在有两枚硬币1和2，,随机抛掷后正面朝上概率分别为$P_1$，$P_2$。为了估计这两个概率，做实验，每次取一枚硬币，连掷5下，记录下结果，如下：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>硬币</th>
+      <th>结果</th>
+      <th>统计</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>正正反正反</td>
+      <td>3正-2反</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>反反正正反</td>
+      <td>2正-3反</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>正反反反反</td>
+      <td>1正-4反</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>正反反正正</td>
+      <td>3正-2反</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>反正正反反</td>
+      <td>2正-3反</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>可以很容易地估计出$ P_1$和$ P_2$，（硬币1实验15次正面6次，硬币2实验10次正面5次）如下：</p>
+
+\[P_1 = ( 3 + 1 + 2 ) / 15 = 0.4 \\
+P_2 = ( 2 + 3 ) / 10 = 0.5\]
+
+<p>到这里，一切似乎很美好，下面我们加大难度。</p>
+
+<h4 id="加入隐变量z">加入隐变量z</h4>
+
+<p>还是上面的问题，现在我们抹去每轮投掷时使用的硬币标记，如下：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>硬币</th>
+      <th>结果</th>
+      <th>统计</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Unknown</td>
+      <td>正正反正反</td>
+      <td>3正-2反</td>
+    </tr>
+    <tr>
+      <td>Unknown</td>
+      <td>反反正正反</td>
+      <td>2正-3反</td>
+    </tr>
+    <tr>
+      <td>Unknown</td>
+      <td>正反反反反</td>
+      <td>1正-4反</td>
+    </tr>
+    <tr>
+      <td>Unknown</td>
+      <td>正反反正正</td>
+      <td>3正-2反</td>
+    </tr>
+    <tr>
+      <td>Unknown</td>
+      <td>反正正反反</td>
+      <td>2正-3反</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>好了，现在我们的目标没变，还是估计$ P_1$和$ P_2$，要怎么做呢？</p>
+
+<p>显然，此时我们多了一个隐变量$z$，可以把它认为是一个5维的向量$(z_1,z_2,z_3,z_4,z_5)$，代表每次投掷时所使用的硬币，比如$ z_1$，就代表第一轮投掷时使用的硬币是1还是2。但是，这个变量$ z$不知道，就无法去估计$P_1$和$P_2$，所以，我们必须先估计出$ z$，然后才能进一步估计$P_1$和$P_2$。</p>
+
+<p>但要估计$z$，我们又得知道$ P_1$和$ P_2$，这样我们才能用最大似然概率法则去估计$ z$，这不是鸡生蛋和蛋生鸡的问题吗，如何破？</p>
+
+<p>答案就是先随机初始化一个$ P_1$和$P_2$，用它来估计$ z$，然后基于$ z$，还是按照最大似然概率法则去估计新的$P_1$和$ P_2$，如果新的$P_1$和$P_2$和我们初始化的$ P_1$和$ P_2$2一样，请问这说明了什么？</p>
+
+<p>这说明我们初始化的$ P_1$和$ P_2$是一个相当靠谱的估计！</p>
+
+<p>就是说，我们初始化的$ P_1$和$ P_2$，按照最大似然概率就可以估计出$z$，然后基于$z$，按照最大似然概率可以反过来估计出$ P_1$和$ P_2$，当与我们初始化的$ P_1$和$ P_2$一样时，说明是$ P_1$和$ P_2$很有可能就是真实的值。这里面包含了两个交互的最大似然估计。</p>
+
+<p>如果新估计出来的$ P_1$和$ P_2$和我们初始化的值差别很大，怎么办呢？就是继续用新的$ P_1$和$ P_2$迭代，直至收敛。</p>
+
+<p>这就是下面的EM初级版。</p>
+
+<h4 id="em初级版">EM初级版</h4>
+
+<p>我们不妨这样，先随便给$ P_1$和$ P_2$赋一个值，比如：</p>
+
+\[P_1 = 0.2\\ P_2 = 0.7\]
+
+<p>然后，我们看看第一轮抛掷最可能是哪个硬币。
+如果是硬币1，得出正正反正反的概率为（注意这里是有先后顺序的）</p>
+
+\[0.2*0.2*0.2*0.8*0.8 = 0.00512\]
+
+<p>如果是硬币2，得出正正反正反的概率为</p>
+
+\[0.7*0.7*0.7*0.3*0.3=0.03087\]
+
+<p>然后依次求出其他4轮中的相应概率。做成表格如下：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>轮数</th>
+      <th>若是硬币1</th>
+      <th>若是硬币2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>0.00512</td>
+      <td>0.03087</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>0.02048</td>
+      <td>0.01323</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>0.08192</td>
+      <td>0.00567</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>0.00512</td>
+      <td>0.03087</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>0.02048</td>
+      <td>0.01323</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>按照最大似然法则：
+第1轮中最有可能的是<strong>硬币2</strong>
+第2轮中最有可能的是<strong>硬币1</strong>
+第3轮中最有可能的是<strong>硬币1</strong>
+第4轮中最有可能的是<strong>硬币2</strong>
+第5轮中最有可能的是<strong>硬币1</strong></p>
+
+<p>我们就把上面的值作为$z$的估计值。然后按照最大似然概率法则来估计新的$ P_1$和$ P_2$。</p>
+
+<p>我们就把上面的值作为z zz的估计值。然后按照最大似然概率法则来估计新的$P_1$和$P_2$。</p>
+
+\[P_1 = ( 2 + 1 + 2 ) / 15 = 0.33 \\
+P_2 = ( 3 + 3 ) / 10 = 0.6\]
+
+<p>设想我们是全知的神，知道每轮抛掷时的硬币就是如前面例子中的那样，$P_1$和$P_2$​的最大似然估计就是0.4和0.5（下文中将这两个值称为$P_1$和$P_2$​的真实值）。那么对比下我们初始化的$P_1$和$P_2$​和新估计出的$P_1$和$P_2$​：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>初始化的P1</th>
+      <th>估计出的P1</th>
+      <th>真实的P1</th>
+      <th>初始化的P2</th>
+      <th>估计出的P2</th>
+      <th>真实的P2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0.2</td>
+      <td>0.33</td>
+      <td>0.4</td>
+      <td>0.7</td>
+      <td>0.6</td>
+      <td>0.5</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>看到没？我们估计的$ P_1$和$ P_2$相比于它们的初始值，更接近它们的真实值了！</p>
+
+<p>可以期待，我们继续按照上面的思路，用估计出的$ P_1$和$ P_2$再来估计$z$，再用$z$来估计新的$ P_1$和$ P_2$，反复迭代下去，就可以最终得到$P_1 = 0.4，P_2=0.5$，此时无论怎样迭代，$ P_1$和$ P_2$的值都会保持0.4和0.5不变，于是乎，我们就找到了$ P_1$和$ P_2$的最大似然估计。</p>
+
+<p>这里有两个问题：
+1、新估计出的$P_1$和$P_2$​一定会更接近真实的$P_1$和$P_2$​？
+答案是：没错，一定会更接近真实的$P_1$和$P_2$​，数学可以证明，但这超出了本文的主题，请参阅其他书籍或文章。</p>
+
+<p>2、迭代一定会收敛到真实的$ P_1$和$ P_2$吗？
+答案是：不一定，取决于$P_1$和$P_2$​的初始化值，上面我们之所以能收敛到$P_1$和$P_2$​，是因为我们幸运地找到了好的初始化值。</p>
+
+<h4 id="em进阶版">EM进阶版</h4>
+
+<p>下面，我们思考下，上面的方法还有没有改进的余地？</p>
+
+<p>我们是用最大似然概率法则估计出的$z$值，然后再用$z$值按照最大似然概率法则估计新的$ P_1$和$ P_2$。也就是说，我们使用了一个最可能的$z$值，而不是所有可能的$z$值。</p>
+
+<p>如果考虑所有可能的$z$值，对每一个$z$值都估计出一个新的$ P_1$和$ P_2$，将每一个$z$值概率大小作为权重，将所有新的$ P_1$和$ P_2$分别加权相加，这样的$ P_1$和$ P_2$应该会更好一些。</p>
+
+<p>所有的$z$值有多少个呢？显然，有$2^5=32$种，需要我们进行32次估值？</p>
+
+<p>不需要，我们可以用期望来简化运算。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>轮数</th>
+      <th>若是硬币1</th>
+      <th>若是硬币2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>0.00512</td>
+      <td>0.03087</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>0.02048</td>
+      <td>0.01323</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>0.08192</td>
+      <td>0.00567</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>0.00512</td>
+      <td>0.03087</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>0.02048</td>
+      <td>0.01323</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>利用上面这个表，我们可以算出每轮抛掷中使用硬币1或者使用硬币2的概率。比如第1轮，使用硬币1的概率是：</p>
+
+\[0.00512 / ( 0.00512 + 0.03087 ) = 0.14\]
+
+<p>使用硬币2的概率是</p>
+
+<p>\(1 − 0.14 = 0.86\)
+依次可以算出其他4轮的概率，如下：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>轮数</th>
+      <th>$ z_i$=硬币1</th>
+      <th>$z_i$=硬币2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>0.14</td>
+      <td>0.86</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>0.61</td>
+      <td>0.39</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>0.94</td>
+      <td>0.06</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>0.14</td>
+      <td>0.86</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>0.61</td>
+      <td>0.39</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>上表中的右两列表示期望值。看第一行，0.86表示，从期望的角度看，这轮抛掷使用硬币2的概率是0.86。相比于前面的方法，我们按照最大似然概率，直接将第1轮估计为用的硬币2，此时的我们更加谨慎，我们只说，有0.14的概率是硬币1，有0.86的概率是硬币2，不再是非此即彼。这样我们在估计$P_1$或者$P_2$时，就可以用上全部的数据，而不是部分的数据，显然这样会更好一些。</p>
+
+<p>这一步，我们实际上是估计出了$z$的概率分布，这步被称作<code class="language-plaintext highlighter-rouge">E步</code>。</p>
+
+<hr />
+
+<p>结合硬币 A 的概率和下面的投掷结果，我们利用期望可以求出硬币 A 和硬币 B 的贡献</p>
+
+<p>结合下表：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>硬币</th>
+      <th>结果</th>
+      <th>统计</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Unknown</td>
+      <td>正正反正反</td>
+      <td>3正-2反</td>
+    </tr>
+    <tr>
+      <td>Unknown</td>
+      <td>反反正正反</td>
+      <td>2正-3反</td>
+    </tr>
+    <tr>
+      <td>Unknown</td>
+      <td>正反反反反</td>
+      <td>1正-4反</td>
+    </tr>
+    <tr>
+      <td>Unknown</td>
+      <td>正反反正正</td>
+      <td>3正-2反</td>
+    </tr>
+    <tr>
+      <td>Unknown</td>
+      <td>反正正反反</td>
+      <td>2正-3反</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>我们按照期望最大似然概率的法则来估计新的$ P_1$和$ P_2$：</p>
+
+<p>以$P_1$估计为例，这里我们要做的事情是在之前推算出来的使用硬币1的概率下，去计算出现现在这种抛掷情况的可能性，就是说计算一下期望看看有多少次等价的硬币1抛出来为正，多少次抛出来为负，以第一轮为例，硬币1在第一轮中被使用的该概率是0.14，现在出现了三次正面两次反面。</p>
+
+<p>第1轮的3正2反相当于</p>
+
+\[0.14∗3=0.42正\\
+0.14∗2=0.28反\]
+
+<p>依次算出其他四轮，列表如下：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>轮数</th>
+      <th>正面</th>
+      <th>反面</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>0.42</td>
+      <td>0.28</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>1.22</td>
+      <td>1.83</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>0.94</td>
+      <td>3.76</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>0.42</td>
+      <td>0.28</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>1.22</td>
+      <td>1.83</td>
+    </tr>
+    <tr>
+      <td>总计</td>
+      <td>4.22</td>
+      <td>7.98</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>上面这个表格这样理解：也就是coin A的情况下出现正面的期望和出现反面的期望</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>轮数</th>
+      <th>coin A 正面 反面</th>
+      <th>coin B 正面 反面</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>0.42 0.28</td>
+      <td>略</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>1.22 1.83</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>0.94 3.76</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>0.42 0.28</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>1.22  1.83</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>总计</td>
+      <td>4.22 7.98</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+\[P_1=4.22/(4.22+7.98)=0.35\]
+
+<p>可以看到，改变了$z$值的估计方法后，新估计出的$P_1$要更加接近0.4。原因就是我们使用了所有抛掷的数据，而不是之前只使用了部分的数据。</p>
+
+<p>这步中，我们根据<code class="language-plaintext highlighter-rouge">E步</code>中求出的$z$的概率分布，依据最大似然概率法则去估计$ P_1$和$ P_2$，被称作<code class="language-plaintext highlighter-rouge">M步</code>。</p>
+
+<h3 id="例子b">例子B</h3>
+
+<p>如果说例子 A 需要计算你可能没那么直观，那就举更一个简单的例子：</p>
+
+<p>现在一个班里有 50 个男生和 50 个女生，且男女生分开。我们假定男生的身高服从正态分布： $N(\mu_1,\sigma^2_1)$ ，女生的身高则服从另一个正态分布：  $N(\mu_2,\sigma^2_2)$ 。这时候我们可以用极大似然法（MLE），分别通过这 50 个男生和 50 个女生的样本来估计这两个正态分布的参数。</p>
+
+<p>但现在我们让情况复杂一点，就是这 50 个男生和 50 个女生混在一起了。我们拥有 100 个人的身高数据，却不知道这 100 个人每一个是男生还是女生。</p>
+
+<p>这时候情况就有点尴尬，因为通常来说，我们只有知道了精确的男女身高的正态分布参数我们才能知道每一个人更有可能是男生还是女生。但从另一方面去考量，我们只有知道了每个人是男生还是女生才能尽可能准确地估计男女各自身高的正态分布的参数。</p>
+
+<p>这个时候有人就想到我们必须从某一点开始，并用迭代的办法去解决这个问题：我们先设定男生身高和女生身高分布的几个参数（初始值），然后根据这些参数去判断每一个样本（人）是男生还是女生，之后根据标注后的样本再反过来重新估计参数。之后再多次重复这个过程，直至稳定。这个算法也就是 EM 算法</p>
+
+<h3 id="例子总结">例子总结</h3>
+
+<p>以上，我们用一个实际的小例子，来实际演示了EM算法背后的idea，共性存于个性之中，通过这个例子，我们可以对EM算法究竟在干什么有一个深刻感性的认识，掌握EM算法的思想精髓。</p>
+
+<h2 id="推导">推导</h2>
+
+<blockquote>
+  <p>以下来自<a href="https://zhuanlan.zhihu.com/p/365641813">深入理解EM算法（ELBO+KL形式）</a>，加入个人理解，另一种理解是用 Jensen不等式，网上大部分是用Jensen不等式来推导的</p>
+
+  <p>还有另一个很详细的教程：<a href="https://zhuanlan.zhihu.com/p/50686800">EM算法与GMM（高斯混合聚类）</a></p>
+</blockquote>
+
+<p>期望最大化(Expectation Maximization, EM)算法一般用于解决带有隐藏数据的概率模型的参数估计问题。那么什么是隐藏数据呢？举个栗子，比如现在我们拿到一堆身高数据，这里面既有男生的身高也有女生的身高，但是具体每个数据是来自男生还是女生我们是不知道的，这里每个数据所对应的性别就属于隐藏数据。</p>
+
+<p>给定一组观测数据 $ X = x_i,i=1,…N $   ,以及模型参数 $ \theta$ ，假设对应的隐藏数据 
+$ Z= {z_i}_{i=1}^N$ ，我们称 $ (x_i,z_i)$ 为完整数据。如果不考虑隐藏数据，我们就可以直接使用极大似然估计的方法估计出参数 $ \theta$ :</p>
+
+\[\theta_{MLE} = \arg\max\limits_\theta\log P(X\mid \theta) = \arg\max\limits_\theta\sum_i^N\log P(x_i\mid \theta)~~(1) \\\]
+
+<p>但由于隐藏数据的存在， 我们有</p>
+
+\[P(X\mid \theta) = \int_Z P(X, Z\mid \theta)dZ~~(2) \\\]
+
+<p>可以看到，如果将(2)带入(1)中，在log里面会出现积分(求和)符号，导致对似然函数的求导变得困难，无法求解。对于这种无法直接求解的问题，我们通常会采用迭代求解的策略，一步一步逼近最终的结果，在EM算法中就是E步和M步的交替进行，直至收敛。</p>
+
+<p><strong>EM算法</strong></p>
+
+<p>在推导EM算法之前，我们先给出它的算法步骤。模型参数被初始化为 $ \theta^{(0)} $，假设在第 t 次迭代后，参数的估计值为 $ \theta^{(t)} $，对于第 t+1 次迭代，具体分为两步：</p>
+
+<ul>
+  <li>E-step：求期望</li>
+</ul>
+
+\[Q(\theta,\theta^{(t)}) = \int_Z P(Z\mid X,\theta^{(t)}) \log P(X,Z\mid \theta) dZ\\ =\mathbb{E}_{Z\mid X,\theta^{(t)}}[\log P(X,Z\mid \theta)]\\
+PPT中以离散为例子，所以是\sum_{z}P(Z\mid X,\theta^{(t)})替换\int_Z P(Z\mid X,\theta^{(t)})\]
+
+<ul>
+  <li>M-step: 最大化 $Q(\theta,\theta^{(t)})$ 并求解$ \theta^{(t+1)}$</li>
+</ul>
+
+\[\theta^{(t+1)} = \arg\max\limits_\theta Q(\theta, \theta^{(t)}) \\\]
+
+<p><strong>推导 (ELBO+KL形式)</strong></p>
+
+<blockquote>
+  <p>tips：下面符号记法$\mid 和;$有混用，一般右边是$\theta$的话就可以认为等价</p>
+</blockquote>
+
+<p>根据条件概率公式，我们有 $P(X;\theta) = \frac{P(X,Z;\theta)}{P(Z;X, \theta)}$</p>
+
+<p>两边同时取对数，有$ \log P(X;\theta) = \log P(X,Z;\theta) - \log P(Z\mid X,\theta)$</p>
+
+<p>下面的构造就比较有技巧性了。我们引入 $Z $的概率分布为 $q(Z)$ ，并且有$ \int_Zq(Z)dZ = 1$（连续）或$\sum_{z}q(z)=1$（离散）。我们将上式构造为</p>
+
+\[\log P(X;\theta)=\sum_{Z}q(Z)\log\frac{P(X,Z;\theta)q(Z)}{\underbrace{q(Z)P(Z \mid X;\theta)}}\\
+=\sum_{Z}q(Z)\log \frac{P(X,Z;\theta)}{q(Z)} + \sum_{Z}q(Z)\log \frac{q(Z)}{P(Z\mid X,\theta)} \\\]
+
+<p>理解方法一：</p>
+
+<p>上式中第二项即为KL散度的定义，于是：</p>
+
+\[\log P(X;\theta)=L(q;\theta) + KL(q\mid P(Z\mid X,\theta))\]
+
+<p>当q的分布和P相同，也就是$q(Z)=P(Z\mid X,\theta)$时，有$KL(q\mid P(Z\mid X,\theta)=0$，此时$\log P(X;\theta)=L(q;\theta)$，所以</p>
+
+\[\log P(X;\theta)=L(q;\theta)=\sum_{Z}q(Z)\log \frac{P(X,Z;\theta)}{q(Z)}\\
+=\sum_{Z}P(Z\mid X,\theta)\log \frac{P(X,Z;\theta)}{P(Z\mid X,\theta)}\\
+=\sum_{Z}P(Z\mid X,\theta)\log P(X,Z;\theta)-\sum_{Z}P(Z\mid X,\theta)P(Z\mid X,\theta)\]
+
+<p>后者为常数，最大化时可以去掉，所以目标最大化</p>
+
+\[Q(\theta,\theta^{(t)})=\sum_{Z}P(Z\mid X,\theta)\log P(X,Z;\theta)=E_{P(Z\mid x;\theta^{(t)})}(logP(X,Z;\theta))\]
+
+<p>理解方法二：</p>
+
+<p>拆开后即为：</p>
+
+\[\log P(X;\theta) = \log \frac{P(X,Z;\theta)}{q(Z)} - \log \frac{P(Z\mid X,\theta)}{q(Z)} \\\]
+
+<p>然后两边同时求关于变量 Z 的期望</p>
+
+\[\mathbb{E}_Z[\log P(X;\theta)] = \mathbb{E}_Z[\log \frac{P(X,Z;\theta)}{q(Z)}] - \mathbb{E}_Z[\log \frac{P(Z\mid X,\theta)}{q(Z)}] \\\]
+
+<p>将期望写成积分的形式</p>
+
+\[\int_Z q(Z)\log P(X;\theta)dZ = \int_Zq(Z)\log \frac{P(X,Z;\theta)}{q(Z)}dZ - \int_Zq(Z)\log \frac{P(Z\mid X,\theta)}{q(Z)}dZ \\\]
+
+<p>同时由于$ \log P(X\mid \theta) $和 $Z$ 无关，所以</p>
+
+\[\log P(X;\theta) = \int_Zq(Z)\log \frac{P(X,Z;\theta)}{q(Z)}dZ - \int_Zq(Z)\log \frac{P(Z\mid X,\theta)}{q(Z)}dZ \\\]
+
+<p>注意最右边的积分项 $- \int_Zq(Z)\log \frac{P(Z\mid X,\theta)}{q(Z)}dZ $，这个其实就是$ q(Z)和 P(Z\mid X,\theta) $之间的相对熵，即$ Kullback-Leibler divergence (KL divergence)$，记作</p>
+
+\[D_{KL}(q(Z)\mid \mid P(Z\mid X,\theta)) = \int_Zq(Z)\log \frac{q(Z)}{P(Z\mid X,\theta)}dZ \\\]
+
+<p>所以我们有</p>
+
+\[\log P(X;\theta) = \int_Zq(Z)\log \frac{P(X,Z;\theta)}{q(Z)}dZ + D_{KL}(q(Z)\mid \mid P(Z\mid X,\theta)) \\\]
+
+<p>根据KL divergence的性质，我们知道 $D_{KL}(q(Z)\mid \mid P(Z\mid X,\theta)) \ge 0$ 当且仅当 $q(Z)=P(Z\mid X,\theta)$取等号，因此</p>
+
+\[\log P(X;\theta) \ge \int_Zq(Z)\log \frac{P(X,Z;\theta)}{q(Z)}dZ \\\]
+
+<p>我们便得到了 $\log P(X;\theta)$ 的一个下界 ，我们称之为Evidence Lower Bound (ELBO)，后面就可以通过迭代的方式不断抬高ELBO，使得 $\log P(X;\theta) $增大。但目前还有一个问题，就是 $q(Z)$是未知的，所以下界还是没法求，怎么办呢？我们可以直接在每轮迭代时令 $q(Z)=P(Z\mid X,\theta^{(t)}) $，此时$ D_{KL}(q(Z)\mid \mid P(Z\mid X,\theta^{(t)})) = 0$ ，因为我们想要ELBO和 $\log P(X;\theta) $的差距尽可能小，这样抬高ELBO才会使得 $\log P(X;\theta) $增益更大，所以将KL这一项直接置为0是比较合理的，此时ELBO就变为</p>
+
+\[\int_ZP(Z\mid X,\theta^{(t)})\log \frac{P(X,Z;\theta)}{P(Z\mid X,\theta^{(t)})}dZ = \mathbb{E}_{Z\mid X,\theta^{(t)}}[\log\frac{P(X,Z\mid \theta)}{P(Z\mid X,\theta^{(t)})}] \\\]
+
+<p>展开有</p>
+
+\[\mathbb{E}_{Z\mid X,\theta^{(t)}}[\log\frac{P(X,Z\mid \theta)}{P(Z\mid X,\theta^{(t)})}] = \mathbb{E}_{Z\mid X,\theta^{(t)}}[\log P(X,Z\mid \theta)] - \mathbb{E}_{Z\mid X,\theta^{(t)}}[\log P(Z\mid X,\theta^{(t)}] \\\]
+
+<p>因为我们最终的目标是求出某个$ \hat\theta $使得ELBO最大，上式的第二项与 $\theta$ 无关，可看成是一个常数，所以可以直接扔掉也不会影响$ \hat\theta $的值，那么式子变成了</p>
+
+\[\mathbb{E}_{Z\mid X,\theta^{(t)}}[\log P(X,Z\mid \theta)] \\\]
+
+<p>这样我们得到了最开始所提到的EM算法E-step求期望的那个式子。紧接着就是求解 $\theta $,使得该期望达到最大，即M-step</p>
+
+\[\theta^{(t+1)} = \arg\max\limits_\theta \mathbb{E}_{Z\mid X,\theta^{(t)}}[\log P(X,Z\mid \theta)] \\\]
+
+<p>以上便是EM算法的ELBO+KL形式的推导过程，当然还有其他的推导方式，后续我们再做介绍。</p>
+
+<p><strong>总结</strong></p>
+
+<p>EM算法是一种迭代式求解的方法，通过重复E-step和M-step, 逐步抬高证据下界来最大化目标函数的值，直至收敛到某个最优点。需要注意的是，EM算法一般收敛到局部最优，无法得到全局最优解。另外，在机器学习领域中一个最常见的使用到了EM思想的算法便是K-means聚类：每个聚类簇的中心是我们需要估计的参数，每个样本的所属类别可看作是隐藏数据。对于E步，我们根据上一轮的聚类结果对类中心进行更新；对于M步，每个样本又被重新聚类到这些更新后的类中心里面。重复E步和M步，直到类中心不再变化，由此完成了对样本的K-means聚类。</p>
+
+<h2 id="gmm-em算法步骤总结">GMM-EM算法步骤总结</h2>
+
+<p>机器学习包括无监督学习；无监督学习包括聚类；GMM-EM算法是一个聚类算法，它将EM算法应用于GMM，适用于凸性数据的聚类。</p>
+
+<blockquote>
+  <p>以下步骤建议先去理解GMM算法后再来看，更容易理解，点<a href="https://jaredddddd.github.io/2024/01/02/GMM/">这里跳转到GMM算法介绍</a></p>
+</blockquote>
+
+<p>算法步骤总结如下：</p>
+
+<ol>
+  <li>初始化参数</li>
+</ol>
+
+\[\mu_k^{(old)}\quad (k=1,\cdots,K)\\
+\Sigma_k^{(old)}\quad (k=1,\cdots,K)\\ 
+\pi^{(old)}\]
+
+<ol>
+  <li><strong>E step</strong> 更新后验分布</li>
+</ol>
+
+\[\gamma_{nk}\gets \cfrac{\pi_k\mathcal N(\pmb x_n \mid  \pmb\mu_k, \mathbf\Sigma_k)}{\sum_{j=1}^K \pi_j\mathcal N(\pmb x_n \mid  \pmb\mu_j, \mathbf\Sigma_j)}\quad (n=1,\cdots,N;k=1,\cdots,K)\\\]
+
+\[\boxed{\mathcal{Q}(\theta;\theta^{(t)})={\color{red}\sum_{k=1}^K{\gamma_k^{(t)}}[\log\mathcal{N}(x\mid \mu_k,\Sigma_k)+\log\pi_k]}}\]
+
+\[\mathbb{E}_{\boldsymbol{p}(\bold symbol{z}\mid \boldsymbol{x};\boldsymbol{\theta}^{(t)})}[z_k]
+=\frac{\mathcal{N} (\boldsymbol{x}\mid \boldsymbol{\mu}_k^{(t)},\boldsymbol{\Sigma}_k^{(t)})\pi_k}{\sum_{i=1}^{K}\mathcal{N} (\boldsymbol{x}\mid \boldsymbol{\mu}_i^{(t)},\boldsymbol{\Sigma}_i^{(t)})\pi_i}\color{red}{\triangleq \gamma_k^{(t)}}\]
+
+<blockquote>
+  <p>$\gamma_{nk}$ ，意思是数据 $n$（数据$n$即为第$n$个数据）符合分布$ k$(分布$k$即为第$k$个簇内的分布)的概率</p>
+</blockquote>
+
+<ol>
+  <li><strong>M step</strong> 更新参数</li>
+</ol>
+
+\[\begin{aligned} \pmb\mu_k^{(\rm new)}&amp;\gets \cfrac{1}{N_k} \sum_{n=1}^N \gamma_{nk} \pmb x_n\quad (k=1,\cdots,K)\\ \mathbf\Sigma_k^{(\rm new)}&amp;\gets \cfrac{1}{N_k} \sum_{n=1}^N \gamma_{nk} (\pmb x_n - \pmb\mu_k) (\pmb x_n - \pmb\mu_k)^{\rm T}\quad (k=1,\cdots,K)\\ \pi_k^{(\rm new)}&amp;\gets \cfrac{N_k}{N} \quad (k=1,\cdots,K) \end{aligned}\\
+其中N_k=\sum_{n=1}^N\gamma_{nk}\]
+
+<ol>
+  <li>检查是否收敛，否则令</li>
+</ol>
+
+\[\begin{aligned} \pmb\mu_k^{(\rm old)}&amp;\gets\pmb\mu_k^{(\rm new)}\quad (k=1,\cdots,K)\\ \mathbb\Sigma_k^{(\rm old)}&amp;\gets\mathbb\Sigma_k^{(\rm new)}\quad (k=1,\cdots,K)\\ \pmb\pi^{(\rm old)}&amp;\gets\pmb\pi^{(\rm new)} \end{aligned}\\\]
+
+<p>随后返回 E step。</p>
+
+<p>其中定义了后验分布（特别地，这里称作“责任（responsibility）”；</p>
+
+\[\gamma_{nk}=p(z_{nk}=1 \mid  \pmb x_n)\quad (n=1,\cdots,N;k=1,\cdots,K)\\\]
+
+<blockquote>
+  <p>可以参考《聚类》中的GMM算法：</p>
+
+  <p>$\gamma_{ji}$ ，意思是数据 $j$（数据j即为第j个数据）符合分布$ i$(分布i即为第i个簇内的分布)的概率</p>
+</blockquote>
+
+<p>还定义了各类别的“有效数量”</p>
+
+\[N_k = \sum_{n=1}^N \gamma_{nk}\quad (k=1,\cdots,K)\\\]
+
+<ol>
+  <li>使用EM算法求得 GMM 的最大似然解之后，可以更进一步，对每个 $\pmb x_n $，估计出它最可能来自哪个类别</li>
+</ol>
+
+\[\hat{C}_n = \text{argmax}_k \gamma_{nk}\\\]
+
+<p>至此完成了凸性数据的无监督聚类。</p>
+
+<p>其中，后验概率更新公式和参数更新公式推导如下。</p>
+
+<hr />
+
+<h2 id="参考资料">参考资料</h2>
+
+<p><a href="https://zhuanlan.zhihu.com/p/40991784">EM算法详解 - 知乎</a></p>
+
+<p><a href="https://zhuanlan.zhihu.com/p/78311644">【机器学习】EM——期望最大（非常详细） - 知乎</a></p>
+
+<p><a href="https://blog.csdn.net/qq_41554005/article/details/100591525">EM算法详解+通俗例子理解_em算法实例-CSDN博客</a></p>
+
+<p><a href="https://blog.csdn.net/qq_52466006/article/details/126786732">【机器学习笔记10】EM算法——直观理解与详细推导_似然函数等于1-CSDN博客</a></p>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2023/12/23/OpenWrt/" data-toggle="tooltip" data-placement="top" title="OpenWrt实现智能路由器">
+                        Previous<br>
+                        <span>OpenWrt实现智能路由器</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2024/01/02/GMM/" data-toggle="tooltip" data-placement="top" title="GMM的推导和理解">
+                        Next<br>
+                        <span>GMM的推导和理解</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+
+                <!--   gitalk       -->
+                <div class="comment">
+                <div id="gitalk-container"></div>
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+                <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+                <script>
+                var gitalk = new Gitalk({
+                    id: location.pathname,
+                    clientID: '0db4b4c6d83c061f6b30',
+                    clientSecret: 'e1651c09f1a49b2b4a544cd584d3e8a55454a48a',
+                    repo: 'BlogComment',
+                    owner: 'jaredddddd',
+                    admin: ['jaredddddd'], 
+                    labels: ['Gitalk'],
+                })
+                gitalk.render('gitalk-container')
+                </script> 
+                </div>
+
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0036" 
+                    href="/archive/?tag=Computer-Organization"
+                    title="Computer-Organization"
+                    rel="21">Computer-Organization</a>
+        
+                <a data-sort="0018" 
+                    href="/archive/?tag=NOTES"
+                    title="NOTES"
+                    rel="39">NOTES</a>
+        
+                <a data-sort="0041" 
+                    href="/archive/?tag=Project"
+                    title="Project"
+                    rel="16">Project</a>
+        
+                <a data-sort="0042" 
+                    href="/archive/?tag=AI"
+                    title="AI"
+                    rel="15">AI</a>
+        
+                <a data-sort="0048" 
+                    href="/archive/?tag=OS"
+                    title="OS"
+                    rel="9">OS</a>
+        
+                <a data-sort="0052" 
+                    href="/archive/?tag=ML"
+                    title="ML"
+                    rel="5">ML</a>
+        
+                <a data-sort="0053" 
+                    href="/archive/?tag=PatternRecognition"
+                    title="PatternRecognition"
+                    rel="4">PatternRecognition</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Blog"
+                    title="Blog"
+                    rel="3">Blog</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Distributed-System"
+                    title="Distributed-System"
+                    rel="3">Distributed-System</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=ANN"
+                    title="ANN"
+                    rel="2">ANN</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CPU%E8%AE%BE%E8%AE%A1"
+                    title="CPU设计"
+                    rel="2">CPU设计</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CompilationPrinciple"
+                    title="CompilationPrinciple"
+                    rel="2">CompilationPrinciple</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     TeX: {
+       equationNumbers: {
+         autoNumber: "AMS"
+       }
+     },
+     SVG: {
+       scale: 90
+     },
+     tex2jax: {
+       inlineMath: [ ['$','$'] ],
+       displayMath: [ ['$$','$$'] ],
+       processEscapes: true,
+     }
+   });
+ </script>
+ <script type="text/javascript"
+         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+
+.post-container {
+    background: #fcfbfb; /* 背景颜色 */
+    border-radius: 25px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    padding-top: 40px; /* 特别增加顶部内边距 */
+    margin-top: 20px; /* 添加顶部外边距 */
+    /* margin-left: 40px; */
+    /* width: 900px; */
+}
+
+
+/* 在宽屏幕设备上应用特定样式 */
+@media (min-width: 1024px) {
+  .post-container {
+    margin-left: 40px; /* 向左扩展 */
+    width: 900px; /* 设置宽度 */
+  }
+  .side-catalog{
+    width: 250px;
+  }
+}
+
+.post-container:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* 当鼠标悬停时增加阴影效果 */
+}
+
+.side-catalog {
+    background: #ffffff; /* 背景颜色 */
+    border-radius: 15px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    margin-left: 10pt;
+    /* width: 200px; */
+
+}
+
+
+
+.catalog-container {
+    /* ... 其他样式 ... */
+    display: none; /* 默认不显示catalog */
+    transition: all 0.3s ease; /* 过渡效果 */
+    margin-top: 20px; /* 添加顶部外边距 */
+}
+
+</style>
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; LvKouKou Blog 2025
+                    <br>
+                    <!--  删掉了作者Hux Blog
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                    -->
+                    <!-- 不蒜子 -->
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                    您是Blog的第<span id="busuanzi_value_site_uv"></span>个小伙伴 </br>
+                     <span id="busuanzi_container_page_pv">
+                        本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<!-- 自己添加的 -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TNVD6PR5TQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNVD6PR5TQ');
+</script>
+<!-- 自己添加的 -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        // a = P.find('h1,h2,h3,h4,h5,h6');
+        a = P.find('h1,h2,h3,h4');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<!--鼠标点击爱心动画-->
+<script type="text/javascript" src="/js/love.js"></script>
+</body>
+
+</html>

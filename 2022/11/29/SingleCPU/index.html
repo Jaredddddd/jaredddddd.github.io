@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @LvKouKou 的个人博客，与你一起发现更大的世界 | 要做一个想环游世界的程序员">
+    <meta name="keywords" content="LvKouKou, jaredddddd, @jaredddddd, LvKouKou Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <link
+  rel="stylesheet"
+  href="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+/>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  defer="defer"
+></script>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  defer="defer"
+  onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
+></script>
+    <script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/mathtex-script-type.min.js"
+  defer="defer"
+></script>
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="单周期CPU设计与实现 - LvKouKou的博客 | LV Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="单周期CPU设计与实现
+
+">
+    
+    <meta property="article:published_time" content=" 2022-11-29T00:00:00Z">
+    
+    
+    <meta property="article:author" content="LvKouKou">
+    
+    
+    <meta property="article:tag" content="Computer-Organization">
+    
+    <meta property="article:tag" content="CPU设计">
+    
+    <meta property="article:tag" content="Project">
+    
+    
+    <meta property="og:image" content="https://jaredddddd.github.io/img/LVKOUKOU.jpg">
+    <meta property="og:url" content="https://jaredddddd.github.io/2022/11/29/SingleCPU/">
+    <meta property="og:site_name" content="LvKouKou的博客 | LV Blog">
+
+    <title>单周期CPU设计与实现 - LvKouKou的博客 | LV Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jaredddddd.github.io/2022/11/29/SingleCPU/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* 打字机效果的样式 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #666 }
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid #666;
+            white-space: nowrap;
+            word-wrap: break-word;
+            letter-spacing: .1em;
+            width: fit-content;
+            margin: 0 auto;
+            animation: 
+                typing 2s steps(40, end), /* 打字机效果, 3s 完成打字, 每步40个字符 */
+                blink-caret .75s step-end infinite; /* 光标闪烁效果, 0.75s 完成一次闪烁  */
+        }
+
+        /* 添加包装容器样式 */
+        .typing-wrapper {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%; /* 确保不会超出父容器 */
+        }
+
+        /* 添加响应式样式 */
+        @media (max-width: 768px) {
+        .typing-effect {
+            font-size: 16px; /* 在手机上可以适当调整字体大小 */
+            letter-spacing: normal; /* 在手机上减小字间距 */
+        }
+    }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptions = document.getElementsByClassName('subheading');
+            if (descriptions.length > 0) {
+                const description = descriptions[0];
+                const text = description.textContent;
+                description.innerHTML = `<span class="typing-wrapper"><span class="typing-effect">${text}</span></span>`;
+            }
+        });
+    </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">LvKouKou Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/resume-home/">Resume</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/roadtrip/">On The Road</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="Searching...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!--//添加评论系统gitalk-->
+<link rel="stylesheet" href="../../../../css/gitalk.css">
+<script src="../../../../js/gitalk.min.js"></script>
+
+<!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=Computer-Organization" title="Computer-Organization">Computer-Organization</a>
+                        
+                        <a class="tag" href="/archive/?tag=CPU%E8%AE%BE%E8%AE%A1" title="CPU设计">CPU设计</a>
+                        
+                        <a class="tag" href="/archive/?tag=Project" title="Project">Project</a>
+                        
+                    </div>
+                    <h1>单周期CPU设计与实现</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by LvKouKou on November 29, 2022</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="单周期cpu设计与实现">单周期CPU设计与实现</h1>
+
+<h2 id="一--实验目的">一.  实验目的</h2>
+
+<ol>
+  <li>
+    <p>理解MIPS常用的指令系统并掌握单周期CPU的工作原理与逻辑功能实现。</p>
+  </li>
+  <li>
+    <p>通过对单周期CPU的运行状况进行观察和分析，进一步加深理解。</p>
+  </li>
+</ol>
+
+<h2 id="二--实验内容">二.  实验内容</h2>
+
+<p>实验的具体内容与要求。</p>
+
+<ol>
+  <li>利用 HDL 语言，基于 Xilinx FPGA basys3 实验平台，用 Verilog HDL 语言或 VHDL 语言来编写，实现单周期CPU 的设计，这个单周期 CPU 能够完成 多于16 条MIPS 指令，至少包含以下指令：
+    <ul>
+      <li>支持基本的内存操作如 lw，sw 指令</li>
+      <li>支持基本的算术逻辑运算如 add，sub，and，ori，slt，addi 指令</li>
+      <li>支持基本的程序控制如 beq，j 指令</li>
+    </ul>
+  </li>
+  <li>
+    <p>掌握各个指令的相关功能并输出仿真结果进行验证，并最后在 FGPA 上实现，将其中的 运算结果在开发板数码管上显示出来。</p>
+  </li>
+  <li>拓展添加其他指令及功能。</li>
+</ol>
+
+<p>要求：</p>
+
+<p>1、PC和寄存器组写状态使用 时钟边缘触发。</p>
+
+<p>2、指令存储器存储单元宽度使用32位，数据存储器存储单元宽度使用8位，（便于添加字节存取）即一个字节的存储单位。深度的选择满足指令要求即可（测试代码的长度）。</p>
+
+<p>3、控制器部分要学会用控制信号真值表方法分析问题并写出逻辑表达式；或者用case语句方法逐个产生各指令控制信号。</p>
+
+<p>4、基本实现必须按统一测试用的汇编程序段进行测试所设计的CPU，增加功能设计可自行编写测试代码，包含所设计的所有指令。</p>
+
+<p>5、必须注意，实验报告中，对每条指令必须有指令执行的波形（截图），且图上必须包含关键信号，同时还要对关键信号以文字说明，这样才能说明该指令的正确性。</p>
+
+<h2 id="三--实验原理">三.  实验原理</h2>
+
+<p>简述实验原理和方法，<strong>必须有数据通路图及相关图</strong>。</p>
+
+<h3 id="1----单时钟周期cpu">1.    单时钟周期CPU</h3>
+
+<p>单周期 CPU 的特点是每条指令的执行只需要一个时钟周期，一条指令执行完再执行下一条指令。再这一个周期中，完成更新地址，取指，解码，执行，内存操作以及寄存器操作。由于每个时钟上升沿时更新地址，因此要在上升沿到来之前完成所有运算，而这所有的运算除可以利用一个下降沿外，只能通过组合逻辑解决。这给寄存器和存储器RAM的制作带来了些许难度。且因为每个时钟周期的时间长短必须统一，因此在确定时钟周期的时间长度时，要依照最长延迟的指令时间来定，这也限制了它的执行效率。</p>
+
+<p>单周期CPU在每个CLK上升沿时更新PC，并读取新的指令。此指令无论执行时间长短，都必须在下一个上升沿到来之前完成。其时序示意如图Ⅰ。</p>
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/clip_image001.png" alt="img" /></p>
+
+<center> <font size="3" face="Impact">图I 单时钟周期CPU时序示意图 </font></center>
+
+<p>下图是一个单周期 CPU 的顶层结构实现。主要器件有程序计数器PC、程序存储器、寄存器堆、ALU、数据存储器和控制部件等。所有的控制信号简单地说明如下：</p>
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/clip_image003.jpg" alt="img" /></p>
+
+<center> 图Ⅱ 单时钟周期CPU详细逻辑设计图参考 </center>
+
+<p>其中，控制单元(Ctrl Unit)定义如下：</p>
+
+<p>（1）regDst：目的地址，为1时，选择rd；为0时，选择rt。</p>
+
+<p>（2）aluSrc：ALU操作数B的选择，为1时，选择扩展的立即数；为0时，选择寄存器数据；</p>
+
+<p>（3）memToReg：为1时，选择存储器数据；为0时，选择ALU 输出的数据；</p>
+
+<p>（4）regWrite：为1时写入寄存器堆，目的寄存器号是由RegDst选出的rt或rd，写入数据是由MemToReg选出的存储器数据或ALU的输出结果；</p>
+
+<p>（5）memRead</p>
+
+<p>（6）memWrite：为1时写入存储器。存储器地址由ALU的输出决定，写入数据为寄存器rt的内容；</p>
+
+<p>（7）branch：为1时，选择转移目标地址；为0时，选择PC +4（图中的 NextPC）；</p>
+
+<p>（8）ExtOp：符号扩展。为1时，符号扩展；为0时，0扩展；</p>
+
+<p>（9）aluop：ALU控制码；(具体表示见控制器的设计)</p>
+
+<p>（10）jmp：为1时，选择跳转目标地址；为 0时，选择由Branch选出的地址；</p>
+
+<p>（11）jal：为1时，写入地址选择31号寄存器，写入内容为PC+4</p>
+
+<h3 id="2----mips指令集">2.    MIPS指令集</h3>
+
+<p>本次实验共涉及三种类型的MIPS指令，分别为R型、I型和J型，三种类型的MIPS指令格式定义如下：</p>
+
+<ul>
+  <li>
+    <p>R（register）类型的指令从寄存器堆中读取两个源操作数，计算结果写回寄存器堆；</p>
+  </li>
+  <li>
+    <p>I（immediate）类型的指令使用一个 16位的立即数作为一个源操作数；</p>
+  </li>
+  <li>
+    <p>J（jump）类型的指令使用一个 26位立即数作为跳转的目标地址（target address）；</p>
+  </li>
+</ul>
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/clip_image005.png" alt="img" /></p>
+
+<center> 图Ⅲ MIPS指令集 </center>
+
+<p>一条指令的执行过程一般有下面的五个阶段，指令的执行过程就是这五个状态的重复过程：</p>
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/clip_image007.png" alt="img" /></p>
+
+<center> 图IV MIPS指令集</center>
+
+<p>在本次实验中，完成了下列31条指令的功能，包括R型、I型和J型。</p>
+
+<center> MIPS的31条指令</center>
+
+<table><tr><td><p><strong>助记符</strong></p></td><td colspan="6"><p><strong>指      令       格      式</strong></p></td><td><p><strong>示  例</strong></p></td><td><p><strong>示例含义</strong></p></td><td><p><strong>操作及解释</strong></p></td></tr><tr><td><p>BIT #</p></td><td><p>31..26</p></td><td><p>25..21</p></td><td><p>20..16</p></td><td><p>15..11</p></td><td><p>10..6</p></td><td><p>5..0</p></td><td></td><td></td><td></td></tr><tr><td><p>R-类型</p></td><td><p>op</p></td><td><p>rs</p></td><td><p>rt</p></td><td><p>rd</p></td><td><p>shamt</p></td><td><p>func</p></td><td></td><td></td><td></td></tr><tr><td><p>add</p></td><td><p>000000</p></td><td><p>rs</p></td><td><p>rt</p></td><td><p>rd</p></td><td><p>00000</p></td><td><p>100000</p></td><td><p>add $1,$2,$3</p></td><td><p>$1=$2+S3</p></td><td><p>(rd)←(rs)+(rt); rs=$2,rt=$3,rd=$1</p></td></tr><tr><td><p>addu</p></td><td><p>000000</p></td><td><p>rs</p></td><td><p>rt</p></td><td><p>rd</p></td><td><p>00000</p></td><td><p>100001</p></td><td><p>addu $1,$2,$3</p></td><td><p>$1=$2+S3</p></td><td><p>(rd)←(rs)+(rt); rs=$2,rt=$3,rd=$1,无符号数</p></td></tr><tr><td><p>sub</p></td><td><p>000000</p></td><td><p>rs</p></td><td><p>rt</p></td><td><p>rd</p></td><td><p>00000</p></td><td><p>100010</p></td><td><p>sub $1,$2,$3</p></td><td><p>$1=$2-S3</p></td><td><p>(rd)←(rs)-(rt); rs=$2,rt=$3,rd=$1</p></td></tr><tr><td><p>subu</p></td><td><p>000000</p></td><td><p>rs</p></td><td><p>rt</p></td><td><p>rd</p></td><td><p>00000</p></td><td><p>100011</p></td><td><p>subu $1,$2,$3</p></td><td><p>$1=$2-S3</p></td><td><p>(rd)←(rs)-(rt); rs=$2,rt=$3,rd=$1,无符号数</p></td></tr><tr><td><p>and</p></td><td><p>000000</p></td><td><p>rs</p></td><td><p>rt</p></td><td><p>rd</p></td><td><p>00000</p></td><td><p>100100</p></td><td><p>and $1,$2,$3</p></td><td><p>$1=$2&amp;S3</p></td><td><p>(rd)←(rs)&amp;(rt); rs=$2,rt=$3,rd=$1</p></td></tr><tr><td><p>or</p></td><td><p>000000</p></td><td><p>rs</p></td><td><p>rt</p></td><td><p>rd</p></td><td><p>00000</p></td><td><p>100101</p></td><td><p>or $1,$2,$3</p></td><td><p>$1=$2|S3</p></td><td><p>(rd)←(rs) | (rt); rs=$2,rt=$3,rd=$1</p></td></tr><tr><td><p>xor</p></td><td><p>000000</p></td><td><p>rs</p></td><td><p>rt</p></td><td><p>rd</p></td><td><p>00000</p></td><td><p>100110</p></td><td><p>xor $1,$2,$3</p></td><td><p>$1=$2^S3</p></td><td><p>(rd)←(rs)^(rt); rs=$2,rt=$3,rd=$1</p></td></tr><tr><td><p>nor</p></td><td><p>000000</p></td><td><p>rs</p></td><td><p>rt</p></td><td><p>rd</p></td><td><p>00000</p></td><td><p>100111</p></td><td><p>nor $1,$2,$3</p></td><td><p>$1= ~($2 | S3)</p></td><td><p>(rd)←~((rs) | (rt)); rs=$2,rt=$3,rd=$1</p></td></tr><tr><td><p>slt</p></td><td><p>000000</p></td><td><p>rs</p></td><td><p>rt</p></td><td><p>rd</p></td><td><p>00000</p></td><td><p>101010</p></td><td><p>slt $1,$2,$3</p></td><td><p>if($2&lt;$3)</p><p> $1=1 else</p><p>  $1=0</p></td><td><p>if (rs&lt; rt) rd=1 else rd=0;rs＝$2，rt=$3, rd=$1</p></td></tr><tr><td><p>sltu</p></td><td><p>000000</p></td><td><p>rs</p></td><td><p>rt</p></td><td><p>rd</p></td><td><p>00000</p></td><td><p>101011</p></td><td><p>sltu $1,$2,$3</p></td><td><p>if($2&lt;$3)</p><p> $1=1 else</p><p>  $1=0</p></td><td><p>if (rs&lt; rt) rd=1 else rd=0;rs＝$2，rt=$3, rd=$1, 无符号数</p></td></tr><tr><td><p>sll</p></td><td><p>000000</p></td><td><p>00000</p></td><td><p>rt</p></td><td><p>rd</p></td><td><p>shamt</p></td><td><p>000000</p></td><td><p>sll $1,$2,10</p></td><td><p>$1=$2&lt;&lt;10</p></td><td><p>(rd)←(rt)&lt;&lt;shamt,rt=$2,rd=$1,shamt=10</p></td></tr><tr><td><p>srl</p></td><td><p>000000</p></td><td><p>00000</p></td><td><p>rt</p></td><td><p>rd</p></td><td><p>shamt</p></td><td><p>000010</p></td><td><p>srl $1,$2,10</p></td><td><p>$1=$2&gt;&gt;10</p></td><td><p>(rd)←(rt)&gt;&gt;shamt, rt=$2, rd=$1, shamt=10,  (逻辑右移)</p></td></tr><tr><td><p>sra</p></td><td><p>000000</p></td><td><p>00000</p></td><td><p>rt</p></td><td><p>rd</p></td><td><p>shamt</p></td><td><p>000011</p></td><td><p>sra $1,$2,10</p></td><td><p>$1=$2&gt;&gt;10</p></td><td><p>(rd)←(rt)&gt;&gt;shamt, rt=$2, rd=$1, shamt=10,  (算术右移，注意符号位保留)</p></td></tr><tr><td><p>sllv</p></td><td><p>000000</p></td><td><p>rs</p></td><td><p>rt</p></td><td><p>rd</p></td><td><p>00000</p></td><td><p>000100</p></td><td><p>sllv $1,$2,$3</p></td><td><p>$1=$2&lt;&lt;$3</p></td><td><p>(rd)←(rt)&lt;&lt;(rs), rs=$3,rt=$2,rd=$1</p></td></tr><tr><td><p>srlv</p></td><td><p>000000</p></td><td><p>rs</p></td><td><p>rt</p></td><td><p>rd</p></td><td><p>00000</p></td><td><p>000110</p></td><td><p>srlv $1,$2,$3</p></td><td><p>$1=$2&gt;&gt;$3</p></td><td><p>(rd)←(rt)&gt;&gt;(rs), rs=$3,rt=$2,rd=$1, (逻辑右移)</p></td></tr><tr><td><p>srav</p></td><td><p>000000</p></td><td><p>rs</p></td><td><p>rt</p></td><td><p>rd</p></td><td><p>00000</p></td><td><p>000111</p></td><td><p>srav $1,$2,$3</p></td><td><p>$1=$2&gt;&gt;$3</p></td><td><p>(rd)←(rt)&gt;&gt;(rs), rs=$3,rt=$2,rd=$1, (算术右移，注意符号位保留)</p></td></tr><tr><td><p>jr</p></td><td><p>000000</p></td><td><p>rs</p></td><td><p>00000</p></td><td><p>00000</p></td><td><p>00000</p></td><td><p>001000</p></td><td><p>jr $31</p></td><td><p>goto $31</p></td><td><p>(PC)←(rs)</p></td></tr><tr><td><p>I-类型</p></td><td><p>op</p></td><td><p>rs</p></td><td><p>rt</p></td><td colspan="3"><p>immediate</p></td><td colspan="3"></td></tr><tr><td><p>addi</p></td><td><p>001000</p></td><td><p>rs</p></td><td><p>rt</p></td><td colspan="3"><p>immediate</p></td><td><p>addi $1,$2,10</p></td><td><p>$1=$2+10</p></td><td><p>(rt)←(rs)+(sign-extend)immediate,rt=$1,rs=$2</p></td></tr><tr><td><p>addiu</p></td><td><p>001001</p></td><td><p>rs</p></td><td><p>rt</p></td><td colspan="3"><p>immediate</p></td><td><p>addiu $1,$2,10</p></td><td><p>$1=$2+10</p></td><td><p>(rt)←(rs)+(sign-extend)immediate,rt=$1,rs=$2</p></td></tr><tr><td><p>andi</p></td><td><p>001100</p></td><td><p>rs</p></td><td><p>rt</p></td><td colspan="3"><p>immediate</p></td><td><p>andi $1,$2,10</p></td><td><p>$1=$2&amp;10</p></td><td><p>(rt)←(rs)&amp;(zero-extend)immediate,rt=$1,rs=$2</p></td></tr><tr><td><p>ori</p></td><td><p>001101</p></td><td><p>rs</p></td><td><p>rt</p></td><td colspan="3"><p>immediate</p></td><td><p>ori $1,$2,10</p></td><td><p>$1=$2|10</p></td><td><p>(rt)←(rs)|(zero-extend)immediate,rt=$1,rs=$2</p></td></tr><tr><td><p>xori</p></td><td><p>001110</p></td><td><p>rs</p></td><td><p>rt</p></td><td colspan="3"><p>immediate</p></td><td><p>xori $1,$2,10</p></td><td><p>$1=$2^10</p></td><td><p>(rt)←(rs)^(zero-extend)immediate,rt=$1,rs=$2</p></td></tr><tr><td><p>lui</p></td><td><p>001111</p></td><td><p>00000</p></td><td><p>rt</p></td><td colspan="3"><p>immediate</p></td><td><p>lui $1,10</p></td><td><p>$1=10*65536</p></td><td><p>(rt)←immediate&lt;&lt;16 &amp; 0FFFF0000H，将16位立即数放到目的寄存器高16位，目的寄存器的低16位填0</p></td></tr><tr><td><p>lw</p></td><td><p>100011</p></td><td><p>rs</p></td><td><p>rt</p></td><td colspan="3"><p>offset</p></td><td><p>lw $1,10($2)</p></td><td><p>$1=Memory[</p><p>$2+10]</p></td><td><p>(rt)←Memory[(rs)+(sign_extend)offset], </p><p>rt=$1,rs=$2</p></td></tr><tr><td><p>sw</p></td><td><p>101011</p></td><td><p>rs</p></td><td><p>rt</p></td><td colspan="3"><p>offset</p></td><td><p>sw $1,10($2)</p></td><td><p>Memory[</p><p>$2+10] =$1</p></td><td><p>Memory[(rs)+(sign_extend)offset]←(rt), </p><p>rt=$1,rs=$2</p></td></tr><tr><td><p>beq</p></td><td><p>000100</p></td><td><p>rs</p></td><td><p>rt</p></td><td colspan="3"><p>offset</p></td><td><p>beq $1,$2,40</p></td><td><p>if($1=$2) <br />goto PC+4+40</p></td><td><p>if ((rt)=(rs)) then (PC)←(PC)+4+( (Sign-Extend) offset&lt;&lt;2), rs=$1, rt=$2</p></td></tr><tr><td><p>bne</p></td><td><p>000101</p></td><td><p>rs</p></td><td><p>rt</p></td><td colspan="3"><p>offset</p></td><td><p>bne $1,$2,40</p></td><td><p>if($1≠$2) <br />goto PC+4+40</p></td><td><p>if ((rt)≠(rs)) then (PC)←(PC)+4+(</p><p>(Sign-Extend) offset&lt;&lt;2) , rs=$1, rt=$2</p></td></tr><tr><td><p>slti</p></td><td><p>001010</p></td><td><p>rs</p></td><td><p>rt</p></td><td colspan="3"><p>immediate</p></td><td><p>slti $1,$2,10</p></td><td><p>if($2&lt;10) <br />  $1=1 else<br />   $1=0</p></td><td><p>if ((rs)&lt;(Sign-Extend)immediate) then (rt)←1; else (rt)←0, rs=$2, rt=$1</p></td></tr><tr><td><p>sltiu</p></td><td><p>001011</p></td><td><p>rs</p></td><td><p>rt</p></td><td colspan="3"><p>immediate</p></td><td><p>sltiu $1,$2,10</p></td><td><p>if($2&lt;10) <br />  $1=1 else<br />   $1=0</p></td><td><p>if ((rs)&lt;(Zero-Extend)immediate) then (rt)←1; else (rt)←0, rs=$2, rt=$1</p></td></tr><tr><td><p>J-类型</p></td><td><p>op</p></td><td colspan="5"><p>address</p></td><td colspan="3"></td></tr><tr><td><p>j</p></td><td><p>000010</p></td><td colspan="5"><p>address</p></td><td><p>j 10000</p></td><td><p>goto 10000</p></td><td><p>(PC)←( (Zero-Extend) address&lt;&lt;2), </p><p>address=10000/4</p></td></tr><tr><td><p>jal</p></td><td><p>000011</p></td><td colspan="5"><p>address</p></td><td><p>jal 10000</p></td><td><p>$31=PC+4</p><p>goto 10000</p></td><td><p>($31)←(PC)+4;</p><p>(PC)←( (Zero-Extend) address&lt;&lt;2),</p><p>address=10000/4</p></td></tr></table>
+
+<center>图V 指令详细结构</center>
+
+<p>add和addu区别是有无溢出检测</p>
+
+<h2 id="四--实验器材">四.  实验器材</h2>
+
+<p>电脑一台，Xilinx Vivado 软件一套，Basys3板一块。</p>
+
+<h2 id="五--实验过程与结果">五.  实验过程与结果</h2>
+
+<h2 id="1-cpu的设计">1. CPU的设计</h2>
+
+<p>该MIPS subset单周期分五个执行阶段，可分功能模块设计，各个子模块分别设计其特定的功能，最终利用一个总的模块进行子模块间连接，使得整个CPU能连贯执行指令，在仿真结果中观察设计结果，最终进行硬件下载，验证设计。其中各个模块简单功能如下：</p>
+
+<p>（1）指令存储器模块（IM）：具备基本的读写功能，用于存放指令。</p>
+
+<p>（2）寄存器堆模块（RegFile）：由32个32位的寄存器组成，提供较大的存储空间，用于存放暂存数据和指令。</p>
+
+<p>（3）算术逻辑运算器模块（ALU）：执行加减法等算术运算，与非或等逻辑运算，以及比较移位传送等操作的功能部件，是该CPU的设计核心部分，存在不同的运算处理功能，是体现实验设计结果正确性的模块。</p>
+
+<p>（4）立即数扩展模块（signext）：执行I型指令时需要立即数扩展，该模块用于MIPS符号扩展，将16位数据扩展为32位数据。</p>
+
+<p>（5）主控制模块（ctr）：用于控制各个模块之间的分工运行，产生不同数据通路的控制信号，保证指令顺序执行不发生紊乱。</p>
+
+<p>（6）ALU控制模块（aluctr）：用于生成ALU执行各种功能的控制信号，使ALU内部运行不发生紊乱。</p>
+
+<p>（7）数据存储器模块（DM），用于LW/SW指令数据存取。</p>
+
+<p>（8）取指模块（next_PC）：进行指令的取出及译码，同时包括程序计数器PC运行设计。</p>
+
+<p>（9）显示模块DISPLAY (display):basys3板子上数码管显示</p>
+
+<h2 id="2各模块具体设计">2.各模块具体设计</h2>
+
+<h3 id="1指令存储器im">（1）指令存储器（IM）</h3>
+
+<p>调用系统的ip核，用Mars编写汇编程序后，转为16进制的指令，然后写到coe文件中，导入ip核。需要注意的是，IP核中Port A Options-Port A Optional Output Registers-Primitives Output Register不要勾选，因为勾选后会使得IP核的Latency为2，使得PC无法从0开始。</p>
+
+<h3 id="2寄存器堆regfile">（2）寄存器堆（RegFile）</h3>
+
+<p>寄存器组是指令操作的主要对象，MIPS 处理器里一共有 32 个 32 位的寄存器，故可以声明一个包含 32 个 32 位的寄存器数组。读寄存器时需要 Rs，Rd 的地址，得到其数据。写寄存器 Rd 时需要所写地址，所写数据，同时需要写使能。以上所有操作需要在时钟和复位信号控制下操作。故寄存器组设计如下：</p>
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/clip_image002.png" alt="img" /></p>
+
+<h3 id="3控制器">（3）控制器</h3>
+
+<p>根据指令中的指令码（op）和功能码（funct）的不同组合输出相应的控制信号。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">主控</th>
+      <th style="text-align: center">aluop 设计图  ALU 译码单元</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><img src="/img/in-post/CPUDesign/SingleCPU/clip_image004.jpg" alt="img" /></td>
+      <td style="text-align: center"><img src="/img/in-post/CPUDesign/SingleCPU/clip_image006.jpg" alt="img" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="主控main-controlctr">主控Main Control（ctr）</h3>
+
+<center> Main Control</center>
+
+<table>
+  <thead>
+    <tr>
+      <th>input  Op  opcode[5:0]</th>
+      <th>00 0000</th>
+      <th>00 1101</th>
+      <th>10 0011</th>
+      <th>10 1011</th>
+      <th>00 0100</th>
+      <th>00  0101</th>
+      <th>00  1000</th>
+      <th>00  1010</th>
+      <th>00  1110</th>
+      <th>00  1111</th>
+      <th>00   0010</th>
+      <th>00  0011</th>
+      <th>00  1100</th>
+      <th>00  1001</th>
+      <th>00  1011</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>output</td>
+      <td>Rtype</td>
+      <td>ori</td>
+      <td>lw</td>
+      <td>sw</td>
+      <td>beq</td>
+      <td>bne</td>
+      <td>addi</td>
+      <td>slti</td>
+      <td>xori</td>
+      <td>lui</td>
+      <td>jump</td>
+      <td>Jal</td>
+      <td>andi</td>
+      <td>addiu</td>
+      <td>sltiu</td>
+    </tr>
+    <tr>
+      <td>regDst</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>X</td>
+      <td>X</td>
+      <td>X</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>X</td>
+      <td>X</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>aluSrc</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>X</td>
+      <td>X</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>memToReg</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>X</td>
+      <td>X</td>
+      <td>X</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>X</td>
+      <td>X</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>regWrite</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>memRead</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>memWrite</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>branch</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ExtOp</td>
+      <td>X</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>X</td>
+      <td>X</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>X</td>
+      <td>X</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>aluop[3:0]</td>
+      <td>1111</td>
+      <td>0010</td>
+      <td>0000</td>
+      <td>0000</td>
+      <td>0001</td>
+      <td>0110</td>
+      <td>0000</td>
+      <td>0011</td>
+      <td>1100</td>
+      <td>1011</td>
+      <td>xxxx</td>
+      <td>xxxx</td>
+      <td>0101</td>
+      <td>0111</td>
+      <td>0100</td>
+    </tr>
+    <tr>
+      <td>jmp</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>jal</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="alu控制译码模块aluctr">ALU控制译码模块（aluctr）</h3>
+
+<p>ALUctr。（拓展了lui指令和移位指令，增加输入lui和Asel输出,jr指令加一个控制信号jr）</p>
+
+<p>上表中31条指令指令与 ALU 操作码及功能码的对应关系如下：(17R+12I+2J)</p>
+
+<center> ALU Control</center>
+
+<table><tr><td colspan="4"><p><strong>input</strong></p></td><td></td><td></td><td colspan="3"><p><strong>output</strong></p></td><td></td></tr><tr><td colspan="2"><p><strong>ALUop</strong></p></td><td><p><strong>func</strong></p></td><td><p><strong>lui</strong></p></td><td><p><strong>shift</strong></p></td><td><p><strong>ALU operation</strong></p></td><td><p><strong>ALUctr</strong></p></td><td><p><strong>Asel</strong></p><p><strong>{lui,shift}</strong></p></td><td><p><strong>jr</strong></p></td><td></td></tr><tr><td><p>1001</p></td><td><p>j-type</p></td><td><p>xxxxxx</p></td><td><p>0</p></td><td><p>0</p></td><td><p>xxx</p></td><td><p>xxxx</p></td><td><p>00</p></td><td><p>0</p></td><td><p>j</p></td></tr><tr><td><p>1010</p></td><td><p>j-type</p></td><td><p>xxxxxx</p></td><td><p>0</p></td><td><p>0</p></td><td><p>xxx</p></td><td><p>xxxx</p></td><td><p>00</p></td><td><p>0</p></td><td><p>jal</p></td></tr><tr><td><p>0000(0)</p></td><td><p>I-type</p></td><td><p>xxxxxx</p></td><td><p>0</p></td><td><p>0</p></td><td><p>add</p></td><td><p>0010 (2)</p></td><td><p>00</p></td><td><p>0</p></td><td><p>lw/sw</p></td></tr><tr><td><p>0000(0)</p></td><td><p>I-type</p></td><td><p>xxxxxx</p></td><td><p>0</p></td><td><p>0</p></td><td><p>add</p></td><td><p>0010 (2)</p></td><td><p>00</p></td><td><p>0</p></td><td><p>addi</p></td></tr><tr><td><p>0111(7)</p></td><td></td><td><p>xxxxxx</p></td><td><p>0</p></td><td><p>0</p></td><td><p>add</p></td><td><p>0010 (2)</p></td><td><p>00</p></td><td><p>0</p></td><td><p>addiu</p></td></tr><tr><td><p>0101(5)</p></td><td></td><td><p>xxxxxx</p></td><td><p>0</p></td><td><p>0</p></td><td><p>and</p></td><td><p>0000 (0)</p></td><td><p>00</p></td><td><p>0</p></td><td><p>andi</p></td></tr><tr><td><p>0001(1)</p></td><td></td><td><p>xxxxxx</p></td><td><p>0</p></td><td><p>0</p></td><td><p>sub</p></td><td><p>0110 (6)</p></td><td><p>00</p></td><td><p>0</p></td><td><p>beq</p></td></tr><tr><td><p>0010(2)</p></td><td><p>I-type</p></td><td><p>xxxxxx</p></td><td><p>0</p></td><td><p>0</p></td><td><p>or</p></td><td><p>0001 (1)</p></td><td><p>00</p></td><td><p>0</p></td><td><p>ori</p></td></tr><tr><td><p>1000(8)</p></td><td></td><td><p>xxxxxx</p></td><td><p>0</p></td><td><p>0</p></td><td><p>xor</p></td><td><p>1100(12)</p></td><td><p>00</p></td><td><p>0</p></td><td><p>xori</p></td></tr><tr><td><p>0011(3)</p></td><td><p>I-type</p></td><td><p>xxxxxx</p></td><td><p>0</p></td><td><p>0</p></td><td><p>slt</p></td><td><p>0111 (7)</p></td><td><p>00</p></td><td><p>0</p></td><td><p>slti</p></td></tr><tr><td><p>0100(4)</p></td><td></td><td><p>xxxxxx</p></td><td><p>0</p></td><td><p>0</p></td><td><p>sltu</p></td><td><p>1001(9)</p></td><td><p>00</p></td><td><p>0</p></td><td><p>sltiu</p></td></tr><tr><td><p>0110(6)</p></td><td></td><td><p>xxxxxx</p></td><td><p>0</p></td><td><p>0</p></td><td><p>sub</p></td><td><p>0110(6)</p></td><td><p>00</p></td><td><p>0</p></td><td><p>bne</p></td></tr><tr><td><p>1011(11)</p></td><td><p>I-type</p></td><td><p>xxxxxx</p></td><td><p><strong>1</strong></p></td><td><p>0</p></td><td><p>sll</p></td><td><p>0011 (3)</p></td><td><p>10</p></td><td><p>0</p></td><td><p>lui</p></td></tr><tr><td><p>1111</p></td><td rowspan="16"><p>R-type</p></td><td><p>100000</p></td><td><p>0</p></td><td><p>0</p></td><td><p>add</p></td><td><p>0010 (2)</p></td><td><p>00</p></td><td><p>0</p></td><td><p>add</p></td></tr><tr><td><p>1111</p></td><td><p>100001</p></td><td><p>0</p></td><td><p>0</p></td><td><p>addu</p></td><td><p>0010 (2)</p></td><td><p>00</p></td><td><p>0</p></td><td><p>addu</p></td></tr><tr><td><p>1111</p></td><td><p>100010</p></td><td><p>0</p></td><td><p>0</p></td><td><p>sub</p></td><td><p>0110 (6)</p></td><td><p>00</p></td><td><p>0</p></td><td><p>sub</p></td></tr><tr><td><p>1111</p></td><td><p>100011</p></td><td><p>0</p></td><td><p>0</p></td><td><p>subu</p></td><td><p>0110 (6)</p></td><td><p>00</p></td><td><p>0</p></td><td><p>subu</p></td></tr><tr><td><p>1111</p></td><td><p>100100</p></td><td><p>0</p></td><td><p>0</p></td><td><p>and</p></td><td><p>0000 (0)</p></td><td><p>00</p></td><td><p>0</p></td><td><p>and</p></td></tr><tr><td><p>1111</p></td><td><p>100101</p></td><td><p>0</p></td><td><p>0</p></td><td><p>or</p></td><td><p>0001 (1)</p></td><td><p>00</p></td><td><p>0</p></td><td><p>or</p></td></tr><tr><td><p>1111</p></td><td><p>100110</p></td><td><p>0</p></td><td><p>0</p></td><td><p>xor</p></td><td><p>1100(12)</p></td><td><p>00</p></td><td><p>0</p></td><td><p>xor</p></td></tr><tr><td><p>1111</p></td><td><p>100111</p></td><td><p>0</p></td><td><p>0</p></td><td><p>nor</p></td><td><p>1000 (8)</p></td><td><p>00</p></td><td><p>0</p></td><td><p>nor</p></td></tr><tr><td><p>1111</p></td><td><p>101010</p></td><td><p>0</p></td><td><p>0</p></td><td><p>slt</p></td><td><p>0111 (7)</p></td><td><p>00</p></td><td><p>0</p></td><td><p>slt</p></td></tr><tr><td><p>1111</p></td><td><p>101011</p></td><td><p>0</p></td><td><p>0</p></td><td><p>sltu</p></td><td><p>1001 (9)</p></td><td><p>00</p></td><td><p>0</p></td><td><p>sltu</p></td></tr><tr><td><p>1111</p></td><td><p>000000</p></td><td><p>0</p></td><td><p>1</p></td><td><p>Shift left</p></td><td><p>0011 (3)</p></td><td><p>01</p></td><td><p>0</p></td><td><p>sll</p></td></tr><tr><td><p><a id="_Hlk88076982"></a>1111</p></td><td><p>000100</p></td><td><p>0</p></td><td><p>0</p></td><td><p>Shift left</p></td><td><p>0011 (3)</p></td><td><p>00</p></td><td><p>0</p></td><td><p>sllv</p></td></tr><tr><td><p>1111</p></td><td><p>000011</p></td><td><p>0</p></td><td><p>1</p></td><td><p>Shift A right</p></td><td><p>0100 (4)</p></td><td><p>01</p></td><td><p>0</p></td><td><p>sra</p></td></tr><tr><td><p>1111</p></td><td><p>000111</p></td><td><p>0</p></td><td><p>0</p></td><td><p>Shift A right</p></td><td><p>0100 (4)</p></td><td><p>00</p></td><td><p>0</p></td><td><p>srav</p></td></tr><tr><td><p>1111</p></td><td><p>000010</p></td><td><p>0</p></td><td><p>1</p></td><td><p>Shift right</p></td><td><p>0101 (5)</p></td><td><p>01</p></td><td><p>0</p></td><td><p>srl</p></td></tr><tr><td><p>1111</p></td><td><p>000110</p></td><td><p>0</p></td><td><p>0</p></td><td><p>Shift right</p></td><td><p>0101 (5)</p></td><td><p>00</p></td><td><p>0</p></td><td><p>srlv</p></td></tr><tr><td><p>1111</p></td><td></td><td><p>001000</p></td><td><p>0</p></td><td><p>0</p></td><td></td><td><p>xxxx</p></td><td><p>00</p></td><td><p>1</p></td><td><p>jr</p></td></tr></table>
+
+<p>Asel={lui,shift}</p>
+
+<p>指导书控制器只实现了部分指令的译码, 如果如图加入移位指令、lui指令，需要添加控制信号shift, lui（左移16位），按照提供的表格或自己编辑添加实现更多指令的控制逻辑。</p>
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/clip_image002-1705399421004.png" alt="img" /></p>
+
+<p><strong>加入jal指令，需译码jal信号</strong></p>
+
+<p>Shift and lui 增加控制信号ASEL</p>
+
+<p>红色输入为  <code class="language-plaintext highlighter-rouge">shamt:&lt;10:6&gt;</code></p>
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/clip_image003.png" alt="img" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>assign ALUSrcA =(Asel==2’b00)?RsData:
+				(Asel==2b01)?instruction[10:6]:
+				(Asel==2’b10?5’h10:RsData;
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="4alu运算模块">（4）ALU运算模块</h3>
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/clip_image006-1705399421005.jpg" alt="img" /></p>
+
+<p>ALU 主要执行 12种操作：</p>
+
+<div class="language-verilog highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+</pre></td><td class="rouge-code"><pre><span class="mb">4'b0000</span><span class="o">:</span><span class="k">begin</span> <span class="n">F</span><span class="o">=</span><span class="n">A</span><span class="o">&amp;</span><span class="n">B</span><span class="p">;</span> <span class="k">end</span>  <span class="c1">//按位与                     	  0 and</span>
+
+<span class="mb">4'b0001</span><span class="o">:</span><span class="k">begin</span> <span class="n">F</span><span class="o">=</span><span class="n">A</span><span class="o">|</span><span class="n">B</span><span class="p">;</span> <span class="k">end</span>  <span class="c1">//按位或                       	  1 or</span>
+
+<span class="mb">4'b0010</span><span class="o">:</span><span class="k">begin</span> <span class="o">{</span><span class="n">C</span><span class="p">,</span><span class="n">F</span><span class="o">}=</span><span class="n">A</span><span class="o">+</span><span class="n">B</span><span class="p">;</span> <span class="k">end</span> <span class="c1">//加法                          2 add</span>
+
+<span class="mb">4'b0011</span><span class="o">:</span><span class="k">begin</span> <span class="n">F</span><span class="o">=</span><span class="n">B</span><span class="o">&lt;&lt;</span><span class="n">A</span><span class="p">;</span> <span class="k">end</span>  <span class="c1">//将B左移shamt位 or rs位           3 sll sllv lui</span>
+
+<span class="mb">4'b0100</span><span class="o">:</span><span class="k">begin</span> <span class="n">F</span><span class="o">=</span><span class="p">(</span> <span class="p">$</span><span class="kt">signed</span><span class="p">(</span><span class="n">B</span><span class="p">)</span> <span class="p">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">;</span> <span class="k">end</span> <span class="c1">//算术右移          4 sra srav</span>
+
+<span class="mb">4'b0101</span><span class="o">:</span><span class="k">begin</span> <span class="n">F</span><span class="o">=</span><span class="n">B</span><span class="o">&gt;&gt;</span><span class="n">A</span><span class="p">;</span> <span class="k">end</span> <span class="c1">//将B右移shamt位                    5 srl srlv</span>
+
+<span class="mb">4'b0110</span><span class="o">:</span><span class="k">begin</span> <span class="o">{</span><span class="n">C</span><span class="p">,</span><span class="n">F</span><span class="o">}=</span><span class="n">A</span><span class="o">-</span><span class="n">B</span><span class="p">;</span> <span class="k">end</span> <span class="c1">//减法                       	6 sub</span>
+
+<span class="mb">4'b0111</span><span class="o">:</span><span class="k">begin</span> <span class="n">F</span><span class="o">=</span><span class="n">A</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span><span class="o">!=</span><span class="n">B</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span><span class="o">?</span><span class="n">A</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span><span class="o">&gt;</span><span class="n">B</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span><span class="o">:</span><span class="n">A</span><span class="o">&lt;</span><span class="n">B</span><span class="p">;</span> <span class="k">end</span>  <span class="c1">//比较A&lt;B带符号     7 slt slti </span>
+
+<span class="mb">4'b1000</span><span class="o">:</span><span class="k">begin</span> <span class="n">F</span><span class="o">=~</span><span class="p">(</span><span class="n">A</span><span class="o">|</span><span class="n">B</span><span class="p">);</span> <span class="k">end</span> <span class="c1">// 或非                       	8 nor</span>
+
+<span class="mb">4'b1001</span><span class="o">:</span><span class="k">begin</span> <span class="n">F</span><span class="o">=</span><span class="n">A</span><span class="o">&lt;</span><span class="n">B</span><span class="p">;</span> <span class="k">end</span><span class="c1">//A&lt;B则F=1，否则F=0                    9 sltu sltiu </span>
+
+<span class="mb">4'b1100</span><span class="o">:</span><span class="k">begin</span> <span class="n">F</span><span class="o">=</span><span class="n">A</span><span class="o">^</span><span class="n">B</span><span class="p">;</span> <span class="k">end</span>  <span class="c1">//按位异或                 	       12 xor </span>
+
+<span class="mb">4'b1111</span><span class="o">:</span><span class="k">begin</span> <span class="n">F</span><span class="o">=</span><span class="mh">32'h0</span><span class="p">;</span> <span class="k">end</span>       <span class="c1">//                			  15 j和jal，jr不需要ALU</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>add和addu、addi和addiu的区别是有无溢出检测，slt和sltu、slti和sltiu区别是有符号数和无符号数比较</p>
+
+<h3 id="5符号扩展模块signext">（5）符号扩展模块（signext）</h3>
+
+<p>包括了符号扩展和0扩展，如果ExtOp是0，则为0扩展，若ExtOp是1，则为符号扩展</p>
+
+<h3 id="6数据存储器模块dm">（6）数据存储器模块（DM）</h3>
+
+<p>只有lw和sw指令需要用到</p>
+
+<h3 id="7数码管显示模块display">（7）数码管显示模块（display）</h3>
+
+<p>七段译码显示的内容是16位的，而ALU的运算结果是32位的，将运算结果分为高十六位和低十六位，分别传进七段译码模块；在顶层模块可用一个开关，来选择是显示高16位还是低16位；sm_wei 选择哪一个数码管亮，sm_duan 选择数码管的哪一段亮，sm_wei 变换的速度是 1 秒 1000 次，使人眼看起来数码管是同时显示数值的。</p>
+
+<p>display输入的时钟是高频时钟，在模块内部需要分频使得容易看</p>
+
+<h3 id="8pc取指模块next_pc">（8）PC取指模块（next_PC）</h3>
+
+<p>根据控制信号和ALU运算结果等产生下一条PC的值，若该指令为跳转指令，则若jmp为1，则说明要发生跳转，同时根据jr的值来选择进行寄存器跳转还是立即数跳转；若jmp为0则根据branch来决定是否跳转，若branch为1且ALU运算结果符合跳转条件（用zero来标志）则发生跳转，同时利用beq和ben只有指令的第二十六位不同的性质，来区分是否需要跳转，bne且零标志为1则跳转，beq且零标志为0则跳转，否则不进行跳转，下条指令为PC+4。</p>
+
+<h3 id="9顶层模块">（9）顶层模块</h3>
+
+<p>1.用板子上的按键输入clkORstep来区分是连续运行还是单步运行</p>
+
+<div class="language-verilog highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="kt">wire</span> <span class="n">clkin</span><span class="p">;</span>
+
+<span class="k">assign</span> <span class="n">clkin</span><span class="o">=</span><span class="p">(</span><span class="n">clkORstep</span><span class="o">==</span><span class="mb">1'b1</span><span class="p">)</span><span class="o">?</span><span class="n">clk_cpu</span><span class="o">:</span><span class="n">step</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>2.同时，判断是否是jr指令，来确定寄存器堆A口读出来的是rs的值，还是31号寄存器的值（因为要将A口读出来的值传给PC模块）</p>
+
+<div class="language-verilog highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="kt">wire</span> <span class="p">[</span><span class="mi">4</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span><span class="n">ReadAddrA</span><span class="p">;</span>
+
+<span class="k">assign</span> <span class="n">ReadAddrA</span><span class="o">=</span><span class="p">(</span><span class="n">jr</span><span class="o">==</span><span class="mb">1'b1</span><span class="p">)</span><span class="o">?</span><span class="mb">5'b11111</span><span class="o">:</span><span class="n">instruction</span><span class="p">[</span><span class="mi">25</span><span class="o">:</span><span class="mi">21</span><span class="p">];</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>3.为了在bsysy3 上便于观看，取指令的时钟需要分频成约T=1.33s的时钟，这样才可以慢慢增加PC（在顶层模块中分频，所有的时钟都用分频后的时钟，只有display模块用分频前高频时钟，因为在display模块中有分频且是基于高频时钟的分频）</p>
+
+<div class="language-verilog highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre></td><td class="rouge-code"><pre><span class="c1">//-------------------分频，PC更新需要慢一点的时钟---------------------</span>
+
+<span class="kt">integer</span> <span class="n">clk_cnt</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+
+<span class="kt">reg</span> <span class="n">clk_cpu</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="c1">//1.33秒一个时钟周期，以此为cpu的时钟周期 10^8/0.75*10^8=4/3=1.33 always @(posedge clk)</span>
+
+<span class="k">always</span> <span class="o">@</span><span class="p">(</span><span class="kt">posedge</span> <span class="n">clk</span><span class="p">)</span>
+
+<span class="k">if</span><span class="p">(</span><span class="n">clk_cnt</span><span class="o">==</span><span class="mi">32'd75000000</span><span class="p">)</span>
+
+<span class="k">begin</span>
+
+<span class="n">clk_cnt</span> <span class="o">&lt;=</span> <span class="mb">1'b0</span><span class="p">;</span> 
+
+<span class="n">clk_cpu</span> <span class="o">&lt;=</span> <span class="o">~</span><span class="n">clk_cpu</span><span class="p">;</span>
+
+<span class="k">end</span> 
+
+<span class="k">else</span>
+
+<span class="n">clk_cnt</span> <span class="o">&lt;=</span> <span class="n">clk_cnt</span> <span class="o">+</span> <span class="mb">1'b1</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>4.因为basys3上数码管只有4个，只能同时显示16位，所以用SW[2]来控制高16位和低16位</p>
+
+<div class="language-verilog highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="kt">wire</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">display_content</span><span class="p">;</span>
+
+<span class="k">assign</span> <span class="n">display_content</span> <span class="o">=</span> <span class="p">(</span><span class="n">SW</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mb">2'b00</span><span class="p">)</span><span class="o">?</span> <span class="n">instruction</span><span class="o">:</span><span class="p">(</span><span class="n">SW</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mb">2'b01</span><span class="p">)</span><span class="o">?</span> <span class="n">PC</span><span class="o">:</span><span class="p">(</span><span class="n">SW</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mb">2'b10</span><span class="p">)</span><span class="o">?</span> <span class="n">aluRes</span><span class="o">:</span> <span class="n">memreaddata</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>5.显示的内容可以是指令、PC、ALU运算结果、DM中取出来的值，用SW[1:0]来区分</p>
+
+<p>00为ins</p>
+
+<p>01为PC</p>
+
+<p>10为ALU</p>
+
+<p>11为MEM</p>
+
+<p>6.写回寄存器堆的地址有3个：rt、rd、ra。写回寄存器的值有3种：alu计算结果、DM中取出来的值、PC+4，由以下语句区分（WB_addr和WB_data是最终输入到寄存器堆的值）。</p>
+
+<div class="language-verilog highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre><span class="k">assign</span> <span class="n">regWriteAddr</span> <span class="o">=</span> <span class="n">reg_dst</span> <span class="o">?</span> <span class="n">instruction</span><span class="p">[</span><span class="mi">15</span><span class="o">:</span><span class="mi">11</span><span class="p">]</span> <span class="o">:</span> <span class="n">instruction</span><span class="p">[</span><span class="mi">20</span><span class="o">:</span><span class="mi">16</span><span class="p">];</span>
+
+<span class="k">assign</span> <span class="n">WB_addr</span> <span class="o">=</span> <span class="p">(</span><span class="n">jal</span><span class="o">==</span><span class="mb">1'b1</span><span class="p">)</span><span class="o">?</span><span class="mb">5'b11111</span><span class="o">:</span><span class="n">regWriteAddr</span><span class="p">;</span>
+
+<span class="k">assign</span> <span class="n">regWriteData</span> <span class="o">=</span> <span class="n">memtoreg</span> <span class="o">?</span> <span class="n">memreaddata</span> <span class="o">:</span> <span class="n">aluRes</span><span class="p">;</span>
+
+<span class="kt">reg</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span><span class="n">next_PC</span><span class="p">;</span>
+
+<span class="k">always</span><span class="o">@</span><span class="p">(</span><span class="kt">posedge</span> <span class="n">clkin</span><span class="p">)</span> <span class="n">next_PC</span><span class="o">=</span><span class="n">PC</span><span class="o">+</span><span class="mi">4</span><span class="p">;</span>
+
+<span class="k">assign</span> <span class="n">WB_data</span><span class="o">=</span><span class="p">(</span><span class="n">jal</span><span class="o">==</span><span class="mb">1'b1</span><span class="p">)</span><span class="o">?</span><span class="n">next_PC</span><span class="o">:</span><span class="n">regWriteData</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>7.ALU中A口的输入值有三个，RsData（Rs寄存器的值）或者shamt（R型指令的移位码）或者16（lui要左移16位）</p>
+
+<p>ALU中B口的输入值有两个，RtData（Rt寄存器的值）或者立即数扩展后的值。</p>
+
+<div class="language-verilog highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="k">assign</span> <span class="n">input2</span> <span class="o">=</span> <span class="n">alu_src</span> <span class="o">?</span> <span class="n">expand</span> <span class="o">:</span> <span class="n">RtData</span><span class="p">;</span>
+
+<span class="k">assign</span> <span class="n">Asel</span><span class="o">={</span><span class="n">lui</span><span class="p">,</span><span class="n">shift</span><span class="o">}</span><span class="p">;</span>
+
+<span class="k">assign</span> <span class="n">input1</span> <span class="o">=</span><span class="p">(</span><span class="n">Asel</span><span class="o">==</span><span class="mb">2'b00</span><span class="p">)</span><span class="o">?</span><span class="n">RsData</span><span class="o">:</span><span class="p">(</span><span class="n">Asel</span><span class="o">==</span><span class="mb">2'b01</span><span class="p">)</span><span class="o">?</span><span class="n">shamt</span><span class="o">:</span><span class="p">(</span><span class="n">Asel</span><span class="o">==</span><span class="mb">2'b10</span><span class="p">)</span><span class="o">?</span><span class="mb">5'b10000</span><span class="o">:</span><span class="n">RsData</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>8.给指令寄存器中输入的是PC[9:2],因为指令存储器IM中存的是指令的字地址且是设计的MIPS是大端存储，只需要输入字地址就可以，而输入PC[9:2]相当于除了4，也就是字地址了。</p>
+
+<p>9.IM在时钟沿下降沿写入，才能使得PC从0开始</p>
+
+<hr />
+
+<h2 id="3cpu正确性验证">3.CPU正确性验证</h2>
+
+<p><strong>表格中为理论值，图中为仿真波形图</strong></p>
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/image-20240116181332562.png" alt="image-20240116181332562" /></p>
+
+<hr />
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/image-20240116181456203.png" alt="image-20240116181456203" /></p>
+
+<hr />
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/image-20240116181511301.png" alt="image-20240116181511301" /></p>
+
+<hr />
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/image-20240116181523693.png" alt="image-20240116181523693" /></p>
+
+<hr />
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/image-20240116181609022.png" alt="image-20240116181609022" /></p>
+
+<hr />
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/image-20240116181622983.png" alt="image-20240116181622983" /></p>
+
+<hr />
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/image-20240116181638374.png" alt="image-20240116181638374" /></p>
+
+<hr />
+
+<p>经过比对，图中的仿真得到的数据与理论值符合，说明CPU设计正确，需要特别注意的是跳转指令</p>
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/clip_image002-1705400215680.png" alt="img" /></p>
+
+<p>0x400064为jal指令，应该要跳转到0x400070的位置，跳转成功，并且看jr指令能否跳转回到0x400068的位置</p>
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/clip_image004-1705400215681.png" alt="img" /></p>
+
+<p>0x40008c为jr指令，而下一条指令的地址为0x400068，是jal指令的下一条，说明jal指令成功跳转的同时也将PC+4的地址记录到了31号寄存器中，jr指令可以成功从31号寄存器读取地址并跳转</p>
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/clip_image006.png" alt="img" /></p>
+
+<p>0x400070为bne指令：<strong><code class="language-plaintext highlighter-rouge">bne $1,$2,notequal #jal here</code></strong> 此时$1的值为6，$2的值为3，要发生跳转，到0x40007c的位置，图中可以看出下一条指令地址为0x40007c，说明成功跳转且可以分辨bne和零标志，因为bne是零标志位1时跳转</p>
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/clip_image008.png" alt="img" /></p>
+
+<p>0x400080为beq指令：<strong><code class="language-plaintext highlighter-rouge">beq $1,$2,equal</code></strong>，此时$1=6,$2=6，会发生跳转，跳转到0x400088的位置，而图中可看出beq下一条指令地址为0x40088，说明成功跳转，也说明了可以区分beq和零标志。只有beq和零标志为0的才会发生跳转。</p>
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/clip_image010.png" alt="img" /></p>
+
+<p>0x40006c是j指令，需要跳转到0x400090的位置，图中下一条指令位置为0x400090，说明跳转成功</p>
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/clip_image012.png" alt="img" /></p>
+
+<p>还有需要注意的是slti和sltiu，slt和sltu的区别，就是有符号数比较和无符号数比较，这里以slti和sltiu为例：</p>
+
+<p>0x400088处为slti：<strong><code class="language-plaintext highlighter-rouge">slti $9,$0,-2 #beq here</code></strong>，此时运算结果为0<strong>，说明0&gt;-2,</strong> <strong>所以不小于</strong></p>
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/clip_image014.png" alt="img" /></p>
+
+<p>0x4000a4处为sltiu：<strong><code class="language-plaintext highlighter-rouge">sltiu $16,$0,-2</code></strong>，此时运算结果为1，说明0&lt;-2成立，这是因为-2以补码形式储存，实际存储的值是fffe，有因为是无符号比较，所以不会认为是-2，而是fffe，即0&lt;fffe,所以可以实现有符号比较和无符号比较</p>
+
+<hr />
+
+<center> 总表</center>
+
+<table><tr><td rowspan="2"><p><a id="_Hlk120609664"></a><strong>地址</strong></p></td><td rowspan="2"><p><strong>汇编程序</strong></p></td><td></td><td></td><td colspan="5"><p><strong>运行结果</strong></p></td></tr><tr><td><p><strong>16进制</strong></p></td><td><p><strong>Next_PC</strong></p></td><td><p><strong>ALU运算结果</strong></p></td><td><p><strong>DM输出结果（LW）</strong></p></td><td><p><strong>WB_data写回数据</strong></p></td><td><p><strong>WB_addr写回地址</strong></p></td></tr><tr><td><p><strong>0x00400000</strong></p></td><td><p>lui $1,4097</p></td><td><p>3c011001</p></td><td><p><strong>0x00400004</strong></p></td><td><p>268500992</p></td><td><p>x</p></td><td><p>268500992</p></td><td><p>1</p></td></tr><tr><td><p><strong>0x00400004</strong></p></td><td><p>ori  $11,$1,0</p></td><td><p>342b0000</p></td><td><p><strong>0x00400008</strong></p></td><td><p>268500992</p></td><td><p>x</p></td><td><p>268500992</p></td><td><p>11</p></td></tr><tr><td><p><strong>0x00400008</strong></p></td><td><p>addi $1,$0,1</p></td><td><p>20010001</p></td><td><p><strong>0x0040000C</strong></p></td><td><p>1</p></td><td><p>x</p></td><td><p>1</p></td><td><p>1</p></td></tr><tr><td><p><a id="_Hlk120628312"></a><strong>0x0040000C</strong></p></td><td><p>add $2,$1,$1</p></td><td><p>00211020</p></td><td><p><strong>0x00400010</strong></p></td><td><p>2</p></td><td><p>x</p></td><td><p>2</p></td><td><p>2</p></td></tr><tr><td><p><strong>0x00400010</strong></p></td><td><p>sub $3,$2,$1   </p></td><td><p>00411822</p></td><td><p><strong>0x00400014</strong></p></td><td><p>1</p></td><td><p>x</p></td><td><p>1</p></td><td><p>3</p></td></tr><tr><td><p><strong>0x00400014</strong></p></td><td><p>add $1,$2,1</p></td><td><p>20410001</p></td><td><p><strong>0x00400018</strong></p></td><td><p>3</p></td><td><p>x</p></td><td><p>3</p></td><td><p>1</p></td></tr><tr><td><p><strong>0x00400018</strong></p></td><td><p>addi $2,$0,6</p></td><td><p>20020006</p></td><td><p><strong>0x0040001C</strong></p></td><td><p>6</p></td><td><p>x</p></td><td><p>6</p></td><td><p>2</p></td></tr><tr><td><p><strong>0x0040001C</strong></p></td><td><p>and $4,$1,$2</p></td><td><p>00222024</p></td><td><p><strong>0x00400020</strong></p></td><td><p>2</p></td><td><p>x</p></td><td><p>2</p></td><td><p>4</p></td></tr><tr><td><p><strong>0x00400020</strong></p></td><td><p>or $4,$1,$2</p></td><td><p>00222025</p></td><td><p><strong>0x00400024</strong></p></td><td><p>7</p></td><td><p>x</p></td><td><p>7</p></td><td><p>4</p></td></tr><tr><td><p><strong>0x00400024</strong></p></td><td><p>xor $4,$1,$2</p></td><td><p>00222026</p></td><td><p><strong>0x00400028</strong></p></td><td><p>5</p></td><td><p>x</p></td><td><p>5</p></td><td><p>4</p></td></tr><tr><td><p><strong>0x00400028</strong></p></td><td><p>nor $4,$1,$2</p></td><td><p>00222027</p></td><td><p><strong>0x0040002C</strong></p></td><td><p>-8</p></td><td><p>x</p></td><td><p>-8</p></td><td><p>4</p></td></tr><tr><td><p><strong>0x0040002C</strong></p></td><td><p>slt $5,$1,$2</p></td><td><p>0022282a</p></td><td><p><strong>0x00400030</strong></p></td><td><p>1</p></td><td><p>x</p></td><td><p>1</p></td><td><p>5</p></td></tr><tr><td><p><strong>0x00400030</strong></p></td><td><p>sll $5,$2,2</p></td><td><p>00022880</p></td><td><p><strong>0x00400034</strong></p></td><td><p>24</p></td><td><p>x</p></td><td><p>24</p></td><td><p>5</p></td></tr><tr><td><p><strong>0x00400034</strong></p></td><td><p>srl $5,$2,1</p></td><td><p>00022842</p></td><td><p><strong>0x00400038</strong></p></td><td><p>3</p></td><td><p>x</p></td><td><p>3</p></td><td><p>5</p></td></tr><tr><td><p><strong>0x00400038</strong></p></td><td><p>sra $5,$2,1</p></td><td><p>00022843</p></td><td><p><strong>0x0040003C</strong></p></td><td><p>3</p></td><td><p>x</p></td><td><p>3</p></td><td><p>5</p></td></tr><tr><td><p><strong>0x0040003C</strong></p></td><td><p>sllv $5,$2,$1</p></td><td><p>00222804</p></td><td><p><strong>0x00400040</strong></p></td><td><p>48</p></td><td><p>x</p></td><td><p>48</p></td><td><p>5</p></td></tr><tr><td><p><strong>0x00400040</strong></p></td><td><p><strong>addi $10,$0,1</strong></p></td><td><p>200a0001</p></td><td><p><strong>0x00400044</strong></p></td><td><p>1</p></td><td><p>x</p></td><td><p>1</p></td><td><p>10</p></td></tr><tr><td><p><strong>0x00400044</strong></p></td><td><p><strong>srlv $5,$2,$10</strong></p></td><td><p>01422806</p></td><td><p><strong>0x00400048</strong></p></td><td><p>3</p></td><td><p>x</p></td><td><p>3</p></td><td><p>5</p></td></tr><tr><td><p><strong>0x00400048</strong></p></td><td><p>srav $5,$2,$10</p></td><td><p>01422807</p></td><td><p><strong>0x0040004C</strong></p></td><td><p>3</p></td><td><p>x</p></td><td><p>3</p></td><td><p>5</p></td></tr><tr><td><p><strong>0x0040004C</strong></p></td><td><p>andi $6,$1,6</p></td><td><p>30260006</p></td><td><p><strong>0x00400050</strong></p></td><td><p>2</p></td><td><p>x</p></td><td><p>2</p></td><td><p>6</p></td></tr><tr><td><p><strong>0x00400050</strong></p></td><td><p><strong>ori $6,$1,6</strong></p></td><td><p>34260006</p></td><td><p><strong>0x00400054</strong></p></td><td><p>7</p></td><td><p>x</p></td><td><p>7</p></td><td><p>6</p></td></tr><tr><td><p><strong>0x00400054</strong></p></td><td><p><strong>xori $6,$1,6</strong></p></td><td><p>38260006</p></td><td><p><strong>0x00400058</strong></p></td><td><p>5</p></td><td><p>x</p></td><td><p>5</p></td><td><p>6</p></td></tr><tr><td><p><strong>0x00400058</strong></p></td><td><p><strong>lui $7,1</strong></p></td><td><p>3c070001</p></td><td><p><strong>0x0040005c</strong></p></td><td><p>65536</p></td><td><p>x</p></td><td><p>65536</p></td><td><p>7</p></td></tr><tr><td><p><strong>0x0040005c</strong></p></td><td><p><strong>sw $2,0($11)</strong></p></td><td><p>ad620000</p></td><td><p><strong>0x00400060</strong></p></td><td><p>xx</p></td><td><p>x</p></td><td><p>x</p></td><td><p>x</p></td></tr><tr><td><p><strong>0x00400060</strong></p></td><td><p><strong>lw $8,0($11)</strong></p></td><td><p>8d680000</p></td><td><p><strong>0x00400064</strong></p></td><td><p>xx</p></td><td><p>6</p></td><td><p>6</p></td><td><p>8</p></td></tr><tr><td><p><strong>0x00400064</strong></p></td><td><p><strong>jal BranchTest</strong></p></td><td><p>0c10001c,</p></td><td><p>0x00400070</p></td><td><p>xx</p></td><td><p>x</p></td><td><p>x</p></td><td><p>x</p></td></tr><tr><td><p><strong>0x00400068</strong></p></td><td><p><strong>addi $17,$0,17</strong></p></td><td><p>20110011</p></td><td><p>0x0040006c</p></td><td><p>17</p></td><td><p>x</p></td><td><p>17</p></td><td><p>17</p></td></tr><tr><td><p><strong>0x0040006c</strong></p></td><td><p><strong>j end</strong></p></td><td><p>08100024</p></td><td><p>0x00400090</p></td><td><p>xx</p></td><td><p>x</p></td><td><p>x</p></td><td><p>x</p></td></tr><tr><td><p><strong>0x00400070</strong></p></td><td><p><strong>bne $1,$2,notequal #jal here</strong></p></td><td><p>14220002</p></td><td><p>0x0040007c</p></td><td><p>-3</p></td><td><p>x</p></td><td><p>x</p></td><td><p>x</p></td></tr><tr><td><p><strong>0x00400074</strong></p></td><td><p><strong>addi $18,$0,18 #不运行</strong></p></td><td><p>20120012</p></td><td><p>xx</p></td><td><p>xx</p></td><td><p>x</p></td><td><p>x</p></td><td><p>xx</p></td></tr><tr><td><p><strong>0x00400078</strong></p></td><td><p><strong>addi $19,$0,20 #不运行</strong></p></td><td><p>20130014</p></td><td><p>xx</p></td><td><p>xx</p></td><td><p>x</p></td><td><p>x</p></td><td><p>xx</p></td></tr><tr><td><p><strong>0x0040007c</strong></p></td><td><p><strong>addi $2,$0,3 #bne here</strong></p></td><td><p>20020003</p></td><td><p>0x00400080</p></td><td><p>3</p></td><td><p>x</p></td><td><p>3</p></td><td><p>2</p></td></tr><tr><td><p><strong>0x00400080</strong></p></td><td><p><strong>beq $1,$2,equal</strong></p></td><td><p>10220001</p></td><td><p>0x00400088</p></td><td><p>0</p></td><td><p>x</p></td><td><p>x</p></td><td><p>x</p></td></tr><tr><td><p><strong>0x00400084</strong></p></td><td><p><strong>addi $19,$0,19#不运行</strong></p></td><td><p>20130013</p></td><td><p>xx</p></td><td><p>xx</p></td><td><p>x</p></td><td><p>x</p></td><td><p>xx</p></td></tr><tr><td><p><strong>0x00400088</strong></p></td><td><p><strong>slti $9,$0,-2 #beq here</strong></p></td><td><p>2809fffe</p></td><td><p>0x0040008c</p></td><td><p>0</p></td><td><p>x</p></td><td><p>0</p></td><td><p>9</p></td></tr><tr><td><p><strong>0x0040008c</strong></p></td><td><p><strong>jr $31 #回到jal branch的下一条</strong></p></td><td><p>03e00008</p></td><td><p>0x00400068</p></td><td><p>xx</p></td><td><p>x</p></td><td><p>x</p></td><td><p>x</p></td></tr><tr><td><p><strong>0x00400090</strong></p></td><td><p><strong>addi $1,$0,2 #j here</strong></p></td><td><p>20010002</p></td><td><p>0x00400094</p></td><td><p>2</p></td><td><p>x</p></td><td><p>2</p></td><td><p>1</p></td></tr><tr><td><p><strong>0x00400094</strong></p></td><td><p><strong>addiu $12,$0,-2</strong></p></td><td><p>240cfffe</p></td><td><p><strong>0x00400098</strong></p></td><td><p>-2</p></td><td><p>x</p></td><td><p>-2</p></td><td><p>12</p></td></tr><tr><td><p><strong>0x00400098</strong></p></td><td><p><strong>addu $13,$0,$12</strong></p></td><td><p>000c6821</p></td><td><p><strong>0x0040009c</strong></p></td><td><p>-2</p></td><td><p>x</p></td><td><p>-2</p></td><td><p>13</p></td></tr><tr><td><p><strong>0x0040009c</strong></p></td><td><p><strong>subu $14,$0,$1#$1=2</strong></p></td><td><p>00017023</p></td><td><p><strong>0x004000a0</strong></p></td><td><p>-2</p></td><td><p>x</p></td><td><p>-2</p></td><td><p>14</p></td></tr><tr><td><p><strong>0x004000a0</strong></p></td><td><p><strong>sltu $15,$0,$12</strong></p></td><td><p>000c782b</p></td><td><p><strong>0x004000a4</strong></p></td><td><p>1</p></td><td><p>x</p></td><td><p>1</p></td><td><p>15</p></td></tr><tr><td><p><strong>0x004000a4</strong></p></td><td><p><strong>sltiu $16,$0,-2</strong></p></td><td><p>2c10fffe</p></td><td><p><strong>0x00400098</strong></p></td><td><p>1</p></td><td><p>x</p></td><td><p>1</p></td><td><p>16</p></td></tr></table>
+
+<hr />
+
+<h2 id="4basys-3板操作方法">4.Basys 3板操作方法</h2>
+
+<p>顶层文件输入有6个，</p>
+
+<p>clk接板子上的时钟</p>
+
+<p>step接板子上的SW15，模拟一个上升沿和下降沿</p>
+
+<p>clkORstep接板子上的SW14，为1则是连续运行，时钟为板子上时钟clk，为0则为单步运行，用step驱动</p>
+
+<p>reset接板子上的SW13，为1时，在上升沿来到时清零，为0时，则正常运行</p>
+
+<p>SW2来选择显示数据的高16位和低16位，为1则显示高16位，为0则显示低16位</p>
+
+<p>SW1和SW0同时选择显示的数据：00则为instruction，01则为PC，10则为ALU计算结果，11则为DM中取出来的值</p>
+
+<p>输出有7个</p>
+
+<p>sm_duna选择一个数码管的显示，sm_wei选择是哪一个数据管，数据在4个数码管上显示，显示高16位或者低16位</p>
+
+<p>而输出标志这有ZF（零标志）、OF（溢出标志）、SF（符号位）、CF（进/借位）、PF（奇偶标志位）</p>
+
+<p>ZF，连接板子上LD15  //0标志位, 运算结果为0(全零)则置1, 否则置0</p>
+
+<p>OF，连接板子上LD14 //溢出标志位，对有符号数运算有意义，溢出则OF=1，否则为0</p>
+
+<p>SF，连接板子上LD13 //符号标志位，与F的最高位相同</p>
+
+<p>CF，连接板子上LD12 //进借位标志位, 取最高位进位C,加法时C=1则CF=1表示有进位,减法时C=0则CF=1表示有借位</p>
+
+<p>PF，连接板子上LD11 //奇偶标志位，F有奇数个1，则PF=1，否则为0</p>
+
+<hr />
+
+<h2 id="5basys-3板运行cpu">5.Basys 3板运行CPU</h2>
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/image-20240116182228638.png" alt="image-20240116182228638" /></p>
+
+<hr />
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/image-20240116182351843.png" alt="image-20240116182351843" /></p>
+
+<hr />
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/image-20240116182323503.png" alt="image-20240116182323503" /></p>
+
+<hr />
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/image-20240116182411578.png" alt="image-20240116182411578" /></p>
+
+<hr />
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/image-20240116182427828.png" alt="image-20240116182427828" /></p>
+
+<hr />
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/image-20240116182456116.png" alt="image-20240116182456116" /></p>
+
+<hr />
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/image-20240116182505640.png" alt="image-20240116182505640" /></p>
+
+<hr />
+
+<p><img src="/img/in-post/CPUDesign/SingleCPU/image-20240116182514428.png" alt="image-20240116182514428" /></p>
+
+<p>##</p>
+
+<h2 id="六-实验心得">六.	实验心得</h2>
+
+<ol>
+  <li>在做CPU的时候，我是一类指令一类指令的写的，在开始之前并没有总体规划，所以导致其实很多可以单独用到MUX的地方，都是在顶层文件通过两步来完成的，例如：</li>
+</ol>
+
+<div class="language-verilog highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="k">assign</span> <span class="n">regWriteAddr</span> <span class="o">=</span> <span class="n">reg_dst</span> <span class="o">?</span> <span class="n">instruction</span><span class="p">[</span><span class="mi">15</span><span class="o">:</span><span class="mi">11</span><span class="p">]</span> <span class="o">:</span> <span class="n">instruction</span><span class="p">[</span><span class="mi">20</span><span class="o">:</span><span class="mi">16</span><span class="p">];</span>
+<span class="k">assign</span> <span class="n">WB_addr</span> <span class="o">=</span> <span class="p">(</span><span class="n">jal</span><span class="o">==</span><span class="mb">1'b1</span><span class="p">)</span><span class="o">?</span><span class="mb">5'b11111</span><span class="o">:</span><span class="n">regWriteAddr</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>本来是可以用3选一选择器使得CPU的结构更加的清晰，但是由于没有增加jal指令之前写回地址只有rt和rd，所以只用了一个三元运算符，但是增加jal指令后就要增加31号寄存器，但是要是临时增加一个3选一的MUX又要改很多地方，所以就保留了上述这种不利于阅读的方法，自己看还好，但是不利于其他人的理解。
+所以在开始设计CPU的时候最好先花一点时间看看自己都需要哪一些部件，能抽象成为一个模块的最好都抽象出来，便于阅读，也便于自己的修改。</p>
+
+<p>2.添加移位指令时可以传入ALU的参数其实包含shamt，即移动位数，所以sll和sllv可以分成两条指令来写，但是我觉得这样同样操作的指令分成两条写不太优雅，所以ALU的A口传入的值有3种，rs的值或者是shamt或者是16（因为lui指令是要左移16位的），这样sll和sllv京可以用同一条指令完成，区别只是传入A口的值不同，这样只需要添加一个选择器即可，而不用在ALU中添加一条指令，但在软件层面上来说，在ALU中添加一条指令显然是更容易的，但是不符合简洁的设计初衷，所以我选择了添加选择器。</p>
+
+<div class="language-verilog highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="k">assign</span> <span class="n">input1</span> <span class="o">=</span><span class="p">(</span><span class="n">Asel</span><span class="o">==</span><span class="mb">2'b00</span><span class="p">)</span><span class="o">?</span><span class="n">RsData</span><span class="o">:</span><span class="p">(</span><span class="n">Asel</span><span class="o">==</span><span class="mb">2'b01</span><span class="p">)</span><span class="o">?</span><span class="n">shamt</span><span class="o">:</span><span class="p">(</span><span class="n">Asel</span><span class="o">==</span><span class="mb">2'b10</span><span class="p">)</span><span class="o">?</span><span class="mb">5'b10000</span><span class="o">:</span><span class="n">RsData</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>3.添加jal指令的时候需要存PC+4到$31中，但是如果直接写的话，会有时钟影响导致PC的值改变，因此写入的值将不是正确的值，因为verilog语言是一旦变化就会写入的，因此需要限定next_PC的值，保证下一个上升沿到来前next_PC的值不会改变：</p>
+
+<div class="language-verilog highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="kt">reg</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span><span class="n">next_PC</span><span class="p">;</span>
+<span class="k">always</span><span class="o">@</span><span class="p">(</span><span class="kt">posedge</span> <span class="n">clkin</span><span class="p">)</span> <span class="n">next_PC</span><span class="o">=</span><span class="n">PC</span><span class="o">+</span><span class="mi">4</span><span class="p">;</span>
+<span class="k">assign</span> <span class="n">WB_data</span><span class="o">=</span><span class="p">(</span><span class="n">jal</span><span class="o">==</span><span class="mb">1'b1</span><span class="p">)</span><span class="o">?</span><span class="n">next_PC</span><span class="o">:</span><span class="n">regWriteData</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>4.传入IM的值是PC[9:2],因为IM中根据字地址寻找指令，而我们规定了数据深度为256位，因此只需要2^8=256,第二位到第九位这8位数就可以了</p>
+
+<p>5.仿真遇到zzzz（高阻态），一般是没有在仿真激励文件中例化。遇到xxxx是因为没有取到值。</p>
+
+<p>6.在设计控制器的时候一定要先分配好自己的aluop对应的操作。</p>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2022/11/29/5-1-Memory-Hierarchies/" data-toggle="tooltip" data-placement="top" title="Chapter5-1 存储器层次结构">
+                        Previous<br>
+                        <span>Chapter5-1 存储器层次结构</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2022/12/20/PipelineCPU/" data-toggle="tooltip" data-placement="top" title="流水线CPU设计与实现">
+                        Next<br>
+                        <span>流水线CPU设计与实现</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+
+                <!--   gitalk       -->
+                <div class="comment">
+                <div id="gitalk-container"></div>
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+                <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+                <script>
+                var gitalk = new Gitalk({
+                    id: location.pathname,
+                    clientID: '0db4b4c6d83c061f6b30',
+                    clientSecret: 'e1651c09f1a49b2b4a544cd584d3e8a55454a48a',
+                    repo: 'BlogComment',
+                    owner: 'jaredddddd',
+                    admin: ['jaredddddd'], 
+                    labels: ['Gitalk'],
+                })
+                gitalk.render('gitalk-container')
+                </script> 
+                </div>
+
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0036" 
+                    href="/archive/?tag=Computer-Organization"
+                    title="Computer-Organization"
+                    rel="21">Computer-Organization</a>
+        
+                <a data-sort="0018" 
+                    href="/archive/?tag=NOTES"
+                    title="NOTES"
+                    rel="39">NOTES</a>
+        
+                <a data-sort="0041" 
+                    href="/archive/?tag=Project"
+                    title="Project"
+                    rel="16">Project</a>
+        
+                <a data-sort="0042" 
+                    href="/archive/?tag=AI"
+                    title="AI"
+                    rel="15">AI</a>
+        
+                <a data-sort="0048" 
+                    href="/archive/?tag=OS"
+                    title="OS"
+                    rel="9">OS</a>
+        
+                <a data-sort="0052" 
+                    href="/archive/?tag=ML"
+                    title="ML"
+                    rel="5">ML</a>
+        
+                <a data-sort="0053" 
+                    href="/archive/?tag=PatternRecognition"
+                    title="PatternRecognition"
+                    rel="4">PatternRecognition</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Blog"
+                    title="Blog"
+                    rel="3">Blog</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Distributed-System"
+                    title="Distributed-System"
+                    rel="3">Distributed-System</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=ANN"
+                    title="ANN"
+                    rel="2">ANN</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CPU%E8%AE%BE%E8%AE%A1"
+                    title="CPU设计"
+                    rel="2">CPU设计</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CompilationPrinciple"
+                    title="CompilationPrinciple"
+                    rel="2">CompilationPrinciple</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     TeX: {
+       equationNumbers: {
+         autoNumber: "AMS"
+       }
+     },
+     SVG: {
+       scale: 90
+     },
+     tex2jax: {
+       inlineMath: [ ['$','$'] ],
+       displayMath: [ ['$$','$$'] ],
+       processEscapes: true,
+     }
+   });
+ </script>
+ <script type="text/javascript"
+         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+
+.post-container {
+    background: #fcfbfb; /* 背景颜色 */
+    border-radius: 25px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    padding-top: 40px; /* 特别增加顶部内边距 */
+    margin-top: 20px; /* 添加顶部外边距 */
+    /* margin-left: 40px; */
+    /* width: 900px; */
+}
+
+
+/* 在宽屏幕设备上应用特定样式 */
+@media (min-width: 1024px) {
+  .post-container {
+    margin-left: 40px; /* 向左扩展 */
+    width: 900px; /* 设置宽度 */
+  }
+  .side-catalog{
+    width: 250px;
+  }
+}
+
+.post-container:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* 当鼠标悬停时增加阴影效果 */
+}
+
+.side-catalog {
+    background: #ffffff; /* 背景颜色 */
+    border-radius: 15px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    margin-left: 10pt;
+    /* width: 200px; */
+
+}
+
+
+
+.catalog-container {
+    /* ... 其他样式 ... */
+    display: none; /* 默认不显示catalog */
+    transition: all 0.3s ease; /* 过渡效果 */
+    margin-top: 20px; /* 添加顶部外边距 */
+}
+
+</style>
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; LvKouKou Blog 2025
+                    <br>
+                    <!--  删掉了作者Hux Blog
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                    -->
+                    <!-- 不蒜子 -->
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                    您是Blog的第<span id="busuanzi_value_site_uv"></span>个小伙伴 </br>
+                     <span id="busuanzi_container_page_pv">
+                        本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<!-- 自己添加的 -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TNVD6PR5TQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNVD6PR5TQ');
+</script>
+<!-- 自己添加的 -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        // a = P.find('h1,h2,h3,h4,h5,h6');
+        a = P.find('h1,h2,h3,h4');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<!--鼠标点击爱心动画-->
+<script type="text/javascript" src="/js/love.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @LvKouKou 的个人博客，与你一起发现更大的世界 | 要做一个想环游世界的程序员">
+    <meta name="keywords" content="LvKouKou, jaredddddd, @jaredddddd, LvKouKou Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <link
+  rel="stylesheet"
+  href="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+/>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  defer="defer"
+></script>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  defer="defer"
+  onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
+></script>
+    <script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/mathtex-script-type.min.js"
+  defer="defer"
+></script>
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="Archive - LvKouKou的博客 | LV Blog">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:description"
+        content="「博观而约取，厚积而薄发」">
+    
+    <meta property="og:image" content="https://jaredddddd.github.io/img/LVKOUKOU.jpg">
+    <meta property="og:url" content="https://jaredddddd.github.io/archive/">
+    <meta property="og:site_name" content="LvKouKou的博客 | LV Blog">
+
+    <title>Archive - LvKouKou的博客 | LV Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jaredddddd.github.io/archive/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* 打字机效果的样式 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #666 }
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid #666;
+            white-space: nowrap;
+            word-wrap: break-word;
+            letter-spacing: .1em;
+            width: fit-content;
+            margin: 0 auto;
+            animation: 
+                typing 2s steps(40, end), /* 打字机效果, 3s 完成打字, 每步40个字符 */
+                blink-caret .75s step-end infinite; /* 光标闪烁效果, 0.75s 完成一次闪烁  */
+        }
+
+        /* 添加包装容器样式 */
+        .typing-wrapper {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%; /* 确保不会超出父容器 */
+        }
+
+        /* 添加响应式样式 */
+        @media (max-width: 768px) {
+        .typing-effect {
+            font-size: 16px; /* 在手机上可以适当调整字体大小 */
+            letter-spacing: normal; /* 在手机上减小字间距 */
+        }
+    }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptions = document.getElementsByClassName('subheading');
+            if (descriptions.length > 0) {
+                const description = descriptions[0];
+                const text = description.textContent;
+                description.innerHTML = `<span class="typing-wrapper"><span class="typing-effect">${text}</span></span>`;
+            }
+        });
+    </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">LvKouKou Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/resume-home/">Resume</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/roadtrip/">On The Road</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="Searching...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!--
+Credits: this page shamelessly borrowed a lot from:
+https://github.com/kitian616/jekyll-TeXt-theme
+-->
+<!-- Page Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+
+
+
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+  <div class="header-mask"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        
+        <div class="site-heading" id="tag-heading">
+        
+          <h1>Archive</h1>
+          <span class="subheading">「博观而约取，厚积而薄发」</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<!-- 
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+
+
+
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+  <div class="header-mask"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        
+        <div class="site-heading">
+        
+          <h1>Archive</h1>
+          <span class="subheading">「博观而约取，厚积而薄发」</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+ -->
+
+<!-- Main Content -->
+<div class="container">
+	<div class="row">
+		<div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+			<!-- Tags (as filter) -->
+			<div id='tag_cloud' class="tags tags-sup js-tags">
+				<a class="tag-button--all" data-encode="">
+					Show All
+					<sup>57</sup>
+				</a>
+
+				
+				
+				
+				
+				
+				<a data-sort="0018"
+					data-encode="NOTES" class="tag-button" title="NOTES"
+					rel="39">
+					NOTES
+					<sup>39</sup>
+				</a>
+				
+				<a data-sort="0036"
+					data-encode="Computer-Organization" class="tag-button" title="Computer-Organization"
+					rel="21">
+					Computer-Organization
+					<sup>21</sup>
+				</a>
+				
+				<a data-sort="0041"
+					data-encode="Project" class="tag-button" title="Project"
+					rel="16">
+					Project
+					<sup>16</sup>
+				</a>
+				
+				<a data-sort="0042"
+					data-encode="AI" class="tag-button" title="AI"
+					rel="15">
+					AI
+					<sup>15</sup>
+				</a>
+				
+				<a data-sort="0048"
+					data-encode="OS" class="tag-button" title="OS"
+					rel="9">
+					OS
+					<sup>9</sup>
+				</a>
+				
+				<a data-sort="0052"
+					data-encode="ML" class="tag-button" title="ML"
+					rel="5">
+					ML
+					<sup>5</sup>
+				</a>
+				
+				<a data-sort="0053"
+					data-encode="PatternRecognition" class="tag-button" title="PatternRecognition"
+					rel="4">
+					PatternRecognition
+					<sup>4</sup>
+				</a>
+				
+				<a data-sort="0054"
+					data-encode="Blog" class="tag-button" title="Blog"
+					rel="3">
+					Blog
+					<sup>3</sup>
+				</a>
+				
+				<a data-sort="0054"
+					data-encode="Distributed-System" class="tag-button" title="Distributed-System"
+					rel="3">
+					Distributed-System
+					<sup>3</sup>
+				</a>
+				
+				<a data-sort="0055"
+					data-encode="ANN" class="tag-button" title="ANN"
+					rel="2">
+					ANN
+					<sup>2</sup>
+				</a>
+				
+				<a data-sort="0055"
+					data-encode="CPU%E8%AE%BE%E8%AE%A1" class="tag-button" title="CPU设计"
+					rel="2">
+					CPU设计
+					<sup>2</sup>
+				</a>
+				
+				<a data-sort="0055"
+					data-encode="CompilationPrinciple" class="tag-button" title="CompilationPrinciple"
+					rel="2">
+					CompilationPrinciple
+					<sup>2</sup>
+				</a>
+				
+				<a data-sort="0056"
+					data-encode="ComputerGraphic" class="tag-button" title="ComputerGraphic"
+					rel="1">
+					ComputerGraphic
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0056"
+					data-encode="ComputerNetwork" class="tag-button" title="ComputerNetwork"
+					rel="1">
+					ComputerNetwork
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0056"
+					data-encode="Database" class="tag-button" title="Database"
+					rel="1">
+					Database
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0056"
+					data-encode="VLSI" class="tag-button" title="VLSI"
+					rel="1">
+					VLSI
+					<sup>1</sup>
+				</a>
+			</div>
+
+			<!-- Article List -->
+			<div class="mini-post-list js-result d-none"><section>
+					<span class="fa listing-seperator">
+						<span class="tag-text">2024</span>
+					</span><div class="post-preview item" data-tags="CompilationPrinciple,NOTES">
+						<a href="/2024/07/08/SyntaxAnalysis/">
+							<h2 class="post-title">
+								语法分析
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/CompilationPrinciple" class="tag">CompilationPrinciple</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="CompilationPrinciple,NOTES">
+						<a href="/2024/07/07/LexicalAnalysis/">
+							<h2 class="post-title">
+								词法分析
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/CompilationPrinciple" class="tag">CompilationPrinciple</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="AI,PatternRecognition,NOTES">
+						<a href="/2024/07/01/PROpenVocabulary/">
+							<h2 class="post-title">
+								开放词汇检测综述
+							</h2><h3 class="post-subtitle">
+								A Survey on Open-Vocabulary Detection
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/AI" class="tag">AI</a><a href="/tag/PatternRecognition" class="tag">PatternRecognition</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="AI,ANN,NOTES,Project">
+						<a href="/2024/06/22/finalterm/">
+							<h2 class="post-title">
+								Seq2Seq+attention中英机器翻译
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/AI" class="tag">AI</a><a href="/tag/ANN" class="tag">ANN</a><a href="/tag/NOTES" class="tag">NOTES</a><a href="/tag/Project" class="tag">Project</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="AI,PatternRecognition,NOTES,Project">
+						<a href="/2024/06/18/HW3-mixmatch-fixmatch/">
+							<h2 class="post-title">
+								半监督图像分类
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/AI" class="tag">AI</a><a href="/tag/PatternRecognition" class="tag">PatternRecognition</a><a href="/tag/NOTES" class="tag">NOTES</a><a href="/tag/Project" class="tag">Project</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="VLSI,NOTES">
+						<a href="/2024/06/11/VLSI-HW/">
+							<h2 class="post-title">
+								VLSI作业及知识点复习
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/VLSI" class="tag">VLSI</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="AI,PatternRecognition,NOTES,Project">
+						<a href="/2024/06/09/HW2-PCA-LDA/">
+							<h2 class="post-title">
+								基于PCA/LDA和KNN的人脸识别
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/AI" class="tag">AI</a><a href="/tag/PatternRecognition" class="tag">PatternRecognition</a><a href="/tag/NOTES" class="tag">NOTES</a><a href="/tag/Project" class="tag">Project</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="AI,PatternRecognition,NOTES,Project">
+						<a href="/2024/05/25/HW1-ImageStitching/">
+							<h2 class="post-title">
+								全景图像拼接
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/AI" class="tag">AI</a><a href="/tag/PatternRecognition" class="tag">PatternRecognition</a><a href="/tag/NOTES" class="tag">NOTES</a><a href="/tag/Project" class="tag">Project</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="AI,ANN,NOTES,Project">
+						<a href="/2024/05/01/midterm/">
+							<h2 class="post-title">
+								Facial Expression Recognition (FER)
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/AI" class="tag">AI</a><a href="/tag/ANN" class="tag">ANN</a><a href="/tag/NOTES" class="tag">NOTES</a><a href="/tag/Project" class="tag">Project</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Blog">
+						<a href="/2024/04/30/InterestingWeb/">
+							<h2 class="post-title">
+								有趣的小页面
+							</h2><h3 class="post-subtitle">
+								Interesting Web
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Blog" class="tag">Blog</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Blog">
+						<a href="/2024/01/12/First-Blog/">
+							<h2 class="post-title">
+								LvKouKou的第一个Blog
+							</h2><h3 class="post-subtitle">
+								First Blog！
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Blog" class="tag">Blog</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Blog">
+						<a href="/2024/01/12/Second_Blog/">
+							<h2 class="post-title">
+								LvKouKou的第二个Blog
+							</h2><h3 class="post-subtitle">
+								Second Blog！To test some function
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Blog" class="tag">Blog</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="AI,ML,NOTES">
+						<a href="/2024/01/05/MachineLearning-Final-Review/">
+							<h2 class="post-title">
+								中山大学机器学习与数据挖掘期末复习笔记
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/AI" class="tag">AI</a><a href="/tag/ML" class="tag">ML</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Distributed-System,NOTES">
+						<a href="/2024/01/04/DistributedSystem-Fianl-Review/">
+							<h2 class="post-title">
+								中山大学分布式系统期末总结
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Distributed-System" class="tag">Distributed-System</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="AI,ML">
+						<a href="/2024/01/02/GMM/">
+							<h2 class="post-title">
+								GMM的推导和理解
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/AI" class="tag">AI</a><a href="/tag/ML" class="tag">ML</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="AI,ML">
+						<a href="/2024/01/01/EM/">
+							<h2 class="post-title">
+								EM算法的理解和详细推导
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/AI" class="tag">AI</a><a href="/tag/ML" class="tag">ML</a></div>
+						</a>
+						<hr>
+					</div></section><section>
+					<span class="fa listing-seperator">
+						<span class="tag-text">2023</span>
+					</span><div class="post-preview item" data-tags="AI,ML">
+						<a href="/2023/12/23/Ensemble-Learning/">
+							<h2 class="post-title">
+								集成学习/元学习 Bagging&Boosting
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/AI" class="tag">AI</a><a href="/tag/ML" class="tag">ML</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="ComputerNetwork,Project">
+						<a href="/2023/12/23/OpenWrt/">
+							<h2 class="post-title">
+								OpenWrt实现智能路由器
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/ComputerNetwork" class="tag">ComputerNetwork</a><a href="/tag/Project" class="tag">Project</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Distributed-System,Project">
+						<a href="/2023/12/17/DSFileSystem/">
+							<h2 class="post-title">
+								分布式系统文件系统设计
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Distributed-System" class="tag">Distributed-System</a><a href="/tag/Project" class="tag">Project</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="AI,ML">
+						<a href="/2023/12/12/Linear-Logic-Regression/">
+							<h2 class="post-title">
+								线性回归和逻辑回归数学推导
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/AI" class="tag">AI</a><a href="/tag/ML" class="tag">ML</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Database,Project">
+						<a href="/2023/12/12/Database-Supermarket/">
+							<h2 class="post-title">
+								超市管理数据库设计
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Database" class="tag">Database</a><a href="/tag/Project" class="tag">Project</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="ComputerGraphic,Project">
+						<a href="/2023/12/07/CG-FinalProject/">
+							<h2 class="post-title">
+								用OpenGL搭建并渲染一个场景
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/ComputerGraphic" class="tag">ComputerGraphic</a><a href="/tag/Project" class="tag">Project</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Distributed-System,Project">
+						<a href="/2023/10/27/DS-publish-subscribe/">
+							<h2 class="post-title">
+								gRPC实现消息订阅系统
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Distributed-System" class="tag">Distributed-System</a><a href="/tag/Project" class="tag">Project</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="AI,Project">
+						<a href="/2023/07/07/Emotion-Classification/">
+							<h2 class="post-title">
+								单层神经网络文本情感分类&朴素贝叶斯文本情感分类
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/AI" class="tag">AI</a><a href="/tag/Project" class="tag">Project</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="OS,NOTES">
+						<a href="/2023/06/18/OS-Ch9/">
+							<h2 class="post-title">
+								Chapter9 Processes
+							</h2><h3 class="post-subtitle">
+								第九章 虚拟内存管理！
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/OS" class="tag">OS</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="OS,NOTES">
+						<a href="/2023/06/04/OS-Ch8/">
+							<h2 class="post-title">
+								Chapter8 Memory Management
+							</h2><h3 class="post-subtitle">
+								第八章 内存管理策略！
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/OS" class="tag">OS</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="OS,NOTES">
+						<a href="/2023/06/01/OS-Ch7/">
+							<h2 class="post-title">
+								Chapter7 Deadlock
+							</h2><h3 class="post-subtitle">
+								第七章 死锁！
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/OS" class="tag">OS</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="OS,NOTES">
+						<a href="/2023/04/30/OS-Ch6/">
+							<h2 class="post-title">
+								Chapter6  Process Synchronization  
+							</h2><h3 class="post-subtitle">
+								第六章 进程同步！
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/OS" class="tag">OS</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="AI,Project">
+						<a href="/2023/04/29/TSP/">
+							<h2 class="post-title">
+								使用模拟退火和遗传算法求解TSP问题
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/AI" class="tag">AI</a><a href="/tag/Project" class="tag">Project</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="AI,Project">
+						<a href="/2023/04/19/AI-Chess/">
+							<h2 class="post-title">
+								Alpha-beta剪枝算法设计一个中国象棋博弈程序
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/AI" class="tag">AI</a><a href="/tag/Project" class="tag">Project</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="OS,NOTES">
+						<a href="/2023/04/15/OS-Ch5/">
+							<h2 class="post-title">
+								Chapter5 Process scheduling
+							</h2><h3 class="post-subtitle">
+								第五章 进程调度（CPU调度）！
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/OS" class="tag">OS</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="OS,NOTES">
+						<a href="/2023/04/10/OS-Ch4/">
+							<h2 class="post-title">
+								Chapter4 Threads  
+							</h2><h3 class="post-subtitle">
+								第四章 多线程编程！
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/OS" class="tag">OS</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="AI,Project">
+						<a href="/2023/03/27/AI-15Puzzle/">
+							<h2 class="post-title">
+								使用A* 与IDA* 算法解决15-Puzzle问题
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/AI" class="tag">AI</a><a href="/tag/Project" class="tag">Project</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="OS,NOTES">
+						<a href="/2023/03/25/OS-Ch3/">
+							<h2 class="post-title">
+								Chapter3 Processes
+							</h2><h3 class="post-subtitle">
+								第三章 进程管理！
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/OS" class="tag">OS</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="OS,NOTES">
+						<a href="/2023/03/24/Ch2-Operating-System-Structures/">
+							<h2 class="post-title">
+								Chapter2 Operating-System Structures  
+							</h2><h3 class="post-subtitle">
+								第二章 操作体系体系结构！
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/OS" class="tag">OS</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="OS,NOTES">
+						<a href="/2023/03/20/Chapter1-Introduction/">
+							<h2 class="post-title">
+								Chapter1 Introduction of Operating System
+							</h2><h3 class="post-subtitle">
+								第一章 导论！
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/OS" class="tag">OS</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div></section><section>
+					<span class="fa listing-seperator">
+						<span class="tag-text">2022</span>
+					</span><div class="post-preview item" data-tags="Computer-Organization,CPU%E8%AE%BE%E8%AE%A1,Project">
+						<a href="/2022/12/20/PipelineCPU/">
+							<h2 class="post-title">
+								流水线CPU设计与实现
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Computer-Organization" class="tag">Computer-Organization</a><a href="/tag/CPU%E8%AE%BE%E8%AE%A1" class="tag">CPU设计</a><a href="/tag/Project" class="tag">Project</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Computer-Organization,NOTES">
+						<a href="/2022/11/29/5-1-Memory-Hierarchies/">
+							<h2 class="post-title">
+								Chapter5-1 存储器层次结构
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Computer-Organization" class="tag">Computer-Organization</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Computer-Organization,CPU%E8%AE%BE%E8%AE%A1,Project">
+						<a href="/2022/11/29/SingleCPU/">
+							<h2 class="post-title">
+								单周期CPU设计与实现
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Computer-Organization" class="tag">Computer-Organization</a><a href="/tag/CPU%E8%AE%BE%E8%AE%A1" class="tag">CPU设计</a><a href="/tag/Project" class="tag">Project</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Computer-Organization,NOTES">
+						<a href="/2022/11/27/4-4-Adventure-Processing/">
+							<h2 class="post-title">
+								Chapter4-4 流水线冒险处理
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Computer-Organization" class="tag">Computer-Organization</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Computer-Organization,NOTES">
+						<a href="/2022/11/22/4-3-Pipelining/">
+							<h2 class="post-title">
+								Chapter4-3 Pipelining 流水线数据通路
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Computer-Organization" class="tag">Computer-Organization</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Computer-Organization,NOTES">
+						<a href="/2022/11/09/MIPS/">
+							<h2 class="post-title">
+								MIPS汇编语言指令分类及寻址模式
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Computer-Organization" class="tag">Computer-Organization</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Computer-Organization,NOTES">
+						<a href="/2022/11/06/4-2-Multi-Cycle-datapath/">
+							<h2 class="post-title">
+								Chapter4-2 多周期数据通路
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Computer-Organization" class="tag">Computer-Organization</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Computer-Organization,NOTES">
+						<a href="/2022/10/24/4-1-Single-cycle-datapath/">
+							<h2 class="post-title">
+								Chapter4-1 单周期数据通路
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Computer-Organization" class="tag">Computer-Organization</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Computer-Organization,NOTES">
+						<a href="/2022/10/18/3-2-2-DIvision/">
+							<h2 class="post-title">
+								Chapter3-2-2  DIvision
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Computer-Organization" class="tag">Computer-Organization</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Computer-Organization,NOTES">
+						<a href="/2022/10/18/3-2-3-Float/">
+							<h2 class="post-title">
+								Chapter3-2-3 浮点数及其运算
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Computer-Organization" class="tag">Computer-Organization</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Computer-Organization,NOTES">
+						<a href="/2022/10/17/3-2-1-Binary-Multipliters-%E6%95%B4%E6%95%B0%E4%B9%98%E6%B3%95/">
+							<h2 class="post-title">
+								Chapter3-2-1 Binary Multipliters 整数乘法
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Computer-Organization" class="tag">Computer-Organization</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Computer-Organization,NOTES">
+						<a href="/2022/10/16/3-1-ALU-Design/">
+							<h2 class="post-title">
+								Chapter3-1 ALU Design
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Computer-Organization" class="tag">Computer-Organization</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Computer-Organization,NOTES">
+						<a href="/2022/10/15/2-5-Addressing-Modes/">
+							<h2 class="post-title">
+								Chapter2-5 Addressing Modes 寻址模式
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Computer-Organization" class="tag">Computer-Organization</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Computer-Organization,NOTES">
+						<a href="/2022/10/14/2-4-Assembly&Compilation/">
+							<h2 class="post-title">
+								Chapter2-4 Assembly & Compilation
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Computer-Organization" class="tag">Computer-Organization</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Computer-Organization,NOTES">
+						<a href="/2022/10/13/2-3-Assembly&Simulation/">
+							<h2 class="post-title">
+								Chapter2-3 Assembly & Simulation 汇编与仿真
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Computer-Organization" class="tag">Computer-Organization</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Computer-Organization,NOTES">
+						<a href="/2022/10/12/2-2-1-ISA/">
+							<h2 class="post-title">
+								Chapter2-2-1 ISA
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Computer-Organization" class="tag">Computer-Organization</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Computer-Organization,NOTES">
+						<a href="/2022/10/12/2-2-2-MIPS-Architecture/">
+							<h2 class="post-title">
+								Chapter2-2-2 MIPS Architecture
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Computer-Organization" class="tag">Computer-Organization</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Computer-Organization,NOTES">
+						<a href="/2022/10/11/2-1-The-Instruction-Set-Architecture/">
+							<h2 class="post-title">
+								Chapter2-1 The Instruction Set Architecture  
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Computer-Organization" class="tag">Computer-Organization</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Computer-Organization,NOTES">
+						<a href="/2022/10/10/1-3-Performance/">
+							<h2 class="post-title">
+								Chapter1-3 Performance
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Computer-Organization" class="tag">Computer-Organization</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Computer-Organization,NOTES">
+						<a href="/2022/10/09/1-2-BelowYourProgram/">
+							<h2 class="post-title">
+								Chapter1-2 Below Your Program
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Computer-Organization" class="tag">Computer-Organization</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div><div class="post-preview item" data-tags="Computer-Organization,NOTES">
+						<a href="/2022/10/08/1-1-Introduction/">
+							<h2 class="post-title">
+								Chapter1-1 Introduction
+							</h2><h3 class="post-subtitle">
+								
+							</h3><!-- Add tags below the title -->
+							<div class="post-tags"><a href="/tag/Computer-Organization" class="tag">Computer-Organization</a><a href="/tag/NOTES" class="tag">NOTES</a></div>
+						</a>
+						<hr>
+					</div></section>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+.post-preview {
+	/* 背景颜色 这里修改方框背景颜色*/
+    /* background: #f6f2f2;  */
+	background: linear-gradient(135deg, #f5f5f5, #e8e8e8); /* 极简灰白渐变 */
+    border-radius: 25px; /* 圆角边框 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    margin-bottom: 10px; /* 每个 post-preview 元素底部的间距 */
+    overflow: hidden; /* 确保子元素不会溢出圆角边界 */
+    padding: 20px 25px; /* 调整内边距使内容更加协调 */
+    padding-top: 10px;
+    padding-left: 30px;
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+}
+
+.post-preview:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6); /* 当鼠标悬停时增加阴影效果 */
+	transform: translateY(-2px); /* 添加轻微上浮效果 */
+
+}
+
+.post-title, .post-subtitle {
+    margin: 0; /* 移除默认的 margin */
+}
+
+.post-tags {
+    margin-top: 5px;
+}
+
+.tag {
+    display: inline-block;
+    padding: 3px 6px;
+    margin-right: 5px;
+    font-size: 0.85em;
+    border-radius: 3px;
+    text-decoration: none;
+    /* color: #dbd1d1;  */
+    margin-bottom: 5px;
+}
+
+.tag:hover {
+    background-color: #b2abab;
+}
+
+/* 如果您已经有 `<hr>` 样式定义，可以根据需要调整它们 */
+hr {
+    margin-top: 10px; /* 顶部的间距 */
+    margin-bottom: 5px; /* 底部的间距 */
+}
+
+/* 修改最上面标签*/
+.tag-button {
+    display: inline-block;
+    padding: 4px 12px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    font-size: 0.85em;
+    border-radius: 4px;
+    text-decoration: none;
+    background: linear-gradient(135deg, #d0e7f9, #a0c4e5); /* 从浅紫色到湖蓝色的低饱和度渐变 */
+    color: #555555;
+    transition: all 0.2s ease;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tag-button:hover {
+    background: linear-gradient(135deg, #a0c4e5, #7fa9d1); /* 悬停时稍微加深 */
+    color: #333333;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.tag-button--all {
+    display: inline-block;
+    padding: 4px 12px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    font-size: 0.85em;
+    border-radius: 4px;
+    text-decoration: none;
+    background: linear-gradient(135deg, #c0d8f0, #90b8d8); /* 统一的低饱和度蓝色渐变 */
+    color: #444444;
+    transition: all 0.2s ease;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tag-button--all:hover {
+    background: linear-gradient(135deg, #90b8d8, #70a0c0); /* 悬停时稍微加深 */
+    color: #222222;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* 调整标签中的数字样式 */
+.tag-button sup, .tag-button--all sup {
+    margin-left: 3px;
+    color: #888888;
+    font-size: 0.8em;
+}
+
+
+</style>
+
+<!-- 添加 JavaScript 代码 -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+       	// 定义一个数组包含一组低饱和度北欧极简风的颜色值
+        var colors = ['#b2abab', '#7f6f6f', '#333333', '#c4cfd9', '#b24d5a', '#b23a0e', '#6b6a8d', '#c9b97a', '#b24d5a', '#c9a97a', '#6d7a8d'];
+        //             灰色、     深灰色、    黑色、     浅灰色、     红色、      橙色、     紫色、      黄色、     红色、     橙色、      灰蓝色     
+		
+        
+        // 添加一个计算颜色亮度的函数
+        function isLightColor(color) {
+            const hex = color.replace('#', '');
+            const r = parseInt(hex.substr(0, 2), 16);
+            const g = parseInt(hex.substr(2, 2), 16);
+            const b = parseInt(hex.substr(4, 2), 16);
+            
+            // 计算亮度 (以 HSP 色彩空间为准)
+            const brightness = Math.sqrt(
+                0.299 * (r * r) +
+                0.587 * (g * g) +
+                0.114 * (b * b)
+            );
+            
+            return brightness > 127.5;
+        }
+
+        var tags = document.querySelectorAll('.tag');
+    
+        tags.forEach(function (tag) {
+            var randomColor = colors[Math.floor(Math.random() * colors.length)];
+            tag.style.backgroundColor = randomColor;
+            
+            // 根据背景色的亮度来设置文字颜色
+            tag.style.color = isLightColor(randomColor) ? '#000000' : '#ffffff';
+        });
+    });
+
+
+</script>
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; LvKouKou Blog 2025
+                    <br>
+                    <!--  删掉了作者Hux Blog
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                    -->
+                    <!-- 不蒜子 -->
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                    您是Blog的第<span id="busuanzi_value_site_uv"></span>个小伙伴 </br>
+                     <span id="busuanzi_container_page_pv">
+                        本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    async('/js/jquery.tagcloud.js', function () {
+        $.fn.tagcloud.defaults = {
+            //size: {start: 1, end: 1, unit: 'em'},
+            color: { start: '#bbbbee', end: '#2f93b4' },
+        };
+        $('#tag_cloud a').tagcloud();
+    })
+</script>
+<script src='/js/archive.js '></script>
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<!-- 自己添加的 -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TNVD6PR5TQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNVD6PR5TQ');
+</script>
+<!-- 自己添加的 -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        // a = P.find('h1,h2,h3,h4,h5,h6');
+        a = P.find('h1,h2,h3,h4');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<!--鼠标点击爱心动画-->
+<script type="text/javascript" src="/js/love.js"></script>
+</body>
+
+</html>

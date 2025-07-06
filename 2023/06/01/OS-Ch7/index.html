@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @LvKouKou 的个人博客，与你一起发现更大的世界 | 要做一个想环游世界的程序员">
+    <meta name="keywords" content="LvKouKou, jaredddddd, @jaredddddd, LvKouKou Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <link
+  rel="stylesheet"
+  href="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+/>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  defer="defer"
+></script>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  defer="defer"
+  onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
+></script>
+    <script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/mathtex-script-type.min.js"
+  defer="defer"
+></script>
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="Chapter7 Deadlock - LvKouKou的博客 | LV Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="死锁
+
+">
+    
+    <meta property="article:published_time" content=" 2023-06-01T00:00:00Z">
+    
+    
+    <meta property="article:author" content="LvKouKou">
+    
+    
+    <meta property="article:tag" content="OS">
+    
+    <meta property="article:tag" content="NOTES">
+    
+    
+    <meta property="og:image" content="https://jaredddddd.github.io/img/LVKOUKOU.jpg">
+    <meta property="og:url" content="https://jaredddddd.github.io/2023/06/01/OS-Ch7/">
+    <meta property="og:site_name" content="LvKouKou的博客 | LV Blog">
+
+    <title>Chapter7 Deadlock - LvKouKou的博客 | LV Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jaredddddd.github.io/2023/06/01/OS-Ch7/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* 打字机效果的样式 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #666 }
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid #666;
+            white-space: nowrap;
+            word-wrap: break-word;
+            letter-spacing: .1em;
+            width: fit-content;
+            margin: 0 auto;
+            animation: 
+                typing 2s steps(40, end), /* 打字机效果, 3s 完成打字, 每步40个字符 */
+                blink-caret .75s step-end infinite; /* 光标闪烁效果, 0.75s 完成一次闪烁  */
+        }
+
+        /* 添加包装容器样式 */
+        .typing-wrapper {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%; /* 确保不会超出父容器 */
+        }
+
+        /* 添加响应式样式 */
+        @media (max-width: 768px) {
+        .typing-effect {
+            font-size: 16px; /* 在手机上可以适当调整字体大小 */
+            letter-spacing: normal; /* 在手机上减小字间距 */
+        }
+    }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptions = document.getElementsByClassName('subheading');
+            if (descriptions.length > 0) {
+                const description = descriptions[0];
+                const text = description.textContent;
+                description.innerHTML = `<span class="typing-wrapper"><span class="typing-effect">${text}</span></span>`;
+            }
+        });
+    </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">LvKouKou Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/resume-home/">Resume</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/roadtrip/">On The Road</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="Searching...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!--//添加评论系统gitalk-->
+<link rel="stylesheet" href="../../../../css/gitalk.css">
+<script src="../../../../js/gitalk.min.js"></script>
+
+<!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=OS" title="OS">OS</a>
+                        
+                        <a class="tag" href="/archive/?tag=NOTES" title="NOTES">NOTES</a>
+                        
+                    </div>
+                    <h1>Chapter7 Deadlock</h1>
+                    
+                    <h2 class="subheading">第七章 死锁！</h2>
+                    <span class="meta">Posted by LvKouKou on June 1, 2023</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="死锁">死锁</h1>
+
+<p>死锁是同步时遇到的问题。</p>
+
+<p>死锁的定义：互为条件的进程发生的无限等待状态。</p>
+
+<p>Chapter Objectives:To develop a description of deadlocks, which prevent sets of concurrent processes from completing their tasksTo present a number of different methods for preventing or avoiding deadlocks in a computer system</p>
+
+<p>本章目标：了解死锁的描述，死锁阻止并发进程集完成其任务提出多种不同的方法来防止或避免计算机系统中的死锁</p>
+
+<h2 id="bridge-crossing-example">Bridge Crossing Example</h2>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch7.assets/image-20230601215756089.png" alt="image-20230601215756089" /></p>
+
+<h1 id="1-system-model-系统模型">1. System Model 系统模型</h1>
+
+<ul>
+  <li>
+    <p>System consists of resources</p>
+  </li>
+  <li>Resource types R1, R2, . . ., Rm
+    <ul>
+      <li>CPU cycles, memory space, I/O devices</li>
+    </ul>
+  </li>
+  <li>Each resource type Ri has Wi instances.</li>
+  <li>Each process utilizes a resource as follows:
+    <ul>
+      <li>request</li>
+      <li>use</li>
+      <li>release</li>
+    </ul>
+  </li>
+  <li>系统由资源组成</li>
+  <li>资源类型 R1， R2， . . Rm
+    <ul>
+      <li>CPU 周期、内存空间、I/O 设备</li>
+    </ul>
+  </li>
+  <li>每种资源类型 Ri 都有 Wi 实例。</li>
+  <li>每个进程利用的资源如下：
+    <ul>
+      <li>request</li>
+      <li>use</li>
+      <li>release</li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="2-deadlock-characterization-死锁特征">2. Deadlock Characterization 死锁特征</h1>
+
+<h2 id="21-必要条件">2.1 必要条件</h2>
+
+<p>==死锁发生的四个必要条件（必须背下来）==</p>
+
+<p>Deadlock can arise if four conditions hold simultaneously.</p>
+
+<ul>
+  <li><strong>Mutual exclusion</strong>: only one process at a time can use a resource</li>
+  <li><strong>Hold and wait:</strong> a process holding at least one resource is waiting toacquire additional resources held by other processes</li>
+  <li><strong>No preemption</strong>: a resource can be released only voluntarily by theprocess holding it, after that process has completed its task</li>
+  <li><strong>Circular wait:</strong> there exists a set {P0, P1, …, Pn} of waiting processessuch that P0 is waiting for a resource that is held by P1, P1 is waitingfor a resource that is held by P2, …, Pn–1 is waiting for a resource thatis held by Pn, and Pn is waiting for a resource that is held by P0.</li>
+</ul>
+
+<p>如果四个条件同时成立，则可能会出现死锁。</p>
+
+<ul>
+  <li>互斥：一次只能有一个进程使用资源</li>
+  <li>占有并等待：持有至少一个资源的进程正在等待获取其他进程持有的其他资源</li>
+  <li>非抢占：资源只能由持有资源的进程在完成其任务后自愿释放</li>
+  <li>循环等待：存在一组 {P0， P1， …， Pn} 等待进程，使得 P0 正在等待由 P1 持有的资源，P1 正在等待由 P2 持有的资源，…，Pn–1 正在等待由 Pn 持有的资源，而 Pn 正在等待由 P0 持有的资源。</li>
+</ul>
+
+<h2 id="22-资源分配图-resource-allocation-graph">2.2 资源分配图 Resource-Allocation Graph</h2>
+
+<ul>
+  <li>
+    <p>A set of vertices V and a set of edges E</p>
+
+    <ul>
+      <li>V is partitioned into two types:
+        <ul>
+          <li>P = {P1, P2, …, Pn}, the set consisting of all the processes in the system</li>
+          <li>R = {R1, R2, …, Rm}, the set consisting of all resource types in the system</li>
+        </ul>
+      </li>
+    </ul>
+
+    <p>request edge – directed edge Pi → Rj</p>
+
+    <p>assignment edge – directed edge Rj → Pi</p>
+  </li>
+</ul>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch7.assets/image-20230601220634885.png" alt="image-20230601220634885" style="zoom:50%;" /> <img src="/img/in-post/OperatingSystemNotes/ch7.assets/image-20230601220710596.png" alt="image-20230601220710596" style="zoom:50%;" /></p>
+
+<p>一组顶点 V 和一组边 E</p>
+
+<ul>
+  <li>V 分为两种类型：
+    <ul>
+      <li>P = {P1， P2， …， Pn}，由系统中所有进程组成的集合</li>
+      <li>R = {R1， R2， …， Rm}，由系统中所有资源类型组成的集合</li>
+    </ul>
+  </li>
+</ul>
+
+<p>请求边 – 有向边 Pi → Rj</p>
+
+<p>分配边 – 有向边 Rj → Pi</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch7.assets/image-20230601220738978.png" alt="image-20230601220738978" /></p>
+
+<p>图一：无死锁，因为P3完成后可以释放R3；图二：有死锁，P3占有R3等待R2；图三：无死锁，P2可以完成后释放R1</p>
+
+<h2 id="23--basic-facts">2.3 ⭐ Basic Facts</h2>
+
+<ul>
+  <li>If graph contains no cycles -&gt; no deadlock</li>
+  <li>If graph contains a cycle
+    <ul>
+      <li>if only one instance per resource type, then deadlock</li>
+      <li>if several instances per resource type, possibility of deadlock</li>
+    </ul>
+  </li>
+  <li>如果资源分配图不包含环 -&gt;则没有死锁</li>
+  <li>如果资源分配图包含环-&gt;
+    <ul>
+      <li>如果每种资源类型只有一个实例，则会死锁</li>
+      <li>如果每种资源类型有多个实例，则==<strong>可能</strong>==会死锁</li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="3-死锁处理方法-methods-for-handling-deadlocks">3. 死锁处理方法 Methods for Handling Deadlocks</h1>
+
+<ol>
+  <li>Ensure that the system will never enter a deadlock state:
+    <ol>
+      <li>Deadlock prevention</li>
+      <li>Deadlock avoidence</li>
+    </ol>
+  </li>
+  <li>Allow the system to enter a deadlock state and then recover</li>
+  <li>
+    <p>Ignore the problem and pretend that deadlocks never occur in the system; used by most operating systems, including UNIX</p>
+  </li>
+  <li>确保系统永远不会进入死锁状态：
+    <ol>
+      <li>防止死锁</li>
+      <li>避免死锁</li>
+    </ol>
+  </li>
+  <li>允许系统进入死锁状态，然后恢复</li>
+  <li>忽略问题，假装系统中从未发生过死锁;被大多数操作系统使用，包括 UNIX</li>
+</ol>
+
+<h1 id="4-死锁预防-deadlock-prevention">4. 死锁预防 Deadlock Prevention</h1>
+
+<p>想要预防死锁，破坏四个必要条件中一个即可</p>
+
+<p>Restrain the ways request can be made</p>
+
+<ul>
+  <li>Mutual Exclusion – not required for sharable resources (e.g., readonly files); must hold for <strong>non-sharable</strong> resources</li>
+  <li>Hold and Wait – must guarantee that <strong>whenever a process requests a resource, it does not hold any other resources</strong>
+    <ul>
+      <li>Require process to request and be allocated all its resources before it begins execution, or allow process to request resources only when the process has none allocated to it.</li>
+      <li>Low resource utilization; starvation possible</li>
+    </ul>
+  </li>
+  <li>No Preemption
+    <ul>
+      <li>If a process that is holding some resources requests another resource that cannot be immediately allocated to it, then all resources currently being held are released</li>
+      <li>Preempted resources are added to the list of resources for which the process is waiting</li>
+      <li>Process will be restarted only when it can regain its old resources, as well as the new ones that it is requesting</li>
+    </ul>
+  </li>
+  <li>Circular Wait – impose a total ordering of all resource types, and require that each process requests resources in an increasing order of enumeration</li>
+</ul>
+
+<p>限制提出请求的方式</p>
+
+<ul>
+  <li>互斥——（非必要不互斥）共享资源不需要（例如，只读文件）；必须持有非共享资源（但是有一些资源天生就是互斥的，无法解决，所以这不是通用的方法）</li>
+  <li>占有并等待——必须保证每当进程请求资源时，它不会持有任何其他资源
+    <ul>
+      <li>要求进程在开始执行之前请求并分配所有资源，或者仅当进程没有分配给它时才允许进程请求资源。</li>
+      <li>资源利用率低；可能饿死</li>
+    </ul>
+  </li>
+  <li>非抢占
+    <ul>
+      <li>如果持有某些资源的进程请求另一个不能立即分配给它的资源，则释放当前持有的所有资源</li>
+      <li>被抢占的资源被添加到进程正在等待的资源列表中</li>
+      <li>只有当进程可以重新获得其旧资源以及它正在请求的新资源时，它才会重新启动</li>
+    </ul>
+  </li>
+  <li>循环等待 – 强加所有资源类型的总排序，要求每个进程按照枚举递增的顺序请求资源（如规定优先级高的先执行）</li>
+</ul>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch7.assets/image-20230601232122808.png" alt="image-20230601232122808" style="zoom:50%;" /><img src="/img/in-post/OperatingSystemNotes/ch7.assets/image-20230601232134010.png" alt="image-20230601232134010" style="zoom:50%;" /></p>
+
+<h1 id="5-死锁避免-deadlock-avoidance">5. 死锁避免 Deadlock Avoidance</h1>
+
+<p>我们在上一节中发现死锁预防比较困难，所以考虑死锁避免。</p>
+
+<p>Requires that the system has some additional a priori information available</p>
+
+<ul>
+  <li>Simplest and most useful model requires that each process <strong>declare the maximum number of resources</strong> of each type that it may need</li>
+  <li>The deadlock-avoidance algorithm dynamically <strong>examines</strong> the resource-allocation state to ensure that there can never be a circular-wait condition</li>
+  <li><strong>Resource-allocation</strong> state is defined by the number of available and allocated resources, and the maximum demands of the processes</li>
+</ul>
+
+<p>要求系统具有一些额外的先验可用信息</p>
+
+<ul>
+  <li>最简单和最有用的模型要求每个进程声明它可能需要的每种类型的最大资源数</li>
+  <li>避免死锁算法动态检查资源分配状态，以确保永远不会有循环等待条件</li>
+  <li>资源分配状态由可用和已分配资源的数量以及进程的最大需求定义</li>
+</ul>
+
+<h2 id="51-安全状态">5.1 安全状态</h2>
+
+<p>When a process requests an available resource, system must decide if immediate allocation leaves the system in a safe state</p>
+
+<p>System is in safe state if there exists a sequence &lt;P1, P2, …, Pn&gt; of ALL the processes in the systems such that for each Pi, the resources that Pi can still request can be satisfied by currently available resources + resources held by all the Pj, with j &lt; I</p>
+
+<p>That is:</p>
+
+<ul>
+  <li>If P i resource needs are not immediately available, then Pi can wait until all P j have finished</li>
+  <li>When P j is finished, Pi can obtain needed resources, execute, return allocated resources, and terminate</li>
+  <li>When Pi terminates, Pi +1 can obtain its needed resources, and so on</li>
+</ul>
+
+<hr />
+
+<p>如果系统能按一定顺序为每个进程分配资源 (不超过它的最大需求)，仍然避免死锁，那么系统的状态就是安全的(safe)。更为正式地说，只有存在一个安全序列(safesequence)，系统才处于安全状态。</p>
+
+<p>进程序列&lt;P1，P2，…，Pn&gt;在当前分配状态下为安全序列是指:对于每个 Pi，Pi仍然可以申请的资源数小于当前可用资源加上所有进程Pj(其中j&lt;i)所占有的资源。在这种情况下，进程 Pi需要的资源即使不能立即可用，那么Pi可以等待直到所有 Pj释放资源。当它们完成时，Pi可得到需要的所有资源，完成给定任务，返回分配的资源，最后终止。当Pi终止时，Pi+1 可得到它需要的资源，如此进行。如果没有这样的序列存在，那么系统状态就是非安全的(unsafe)。</p>
+
+<hr />
+
+<p>当进程请求可用资源时，系统必须确定立即分配是否使系统处于安全状态</p>
+
+<p>如果系统中存在<strong>所有</strong>进程的序列&lt;P1，P2，…，Pn&gt;，则系统处于安全状态，对于每个Pi，Pi仍然可以请求的资源可以通过所有Pj持有的当前可用资源来满足，j &lt; I</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch7.assets/image-20230601233119469.png" alt="image-20230601233119469" style="zoom:50%;" /></p>
+
+<p>那是：</p>
+
+<ul>
+  <li>如果 P i 资源需求不能立即可用，则 Pi 可以等到所有 P j 都完成</li>
+  <li>当 P j 完成后，Pi 可以获取所需的资源，执行，返回分配的资源，并终止</li>
+  <li>当 Pi 终止时，Pi 1 可以获得所需的资源，依此类推</li>
+</ul>
+
+<hr />
+
+<p>Basic Facts  :</p>
+
+<ul>
+  <li>If a system is in safe state -&gt; no deadlocks</li>
+  <li>If a system is in unsafe state -&gt; possibility of deadlock</li>
+  <li>Avoidance -&gt; ensure that a system will never enter an unsafe state</li>
+</ul>
+
+<p>基本事实 ：</p>
+
+<ul>
+  <li>如果系统处于安全状态 -&gt; 无死锁</li>
+  <li>如果系统处于不安全状态 - &gt;有死锁的可能性</li>
+  <li>如何避免 - &gt;确保系统永远不会进入不安全状态</li>
+</ul>
+
+<hr />
+
+<p>Avoidance Algorithms  ：（确保系统始终处于安全状态）</p>
+
+<p><strong>Single</strong> instance of a resource type （只有单个实例）</p>
+
+<ul>
+  <li>Use a resource-allocation graph</li>
+</ul>
+
+<p><strong>Multiple</strong> instances of a resource type （有多个实例）</p>
+
+<ul>
+  <li>Use the banker’s algorithm</li>
+</ul>
+
+<p>回避算法▁:(确保系统始终处于安全状态)</p>
+
+<p>资源类型的单个实例</p>
+
+<ul>
+  <li>使用资源分配图</li>
+</ul>
+
+<p>资源类型的多个实例</p>
+
+<ul>
+  <li>使用银行家算法</li>
+</ul>
+
+<h2 id="52-资源分配图算法-resource-allocation-graph-scheme">5.2 资源分配图算法 Resource-Allocation Graph Scheme</h2>
+
+<p>Claim edge Pi → Rj indicated that process Pj may request resource Rj ; represented by a dashed line</p>
+
+<p>Claim edge converts to request edge when a process requests a resource</p>
+
+<p>Request edge converted to an assignment edge when the resource is allocated to the process</p>
+
+<p>When a resource is released by a process, assignment edge reconverts to a claim edge</p>
+
+<p>Resources must be claimed a priori in the system</p>
+
+<p>声明边缘 Pi → Rj 表示进程 Pj 可以请求资源 Rj ;用虚线表示</p>
+
+<p>当进程请求资源时，声明边缘转换为请求边缘</p>
+
+<p>将资源分配给流程时，请求边转换为工作分配边</p>
+
+<p>当资源由流程释放时，分配边缘将重新转换为声明边缘</p>
+
+<p>必须在系统中先验地声明资源</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch7.assets/image-20230601234013279.png" alt="image-20230601234013279" style="zoom:50%;" /><img src="/img/in-post/OperatingSystemNotes/ch7.assets/image-20230601234027535.png" alt="image-20230601234027535" style="zoom:50%;" /></p>
+
+<p>Suppose that process Pi requests a resource Rj</p>
+
+<p>The request can be granted only if converting the request edge to an assignment edge does not result in the formation of a cycle in the resource allocation graph</p>
+
+<p>假设进程 Pi 请求资源 Rj</p>
+
+<p>仅当将请求边转换为分配边<strong>不会</strong>导致在资源分配图中形成环时，才能授予请求（即先给一个进程分配，看是否安全，如果不安全则返回上一个状态，然后把资源分配给下一个需要的进程）</p>
+
+<h2 id="53-银行家算法-bankers-algorithm">5.3 银行家算法 Banker’s Algorithm</h2>
+
+<p>Multiple instances</p>
+
+<p>Each process must a priori claim maximum use</p>
+
+<p>When a process requests a resource it may have to wait</p>
+
+<p>When a process gets all its resources it must return them in a finite amount of time</p>
+
+<p>多个实例</p>
+
+<p>每个过程都必须先验地声称最大限度地使用</p>
+
+<p>当进程请求资源时，可能需要等待</p>
+
+<p>当一个进程获得所有资源时，它必须在有限的时间内返回它们。</p>
+
+<p>先定义一些数据结构：</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch7.assets/image-20230601235410849.png" alt="image-20230601235410849" style="zoom:50%;" /><img src="/img/in-post/OperatingSystemNotes/ch7.assets/image-20230601235427257.png" alt="image-20230601235427257" style="zoom:50%;" /></p>
+
+<p>Resource-Request Algorithm for Process Pi ：</p>
+
+<p>Requesti = request vector for process Pi. If Requesti [j] = k then process Pi wants k instances of resource type Rj</p>
+
+<ol>
+  <li>
+    <p>If Requesti &lt;= Needi go to step 2. Otherwise, raise error condition, sinceprocess has exceeded its maximum claim</p>
+  </li>
+  <li>
+    <p>If Requesti &lt;= Available, go to step 3. Otherwise Pi must wait, sinceresources are not available(没有可用资源)</p>
+  </li>
+  <li>
+    <p>Pretend to allocate requested resources to Pi by modifying the state asfollows:</p>
+
+    <ul>
+      <li>Available = Available – Requesti; （满足需求）</li>
+      <li>Allocationi = Allocationi + Requesti;（分配资源）</li>
+      <li>Needi = Needi – Requesti;（进程剩余所需）</li>
+    </ul>
+
+    <p>If safe -&gt; the resources are allocated to Pi</p>
+
+    <p>If unsafe -&gt; Pi must wait, and the old resource-allocation state is restored</p>
+  </li>
+</ol>
+
+<p>进程 Pi 的资源请求算法：</p>
+
+<p>请求 = 进程 Pi 的请求向量。如果 Requesti [j] = k，则进程 Pi 需要 k 个资源类型 Rj 的实例</p>
+
+<ol>
+  <li>如果请求 &lt;= 需要，请转到步骤 2。否则，引发错误条件，因为进程已超过其最大索赔</li>
+  <li>如果请求 &lt;= 可用，请转到步骤 3。否则 Pi 必须等待，因为资源不可用（没有可用资源）</li>
+  <li>假设通过修改状态将请求的资源分配给 Pi，如下所示：
+    <ul>
+      <li>可用 = 可用 – 请求;（满足需求）</li>
+      <li>Allocationi = Allocationi Requesti;（分配资源）</li>
+      <li>Needi = Needi – Requesti;（进程剩余所需）
+如果安全 -&gt;则资源分配给 Pi
+如果不安全 -&gt; Pi 必须等待，并且恢复旧的资源分配状态</li>
+    </ul>
+  </li>
+</ol>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch7.assets/image-20230601235756171.png" alt="image-20230601235756171" style="zoom:50%;" /><img src="/img/in-post/OperatingSystemNotes/ch7.assets/image-20230601235808340.png" alt="image-20230601235808340" style="zoom:50%;" /></p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch7.assets/image-20230601235828605.png" alt="image-20230601235828605" style="zoom:50%;" /></p>
+
+<h1 id="6-死锁检测-deadlock-detection">6. 死锁检测 Deadlock Detection</h1>
+
+<p>Allow system to enter deadlock state</p>
+
+<p>Detection algorithm</p>
+
+<p>Recovery scheme</p>
+
+<p>允许系统进入死锁状态</p>
+
+<p>检测算法</p>
+
+<p>恢复方案</p>
+
+<h2 id="61-每种资源类型只有单个实例-single-instance-of-each-resource-type">6.1 每种资源类型只有单个实例 Single Instance of Each Resource Type</h2>
+
+<p>Maintain wait-for graph</p>
+
+<ul>
+  <li>Nodes are processes</li>
+  <li>Pi → P j if Pi is waiting for Pj</li>
+</ul>
+
+<p>Periodically invoke an algorithm that searches for a cycle in the graph. If there is a cycle, there exists a deadlock</p>
+
+<p>An algorithm to detect a cycle in a graph requires an order of n2 operations, where n is the number of vertices in the graph</p>
+
+<p>维护等待图</p>
+
+<ul>
+  <li>节点是进程</li>
+  <li>Pi → P j 如果 Pi 正在等待 Pj</li>
+</ul>
+
+<p>定期调用在图形中搜索周期的算法。如果存在循环，则存在死锁</p>
+
+<p>检测图中周期的算法需要 n2 次运算的顺序，其中 n 是图中的顶点数</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch7.assets/image-20230602000316928.png" alt="image-20230602000316928" /></p>
+
+<h2 id="62-每种资源类型只有多个实例-several-instances-of-a-resource-type">6.2 每种资源类型只有多个实例 Several Instances of a Resource Type</h2>
+
+<p>Available: A vector of length m indicates the number of available resources of each type</p>
+
+<p>Allocation: An n x m matrix defines the number of resources of each type currently allocated to each process</p>
+
+<p>Request: An n x m matrix indicates the current request of each process. If Request [i][j] = k, then process Pi is requesting k more instances of resource type Rj.</p>
+
+<p>Available：长度为 m 的向量表示每种类型的可用资源数</p>
+
+<p>Allocation：n x m 矩阵定义当前分配给每个进程的每种类型的资源数量</p>
+
+<p>Request：n x m 矩阵表示每个进程的当前请求。如果请求 [i][j] = k，则进程 Pi 正在请求更多资源类型 Rj 的实例。</p>
+
+<h2 id="63-检测算法-detection-algorithm">6.3 检测算法 Detection Algorithm</h2>
+
+<ol>
+  <li>
+    <p>Let Work and Finish be vectors of length m and n, respectivelyInitialize:</p>
+
+    <p>(a) Work = Available</p>
+
+    <p>(b) For i = 1,2, …, n, if Allocationi != 0, thenFinish[i] = false; otherwise, Finish[i] = true （是否完成）</p>
+  </li>
+  <li>
+    <p>Find an index i such that both:(a) Finish[i] == false(b) Requesti  WorkIf no such i exists, go to step 4</p>
+  </li>
+  <li>Work = Work + AllocationiFinish[i] = truego to step 2</li>
+  <li>If Finish[i] == false, for some i, 1 &lt;= i &lt;= n, then the system is indeadlock state. Moreover, if Finish[i] == false, then Pi isdeadlocked</li>
+</ol>
+
+<p>Algorithm requires an order of O(m x n2) operations to detect whether the system is in deadlocked state</p>
+
+<ol>
+  <li>让 Work 和 Finish 分别是长度为 m 和 n 的向量初始化：
+（a） 工作 = 可用
+（b） 对于 i = 1，2， …， n，如果 Allocationi ！= 0，则 Finish[i] = false;否则，完成 [i] = 真 （是否完成）</li>
+  <li>
+    <p>找到一个索引 i，以便两者：（a） 完成[i] == false（b） 请求  工作如果不存在这样的 i，请转到步骤 4</p>
+  </li>
+  <li>工时 = 工时分配iFinish[i] = true转到步骤 2</li>
+  <li>如果 Finish[i] == false，对于某些 i，1 &lt;= i &lt;= n，则系统处于死锁状态。此外，如果 Finish[i] == 假，则 Pi 死锁</li>
+</ol>
+
+<p>算法需要一阶 O（m x n2） 操作来检测系统是否处于死锁状态</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch7.assets/image-20230602000744259.png" alt="image-20230602000744259" style="zoom:50%;" /><img src="/img/in-post/OperatingSystemNotes/ch7.assets/image-20230602000758079.png" alt="image-20230602000758079" style="zoom:50%;" /></p>
+
+<p>Detection-Algorithm Usage :</p>
+
+<p>When, and how often, to invoke depends on:</p>
+
+<ul>
+  <li>How often a deadlock is likely to occur?</li>
+  <li>How many processes will need to be rolled back?
+    <ul>
+      <li>one for each disjoint cycle</li>
+    </ul>
+  </li>
+</ul>
+
+<p>If detection algorithm is invoked arbitrarily, there may be many cycles in the resource graph and so we would not be able to tell which of the many deadlocked processes “ caused ” the deadlock.</p>
+
+<h1 id="7-死锁恢复">7. 死锁恢复</h1>
+
+<h2 id="71-进程终止-recovery-from-deadlock-process-termination">7.1 进程终止 Recovery from Deadlock: Process Termination</h2>
+
+<p>Abort all deadlocked processes</p>
+
+<p>Abort one process at a time until the deadlock cycle is eliminated</p>
+
+<p>In which order should we choose to abort?</p>
+
+<ol>
+  <li>Priority of the process</li>
+  <li>How long process has computed, and how much longer to completion</li>
+  <li>Resources the process has used</li>
+  <li>Resources process needs to complete</li>
+  <li>How many processes will need to be terminated</li>
+  <li>Is process interactive or batch?</li>
+</ol>
+
+<p>中止所有死锁的进程</p>
+
+<p>一次中止一个进程，直到消除死锁循环，此时引出问题：我们应该选择以什么顺序中止？</p>
+
+<ol>
+  <li>流程的优先级</li>
+  <li>计算了多长时间的过程，以及完成的时间</li>
+  <li>流程使用的资源</li>
+  <li>资源流程需要完成</li>
+  <li>需要终止多少个进程</li>
+  <li>流程是交互式的还是批处理的？</li>
+</ol>
+
+<h2 id="72-资源抢占-recovery-from-deadlock-resource-preemption">7.2 资源抢占 Recovery from Deadlock: Resource Preemption</h2>
+
+<p><strong>Selecting a victim</strong> – minimize cost</p>
+
+<p><strong>Rollback</strong> – return to some safe state, restart process for that state</p>
+
+<p><strong>Starvation</strong> – same process may always be picked as victim, include number of rollback in cost factor</p>
+
+<p>选择受害者 – 成本最小化</p>
+
+<p>回滚 – 返回到某个安全状态，重新启动该状态的过程</p>
+
+<p>饥饿 – 可能总是选择相同的过程作为受害者，包括成本因素中的回滚次数</p>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2023/04/30/OS-Ch6/" data-toggle="tooltip" data-placement="top" title="Chapter6  Process Synchronization  ">
+                        Previous<br>
+                        <span>Chapter6  Process Synchronization  </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2023/06/04/OS-Ch8/" data-toggle="tooltip" data-placement="top" title="Chapter8 Memory Management">
+                        Next<br>
+                        <span>Chapter8 Memory Management</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+
+                <!--   gitalk       -->
+                <div class="comment">
+                <div id="gitalk-container"></div>
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+                <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+                <script>
+                var gitalk = new Gitalk({
+                    id: location.pathname,
+                    clientID: '0db4b4c6d83c061f6b30',
+                    clientSecret: 'e1651c09f1a49b2b4a544cd584d3e8a55454a48a',
+                    repo: 'BlogComment',
+                    owner: 'jaredddddd',
+                    admin: ['jaredddddd'], 
+                    labels: ['Gitalk'],
+                })
+                gitalk.render('gitalk-container')
+                </script> 
+                </div>
+
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0036" 
+                    href="/archive/?tag=Computer-Organization"
+                    title="Computer-Organization"
+                    rel="21">Computer-Organization</a>
+        
+                <a data-sort="0018" 
+                    href="/archive/?tag=NOTES"
+                    title="NOTES"
+                    rel="39">NOTES</a>
+        
+                <a data-sort="0041" 
+                    href="/archive/?tag=Project"
+                    title="Project"
+                    rel="16">Project</a>
+        
+                <a data-sort="0042" 
+                    href="/archive/?tag=AI"
+                    title="AI"
+                    rel="15">AI</a>
+        
+                <a data-sort="0048" 
+                    href="/archive/?tag=OS"
+                    title="OS"
+                    rel="9">OS</a>
+        
+                <a data-sort="0052" 
+                    href="/archive/?tag=ML"
+                    title="ML"
+                    rel="5">ML</a>
+        
+                <a data-sort="0053" 
+                    href="/archive/?tag=PatternRecognition"
+                    title="PatternRecognition"
+                    rel="4">PatternRecognition</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Blog"
+                    title="Blog"
+                    rel="3">Blog</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Distributed-System"
+                    title="Distributed-System"
+                    rel="3">Distributed-System</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=ANN"
+                    title="ANN"
+                    rel="2">ANN</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CPU%E8%AE%BE%E8%AE%A1"
+                    title="CPU设计"
+                    rel="2">CPU设计</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CompilationPrinciple"
+                    title="CompilationPrinciple"
+                    rel="2">CompilationPrinciple</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     TeX: {
+       equationNumbers: {
+         autoNumber: "AMS"
+       }
+     },
+     SVG: {
+       scale: 90
+     },
+     tex2jax: {
+       inlineMath: [ ['$','$'] ],
+       displayMath: [ ['$$','$$'] ],
+       processEscapes: true,
+     }
+   });
+ </script>
+ <script type="text/javascript"
+         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+
+.post-container {
+    background: #fcfbfb; /* 背景颜色 */
+    border-radius: 25px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    padding-top: 40px; /* 特别增加顶部内边距 */
+    margin-top: 20px; /* 添加顶部外边距 */
+    /* margin-left: 40px; */
+    /* width: 900px; */
+}
+
+
+/* 在宽屏幕设备上应用特定样式 */
+@media (min-width: 1024px) {
+  .post-container {
+    margin-left: 40px; /* 向左扩展 */
+    width: 900px; /* 设置宽度 */
+  }
+  .side-catalog{
+    width: 250px;
+  }
+}
+
+.post-container:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* 当鼠标悬停时增加阴影效果 */
+}
+
+.side-catalog {
+    background: #ffffff; /* 背景颜色 */
+    border-radius: 15px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    margin-left: 10pt;
+    /* width: 200px; */
+
+}
+
+
+
+.catalog-container {
+    /* ... 其他样式 ... */
+    display: none; /* 默认不显示catalog */
+    transition: all 0.3s ease; /* 过渡效果 */
+    margin-top: 20px; /* 添加顶部外边距 */
+}
+
+</style>
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; LvKouKou Blog 2025
+                    <br>
+                    <!--  删掉了作者Hux Blog
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                    -->
+                    <!-- 不蒜子 -->
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                    您是Blog的第<span id="busuanzi_value_site_uv"></span>个小伙伴 </br>
+                     <span id="busuanzi_container_page_pv">
+                        本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<!-- 自己添加的 -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TNVD6PR5TQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNVD6PR5TQ');
+</script>
+<!-- 自己添加的 -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        // a = P.find('h1,h2,h3,h4,h5,h6');
+        a = P.find('h1,h2,h3,h4');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<!--鼠标点击爱心动画-->
+<script type="text/javascript" src="/js/love.js"></script>
+</body>
+
+</html>

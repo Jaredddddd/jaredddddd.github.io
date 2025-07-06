@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @LvKouKou 的个人博客，与你一起发现更大的世界 | 要做一个想环游世界的程序员">
+    <meta name="keywords" content="LvKouKou, jaredddddd, @jaredddddd, LvKouKou Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <link
+  rel="stylesheet"
+  href="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+/>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  defer="defer"
+></script>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  defer="defer"
+  onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
+></script>
+    <script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/mathtex-script-type.min.js"
+  defer="defer"
+></script>
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="Chapter6  Process Synchronization   - LvKouKou的博客 | LV Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="Process Synchronization
+
+">
+    
+    <meta property="article:published_time" content=" 2023-04-30T00:00:00Z">
+    
+    
+    <meta property="article:author" content="LvKouKou">
+    
+    
+    <meta property="article:tag" content="OS">
+    
+    <meta property="article:tag" content="NOTES">
+    
+    
+    <meta property="og:image" content="https://jaredddddd.github.io/img/LVKOUKOU.jpg">
+    <meta property="og:url" content="https://jaredddddd.github.io/2023/04/30/OS-Ch6/">
+    <meta property="og:site_name" content="LvKouKou的博客 | LV Blog">
+
+    <title>Chapter6  Process Synchronization   - LvKouKou的博客 | LV Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jaredddddd.github.io/2023/04/30/OS-Ch6/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* 打字机效果的样式 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #666 }
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid #666;
+            white-space: nowrap;
+            word-wrap: break-word;
+            letter-spacing: .1em;
+            width: fit-content;
+            margin: 0 auto;
+            animation: 
+                typing 2s steps(40, end), /* 打字机效果, 3s 完成打字, 每步40个字符 */
+                blink-caret .75s step-end infinite; /* 光标闪烁效果, 0.75s 完成一次闪烁  */
+        }
+
+        /* 添加包装容器样式 */
+        .typing-wrapper {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%; /* 确保不会超出父容器 */
+        }
+
+        /* 添加响应式样式 */
+        @media (max-width: 768px) {
+        .typing-effect {
+            font-size: 16px; /* 在手机上可以适当调整字体大小 */
+            letter-spacing: normal; /* 在手机上减小字间距 */
+        }
+    }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptions = document.getElementsByClassName('subheading');
+            if (descriptions.length > 0) {
+                const description = descriptions[0];
+                const text = description.textContent;
+                description.innerHTML = `<span class="typing-wrapper"><span class="typing-effect">${text}</span></span>`;
+            }
+        });
+    </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">LvKouKou Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/resume-home/">Resume</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/roadtrip/">On The Road</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="Searching...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!--//添加评论系统gitalk-->
+<link rel="stylesheet" href="../../../../css/gitalk.css">
+<script src="../../../../js/gitalk.min.js"></script>
+
+<!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=OS" title="OS">OS</a>
+                        
+                        <a class="tag" href="/archive/?tag=NOTES" title="NOTES">NOTES</a>
+                        
+                    </div>
+                    <h1>Chapter6  Process Synchronization  </h1>
+                    
+                    <h2 class="subheading">第六章 进程同步！</h2>
+                    <span class="meta">Posted by LvKouKou on April 30, 2023</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="process-synchronization">Process Synchronization</h1>
+
+<p>协作进程能与系统内其他执行的进程互相影响。协作进程可以通过两种方式来共享数据，第一种方法是直接共享逻辑地址空间（即代码和数据）（共享内存），第二种方法是通过文件或消息来共享数据（消息传递）。</p>
+
+<p>第一种方法可以通过线程来实现，本章通过讨论多种机制，确保共享同一逻辑地址空间的协作进程的有序进行，从而维护数据的一致性。</p>
+
+<h1 id="objectives">Objectives</h1>
+
+<ul>
+  <li>To present the concept of process synchronization.</li>
+  <li>To introduce the critical-section problem, whose solutions can be used to ensure the consistency of shared data</li>
+  <li>To present both software and hardware solutions of the critical-section problem</li>
+  <li>To examine several classical process-synchronization problems</li>
+  <li>
+    <p>To explore several tools that are used to solve process synchronization problems</p>
+  </li>
+  <li>提出进程同步的概念。</li>
+  <li>引入关键部分问题，其解决方案可用于确保共享数据的一致性</li>
+  <li>提出关键部分问题的软件和硬件解决方案</li>
+  <li>检查几个经典的进程同步问题</li>
+  <li>探索用于解决进程同步问题的几种工具</li>
+</ul>
+
+<h1 id="1-背景-background">1. 背景 Background</h1>
+
+<ul>
+  <li>Processes can execute concurrently
+    <ul>
+      <li>May be interrupted at any time, partially completing execution</li>
+    </ul>
+  </li>
+  <li>Concurrent access to shared data may result in data inconsistency</li>
+  <li>Maintaining data consistency requires mechanisms to ensure the orderly execution of cooperating processes</li>
+  <li>
+    <p>Illustration of the problem:Suppose that we wanted to provide a solution to the consumer-producer problem that fills all the buffers. We can do so by having an integer counter that keeps track of the number of full buffers. Initially, counter is set to 0. It is incremented by the producer after it produces a new buffer
+and is decremented by the consumer after it consumes a buffer.</p>
+  </li>
+  <li>进程可以并发执行
+    <ul>
+      <li>可能随时中断，部分完成执行</li>
+    </ul>
+  </li>
+  <li>并发访问共享数据可能会导致数据不一致</li>
+  <li>维护数据一致性需要确保合作流程有序执行的机制</li>
+  <li>问题说明：假设我们想为填充所有缓冲区的<strong>消费者-生产者问题</strong>（课本P176）提供一个解决方案。我们可以通过拥有一个整数来做到这一点
+跟踪已满缓冲区数的计数器。最初，计数器设置为 0。它在生成新缓冲区后由生产者递增并在使用者消耗缓冲区后递减。</li>
+</ul>
+
+<p>因为允许两个进程并发操作变量 counter，所以得到不正确的状态。像这样的情况，==即多个进程并发访问和操作同一数据并且执行结果与特定访问顺序有关，称为<strong>竞争条件(racecondition)</strong>。==为了防止竞争条件，需要确保一次只有一个进程可以操作变量 counter。为了做出这种保证，要求这些进程按一定方式来同步。
+由于操作系统的不同部分都操作资源，这种情况在系统内经常出现。此外，正如前面章节所强调的，多核系统的日益流行强调了开发多线程应用的重要性。在这类应用中，多个线程，很可能共享数据，并在不同的处理核上并行运行。显然，我们要求，由于这些活动而导致的任何改变不会互相干扰。由于这个问题的重要性，本章的大部分都是，协作进程如何进行<strong>进程同步(process synchronization)和进程协调(process coordination)。</strong></p>
+
+<h1 id="2-临界区问题--critical-section-problem">2. 临界区问题  Critical Section Problem</h1>
+
+<ul>
+  <li>Consider system of n processes {p0, p1, … pn-1}</li>
+  <li>Each process has critical section segment of code
+    <ul>
+      <li>Process may be changing common variables, updating table, writing file,
+etc</li>
+      <li>When one process in critical section, no other may be in its critical
+section</li>
+    </ul>
+  </li>
+  <li>Critical section problem（临界区问题） is to design protocol to solve this</li>
+  <li>
+    <p>Each process must ask permission to enter critical section in <strong>entry section,</strong> may follow critical section with <strong>exit section</strong>, then <strong>remainder section</strong></p>
+  </li>
+  <li>考虑 n 个进程的系统 {p0， p1， …pn-1}</li>
+  <li>每个进程都有代码的关键部分
+    <ul>
+      <li>进程可能正在更改公共变量，更新表，写入文件，
+等</li>
+      <li>当一个过程处于关键部分时，没有其他过程可能处于其关键部分
+部分</li>
+    </ul>
+  </li>
+  <li>关键部分问题（临界区问题）是设计协议来解决这个问题</li>
+  <li>每个进程必须请求许可才可以通过进入区到临界区，然后临界区后紧跟着退出区，最后是剩余区。</li>
+</ul>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch6.assets/image-20230430111928877.png" alt="image-20230430111928877" style="zoom: 67%;" /></p>
+
+<h2 id="21-solution-to-critical-section-problem">2.1 Solution to Critical-Section Problem</h2>
+
+<ol>
+  <li><strong>Mutual Exclusion</strong> - If process Pi is executing in its critical section, then no other processes can be executing in their critical sections</li>
+  <li><strong>Progress</strong> - If no process is executing in its critical section and there exist some processes that wish to enter their critical section, then the selection of the processes that will enter the critical section next cannot be postponed indefinitely</li>
+  <li><strong>Bounded Waiting</strong> - A bound must exist on the number of times that other processes are allowed to enter their critical sections after a process has made a request to enter its critical section and before that request is granted
+    <ul>
+      <li>Assume that each process executes at a nonzero speed</li>
+      <li>No assumption concerning relative speed of the n processes</li>
+    </ul>
+  </li>
+  <li>互斥 - 如果进程 Pi 在其关键部分执行，则没有其他进程可以在其关键部分执行</li>
+  <li>进步 - 如果在其关键部分没有进程正在执行，并且存在一些希望进入其关键部分的进程，则接下来将进入关键部分的进程的选择不能无限期推迟</li>
+  <li>有限等待 - 在进程发出进入其关键部分的请求之后和该请求被授予之前，允许其他进程进入其关键部分的次数必须存在绑定
+    <ul>
+      <li>假设每个进程都以非零速度执行</li>
+      <li>没有关于n个过程的相对速度的假设</li>
+    </ul>
+  </li>
+</ol>
+
+<p>临界区问题的几个特点：</p>
+
+<p>必须强制实施互斥，在具有关于相同资源或共享对象的临界区的所有进程中，一次只允许一个进程进入临界区；</p>
+
+<p>一个在非临界区的进程必须不干涉其他进程；</p>
+
+<p>不允许一个需要访问临界区的进程被无线延迟；</p>
+
+<p>没有进程在临界区时，任何需要进入临界区的进程必须能够立即进入；</p>
+
+<p>相关进程的速度和处理器数目没有任何要求和限制；</p>
+
+<p>一个进程阻流在临界区中的时间必须时有限的；</p>
+
+<p>总的来说，就是以下四句话：</p>
+
+<ol>
+  <li>有空让进</li>
+  <li>无空等待</li>
+  <li>择一而入</li>
+  <li>算法可行</li>
+</ol>
+
+<h2 id="22-critical-section-handling-in-os">2.2 Critical-Section Handling in OS</h2>
+
+<p>Two approaches depending on if kernel is preemptive or non- preemptive</p>
+
+<ul>
+  <li>Preemptive – allows preemption of process when running in kernel mode</li>
+  <li>Non-preemptive – runs until exits kernel mode, blocks, or voluntarily yields CPU
+    <ul>
+      <li>Essentially free of race conditions in kernel mode</li>
+    </ul>
+  </li>
+</ul>
+
+<p>两种方法取决于内核是抢占式还是非抢占式</p>
+
+<ul>
+  <li>抢占 – 允许在内核模式下运行时抢占进程</li>
+  <li>非抢占式 – 运行直到退出内核模式、阻塞或自愿产生 CPU
+    <ul>
+      <li>非抢占式内核的数据结构基本不会导致竞争条件，因为任何时间只有一个进程处于内核模式。</li>
+    </ul>
+  </li>
+</ul>
+
+<p>那么，为何会有人更喜欢抢占式内核而不是非抢占式内核呢?抢占式内核响应更快，因为处于内核模式的进程在释放 CPU之前不会运行任意长的时间。(当然，在内核模式下持续运行很长时间的风险可以通过设计内核代码来最小化。 再者，抢占式内核更适用于实时编程，因为它能允许实时进程抢占在内核模态下运行的其他进程。本章后面将探讨多种操作系统如何管理抢占式内核。</p>
+
+<h1 id="3-petersons-solution--peterson解决方案">3. Peterson’s Solution  Peterson解决方案</h1>
+
+<ul>
+  <li>Good algorithmic description of solving the problem</li>
+  <li>Two process solution</li>
+  <li>Assume that the load and store machine-language instructions are atomic; that is, cannot be interrupted</li>
+  <li>The two processes share two variables:
+    <ul>
+      <li>int turn;</li>
+      <li>Boolean flag[2]</li>
+    </ul>
+  </li>
+  <li>The variable turn indicates whose turn it is to enter the critical section</li>
+  <li>The flag array is used to indicate if a process is ready to enter the critical section. flag[i] = true implies that process Pi is ready</li>
+</ul>
+
+<hr />
+
+<p>一个经典的基于软件的临界区问题的解决方案，称为 Peterson解决方案</p>
+
+<p>Peterson解决方案适用于<strong>两个进程</strong>交错执行临界区与剩余区。两个进程为P0和P1。为了方便，当使用Pi时，用Pj来表示另一个进程，即j== 1-i。</p>
+
+<p>Peterson解答要求两个进程共享两个数据项:</p>
+
+<p>int turn;
+boolean flag[2];</p>
+
+<p>变量 turn表示哪个进程可以进人临界区。即如果turn == i 那么进程Pi允许在临界区内执行。数组 flag 表示哪个进程准备进入临界区。例如，如果 flag[i]为true，那么进程Pi;准备进入临界区。在解释了这些数据结构后，就可以分析如图 6-2所示的算法。</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch6.assets/image-20230430113459634.png" alt="image-20230430113459634" /></p>
+
+<p>为了进入临界区，进程Pi首先设置 flag[i]的值为 true;并且设置 turn 的值为 j，从而表示如果另一个进程Pj希望进入临界区，那么Pj能够进入。如果两个进程同时试图进入，那么turn会几乎在同时设置成i和j。只有一个赋值语句的结果会保持；另一个也会设置，但会立即被重写。变量 turn的最终值决定了哪个进程允许先进入临界区。</p>
+
+<h1 id="4-硬件同步-synchronization-hardware">4. 硬件同步 Synchronization Hardware</h1>
+
+<ul>
+  <li>
+    <p>Many systems provide hardware support for implementing the critical section code.</p>
+  </li>
+  <li>All solutions below based on idea of locking
+    <ul>
+      <li>Protecting critical regions via locks</li>
+    </ul>
+  </li>
+  <li>Uniprocessors – could disable interrupts
+    <ul>
+      <li>Currently running code would execute without preemption</li>
+      <li>Generally too inefficient on multiprocessor systems
+        <ul>
+          <li>Operating systems using this not broadly scalable</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Modern machines provide special <strong>atomic hardware instructions</strong>
+    <ul>
+      <li>Atomic = non-interruptible</li>
+      <li>Either test memory word and set value Or swap contents of two memory words</li>
+    </ul>
+  </li>
+  <li>
+    <p>许多系统为实现关键部分代码提供<strong>硬件</strong>支持。</p>
+  </li>
+  <li>以下所有解决方案均基于加锁理念
+    <ul>
+      <li>通过锁保护关键区域</li>
+    </ul>
+  </li>
+  <li>单处理器 – 可以禁用中断
+    <ul>
+      <li>当前运行的代码将在不抢占的情况下执行</li>
+      <li>在多处理器系统上通常效率太低
+        <ul>
+          <li>使用它的操作系统不能广泛扩展</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>现代机器提供特殊的原子硬件指令
+    <ul>
+      <li>原子 = 不可中断</li>
+      <li>测试记忆字并设置值或交换两个记忆字的内容</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<p>我们刚刚描述了临界区问题的一种基于<strong>软件</strong>的解答。然而，正如所提到的，基于软件的解决方案(如Peterson 解答)并不保证在现代计算机体系结构上正确工作。下面，我们探讨临界区问题的多个解答，这包括内核开发人员和应用程序员采用的硬件和软件 API技术所有这些解答都是基于<strong>加锁(locking)</strong>为前提的，即通过锁来保护临界区。正如将会看到的，这种锁的设计可能相当复杂。</p>
+
+<p>首先，我们介绍一些简单的硬件指令(许多系统都具有的)，并有效使用它们来解决临界区问题。硬件功能能够简化编程工作而且提高系统效率。</p>
+
+<p>对于单处理器环境，临界区问题可简单地加以解决:在修改共享变量时只要禁止中断出现。这样，就能确保当前指令流可以有序执行，且不会被抢占。由于不可能执行其他指令所以共享变量不会被意外地修改。这种方法往往为<strong>非抢占式内核</strong>所采用。</p>
+
+<p>然而，在多处理器环境下，这种解决方案是不可行的。<strong>多处理器的中断禁止会很耗时因为消息要传递到所有处理器。消息传递会延迟进入临界区，并降低系统效率</strong>。另外，如果系统时钟是通过中断来更新的，那么它也会受到影响。</p>
+
+<p>因此，许多现代系统<strong>提供特殊硬件指令</strong>，用于检测和修改字的内容，或者用于原子地(atomically)交换两个字(作为不可中断的指令)。我们可以采用这些特殊指令，相对简单地解决临界区问题。这里，我们不是讨论特定机器的特定指令，而是通过指令 <strong>test_and_set()和 compare_and_swap()</strong>抽象了这些指令背后的主要概念。指令 test_and_set()可以按图6-3 所示来定义。这一指令的重要特征是，它的执行是原子的。因此，如果两个指令 test_and_set()同时执行在不同CPU上，那么它们会按任意次序来顺序执行。如果一台机器支持指令 test_and_set()，那么可以这样实现互斥:声明一个布尔变量 lock，初始化为 false。进程P的结构如图6-4 所示。</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch6.assets/image-20230430114120602.png" alt="image-20230430114120602" /></p>
+
+<p>（具体内容和解释看课本P181）</p>
+
+<h1 id="5-互斥锁-mutex-locks">5. 互斥锁 Mutex Locks</h1>
+
+<ul>
+  <li>Previous solutions are complicated and generally inaccessible to application programmers</li>
+  <li>OS designers build software tools to solve critical section problem</li>
+  <li>Simplest is mutex lock</li>
+  <li>Protect a critical section by first <strong>acquire()</strong> a lock then <strong>release()</strong> the lock
+    <ul>
+      <li>Boolean variable indicating if lock is available or not</li>
+    </ul>
+  </li>
+  <li>Calls to acquire() and release() must be atomic
+    <ul>
+      <li>Usually implemented via hardware atomic instructions</li>
+    </ul>
+  </li>
+  <li>But this solution requires <strong>busy waiting</strong>
+    <ul>
+      <li>This lock therefore called a <strong>spinlock</strong></li>
+    </ul>
+  </li>
+  <li>以前的解决方案很复杂，应用程序员通常无法访问</li>
+  <li>操作系统设计师构建软件工具来解决关键部分问题</li>
+  <li>最简单的是<strong>互斥锁</strong></li>
+  <li>通过首先<strong>acquire()</strong>获得锁然后 <strong>release()</strong>锁来保护关键部分
+    <ul>
+      <li>指示锁是否可用的布尔变量</li>
+    </ul>
+  </li>
+  <li>对 acquire（） 和 release（） 的调用必须是<strong>原子</strong>的
+    <ul>
+      <li>通常通过硬件原子指令实现</li>
+    </ul>
+  </li>
+  <li>但此解决方案需要<strong>忙等待</strong>(会浪费CPU时间)
+    <ul>
+      <li>因此，此锁称为<strong>旋转锁</strong></li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<p>我们采用互斥锁保护临界区，从而防止竞争条件。也就是说，一个进程在进入临界区时应得到锁;它在退出临界区时释放锁。函数 acquire()获取锁，而函数release()释放锁。</p>
+
+<p>每个互斥锁有一个布尔变量 available，它的值表示锁是否可用。如果锁是可用的，那么调用acquire()会成功，并且锁不再可用。当一个进程试图获取不可用的锁时，它会阻塞，直到锁被释放。</p>
+
+<p>按如下定义acquire():</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>acquire(){
+	while (!available)
+		;/*busywait */
+	available = false;
+}
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>按如下定义release():</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>release(){
+	available = true;
+}
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>这里所给实现的主要缺点是，它需要<strong>忙等待 (busy waiting)</strong>。当有一个进程在临界区中，任何其他进程在进入临界区时必须连续循环地调用 acquire()。其实，这种类型的互斥锁也被称为<strong>自旋锁(spinlock)</strong>，因为进程不停地转，以等待锁变得可用。(在前面采用指令test_and_set()和compare_and_swap()的那些例子中，有同样的问题。在实际多道程序系统中，即当多个进程共享同一 CPU 时，这种连续循环显然是个问题。忙等待浪费 CPU周期，而这原本可以有效用于其他进程。)</p>
+
+<p>不过，自旋锁确实有一个优点:当进程在等待锁时，没有上下文切换(上下文切换可能需要相当长的时间)。因此，当使用锁的时间较短时，自旋锁还是有用的。自旋锁通常用于多处理器系统，一个线程可以在一个处理器上“旋转”，而其他线程在其他处理器上执行临界区本章(6.7 节)，将会研究如何使用互斥锁解决经典同步问题，还会讨论多个操作系统以及Pthreads如何使用这些锁。</p>
+
+<h1 id="6-信号量-semaphore">6. 信号量 Semaphore</h1>
+
+<p>前面方法解决临界区调度问题的缺点:</p>
+
+<ol>
+  <li>对不能进入临界区的进程， 采用忙式等待测试法， 浪费CPU时间。</li>
+  <li>将测试能否进入临界区的责任推给各个竞争的进程会削弱系统的可靠性， 加重了用户编程负担。</li>
+</ol>
+
+<p>1965年E.W.Dijkstra(荷兰人）提出了新的同步工具–信号量和P （荷兰语的测试Proberen） semWait、 V操作（荷兰语的增量Verhogen） semSignal</p>
+
+<ul>
+  <li>P操作：让进程休眠</li>
+  <li>V操作：唤醒一个进程</li>
+</ul>
+
+<p>信号量和P、 V操作 ，将交通管制中多种颜色的信号灯管理交通的方法引入操作系统，让两个或多个进程通过特殊变量展开交互。</p>
+
+<p>信号量：一种软资源</p>
+
+<ul>
+  <li>一个进程在某一特殊点上被迫停止执行直到接收到一个对应的特殊变量值，这种特殊变量就是信号量(Semaphore)，复杂的进程合作需求都可以通过适当的信号结构得到满足。</li>
+  <li>原语：内核中执行时不可被中断的过程</li>
+</ul>
+
+<p>Synchronization tool that provides more sophisticated ways (than Mutex locks) for process to synchronize their activities.（同步工具，为进程同步其活动提供更复杂的方法（互斥锁））</p>
+
+<p>Semaphore S – integer variable（信号量 S – 整数变量）</p>
+
+<p>Can only be accessed via two indivisible (atomic) operations（只能通过两个不可分割（原子）操作访问）</p>
+
+<ul>
+  <li>wait() and signal()
+    <ul>
+      <li>Originally called P() and V()</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Definition of the wait() operation</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>wait(S) {
+	while (S &lt;= 0)
+		; // busy wait
+	S--;
+}
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Definition of the signal() operation</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>signal(S) {
+	S++;
+}  
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<hr />
+
+<h3 id="二元信号量">二元信号量</h3>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch6.assets/image-20230430170707338.png" alt="image-20230430170707338" /></p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch6.assets/image-20230430170724390.png" alt="image-20230430170724390" /></p>
+
+<h3 id="互斥">互斥</h3>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch6.assets/image-20230430170742719.png" alt="image-20230430170742719" /></p>
+
+<hr />
+
+<h2 id="61-semaphore-usage--信号量的使用">6.1 Semaphore Usage  信号量的使用</h2>
+
+<ul>
+  <li>
+    <p><strong>Counting semaphore</strong> – integer value can range over an unrestricted domain</p>
+  </li>
+  <li>
+    <p><strong>Binary semaphore</strong> – integer value can range only between 0 and 1</p>
+
+    <ul>
+      <li>Same as a mutex lock</li>
+    </ul>
+  </li>
+  <li>
+    <p>Can solve various synchronization problems</p>
+  </li>
+  <li>
+    <p>Consider P1 and P2 that require S1 to happen before S2</p>
+  </li>
+  <li>
+    <p>Create a semaphore “synch” initialized to 0</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>P1:
+    S1;
+    signal(synch);
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>P2:
+    wait(synch);
+    S2;
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <p>Can implement a counting semaphore S as a binary semaphore</p>
+  </li>
+  <li>
+    <p>计数信号量 – 整数值的范围可以跨越不受限制的域</p>
+  </li>
+  <li>
+    <p>二进制信号量 – 整数值的范围只能在 0 到 1 之间</p>
+
+    <ul>
+      <li>与互斥锁相同</li>
+    </ul>
+  </li>
+  <li>
+    <p>可以解决各种同步问题</p>
+  </li>
+  <li>
+    <p>考虑要求 S1 在 S2 之前发生的 P1 和 P2</p>
+  </li>
+  <li>
+    <p>创建初始化为 0 的信号量“同步”</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>P1:
+    S1;
+    signal(synch);
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>P2:
+    wait(synch);
+    S2;
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <p>Can implement a counting semaphore S as a binary semaphore</p>
+
+    <p>可以将计数信号量 S 实现为二进制信号量</p>
+  </li>
+</ul>
+
+<h2 id="62-信号量的实现-semaphore-implementation">6.2 信号量的实现 Semaphore Implementation</h2>
+
+<ul>
+  <li>Must guarantee that no two processes can execute the wait() and signal() on the same semaphore at the same time</li>
+  <li>Thus, the implementation becomes the critical section problem where the wait and signal code are placed in the critical section
+    <ul>
+      <li>Could now have busy waiting in critical section implementation
+        <ul>
+          <li>But implementation code is short</li>
+          <li>Little busy waiting if critical section rarely occupied</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>Note that applications may spend lots of time in critical sections and therefore this is not a good solution</p>
+  </li>
+  <li>必须保证没有两个进程可以同时在同一个信号量上执行 wait（） 和 signal（）</li>
+  <li>因此，实现成为关键部分的问题，其中等待和信号代码被放置在关键部分
+    <ul>
+      <li>现在可以忙于等待关键部分的实施
+        <ul>
+          <li>但是实现代码很短</li>
+          <li>如果关键部分很少有人占用，则很少忙于等待</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>请注意，应用程序可能会在关键部分花费大量时间，因此这不是一个好的解决方案</li>
+</ul>
+
+<h3 id="semaphore-implementation-with-no-busy-waiting">Semaphore Implementation with no Busy waiting</h3>
+
+<ul>
+  <li>
+    <p>With each semaphore there is an associated waiting queue</p>
+  </li>
+  <li>
+    <p>Each entry in a waiting queue has two data items:</p>
+
+    <ul>
+      <li>value (of type integer)</li>
+      <li>pointer to next record in the list</li>
+    </ul>
+  </li>
+  <li>
+    <p>Two operations:</p>
+
+    <ul>
+      <li>block – place the process invoking the operation on the appropriate waiting queue</li>
+      <li>wakeup – remove one of processes in the waiting queue and place it in the ready queue</li>
+    </ul>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre>typedef struct{
+int value;
+struct process *list;
+} semaphore;  
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+  <li>每个信号灯都有一个关联的等待队列</li>
+  <li>等待队列中的每个条目都有两个数据项：
+    <ul>
+      <li>值（整数类型）</li>
+      <li>指向列表中下一条记录的指针</li>
+    </ul>
+  </li>
+  <li>两个操作：
+    <ul>
+      <li>block – 将调用操作的进程放在适当的等待队列上</li>
+      <li>唤醒 – 删除等待队列中的一个进程并将其放入就绪队列中</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre>typedef struct{
+int value;
+struct process *list;
+} semaphore;  
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch6.assets/image-20230430165811879.png" alt="image-20230430165811879" style="zoom: 80%;" /></p>
+
+<h2 id="63-死锁和饥饿-deadlock-and-starvation">6.3 死锁和饥饿 Deadlock and Starvation</h2>
+
+<p><strong>Deadlock</strong> – two or more processes are waiting indefinitely for an event that can be caused by only one of the waiting processes</p>
+
+<p>Let S and Q be two semaphores initialized to 1</p>
+
+<p>死锁 – 两个或多个进程无限期地等待可能仅由其中一个等待进程引起的事件</p>
+
+<p>设 S 和 Q 是初始化为 1 的两个信号量</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch6.assets/image-20230430170135723.png" alt="image-20230430170135723" /></p>
+
+<ul>
+  <li><strong>Starvation</strong> – <strong>indefinite blocking</strong>
+A process may never be removed from the semaphore queue in which it is suspended</li>
+  <li>
+    <p><strong>Priority Inversion</strong> – Scheduling problem when lower-priority process holds a lock needed by higher-priority process
+Solved via <strong>priority-inheritance protocol</strong></p>
+  </li>
+  <li>饥饿 – 无限期封锁
+进程可能永远不会从挂起的信号量队列中删除</li>
+  <li>优先级反转 – 当低优先级进程持有高优先级进程所需的锁时出现调度问题
+通过优先级继承协议解决</li>
+</ul>
+
+<h2 id="64-优先级反转">6.4 优先级反转</h2>
+
+<p>如果一个较高优先级的进程需要读取或修改内核数据，而且这个内核数据当前正被较低优先级的进程访问(这种串联方式可涉及更多进程)，那么就会出现一个调度挑战。由于内核数据通常是用锁保护的，较高优先级的进程将不得不等待较低优先级的进程用完资源。如果较低优先级的进程被较高优先级的进程抢占，那么情况变得更加复杂。</p>
+
+<p>作为一个例子，假设有三个进程，L、M和H，它们的优先级顺序为L&lt;M&lt;H。假定进程H需要资源R，而R目前正在被进程L访问。通常，进程H将等待L用完资源R。但是，现在假设进程M进入可运行状态，从而抢占进程L。间接地，具有较低优先级的进程M，影响了进程H应等待多久，才会使得进程L释放资源R。</p>
+
+<p>这个问题称为<strong>优先级反转(priority inversion)</strong>。它只出现在具有两个以上优先级的系统因此一个解决方案是只有两个优先级。</p>
+
+<h2 id="65-信号量小结">6.5 信号量小结</h2>
+
+<p>若信号量s.count&gt;=0， 则该值等于可以执行semWait(s)而不需要挂起的进程数。</p>
+
+<p>若信号量s.count为负值， 则其绝对值等于登记排列在该信号量s.queue队列之中等待的进程个数、 亦即恰好等于对信号量s实施semSignal操作而被封锁起来并进入信号量s.queue队列的进程数。</p>
+
+<p><img src="/img/in-post/OperatingSystemNotes/ch6.assets/image-20230430170836754.png" alt="image-20230430170836754" /></p>
+
+<h1 id="7-经典同步问题">7. 经典同步问题</h1>
+
+<p>之后的内容直接看MarginNote3的书P185开始</p>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2023/04/29/TSP/" data-toggle="tooltip" data-placement="top" title="使用模拟退火和遗传算法求解TSP问题">
+                        Previous<br>
+                        <span>使用模拟退火和遗传算法求解TSP问题</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2023/06/01/OS-Ch7/" data-toggle="tooltip" data-placement="top" title="Chapter7 Deadlock">
+                        Next<br>
+                        <span>Chapter7 Deadlock</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+
+                <!--   gitalk       -->
+                <div class="comment">
+                <div id="gitalk-container"></div>
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+                <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+                <script>
+                var gitalk = new Gitalk({
+                    id: location.pathname,
+                    clientID: '0db4b4c6d83c061f6b30',
+                    clientSecret: 'e1651c09f1a49b2b4a544cd584d3e8a55454a48a',
+                    repo: 'BlogComment',
+                    owner: 'jaredddddd',
+                    admin: ['jaredddddd'], 
+                    labels: ['Gitalk'],
+                })
+                gitalk.render('gitalk-container')
+                </script> 
+                </div>
+
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0036" 
+                    href="/archive/?tag=Computer-Organization"
+                    title="Computer-Organization"
+                    rel="21">Computer-Organization</a>
+        
+                <a data-sort="0018" 
+                    href="/archive/?tag=NOTES"
+                    title="NOTES"
+                    rel="39">NOTES</a>
+        
+                <a data-sort="0041" 
+                    href="/archive/?tag=Project"
+                    title="Project"
+                    rel="16">Project</a>
+        
+                <a data-sort="0042" 
+                    href="/archive/?tag=AI"
+                    title="AI"
+                    rel="15">AI</a>
+        
+                <a data-sort="0048" 
+                    href="/archive/?tag=OS"
+                    title="OS"
+                    rel="9">OS</a>
+        
+                <a data-sort="0052" 
+                    href="/archive/?tag=ML"
+                    title="ML"
+                    rel="5">ML</a>
+        
+                <a data-sort="0053" 
+                    href="/archive/?tag=PatternRecognition"
+                    title="PatternRecognition"
+                    rel="4">PatternRecognition</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Blog"
+                    title="Blog"
+                    rel="3">Blog</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Distributed-System"
+                    title="Distributed-System"
+                    rel="3">Distributed-System</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=ANN"
+                    title="ANN"
+                    rel="2">ANN</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CPU%E8%AE%BE%E8%AE%A1"
+                    title="CPU设计"
+                    rel="2">CPU设计</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CompilationPrinciple"
+                    title="CompilationPrinciple"
+                    rel="2">CompilationPrinciple</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     TeX: {
+       equationNumbers: {
+         autoNumber: "AMS"
+       }
+     },
+     SVG: {
+       scale: 90
+     },
+     tex2jax: {
+       inlineMath: [ ['$','$'] ],
+       displayMath: [ ['$$','$$'] ],
+       processEscapes: true,
+     }
+   });
+ </script>
+ <script type="text/javascript"
+         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+
+.post-container {
+    background: #fcfbfb; /* 背景颜色 */
+    border-radius: 25px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    padding-top: 40px; /* 特别增加顶部内边距 */
+    margin-top: 20px; /* 添加顶部外边距 */
+    /* margin-left: 40px; */
+    /* width: 900px; */
+}
+
+
+/* 在宽屏幕设备上应用特定样式 */
+@media (min-width: 1024px) {
+  .post-container {
+    margin-left: 40px; /* 向左扩展 */
+    width: 900px; /* 设置宽度 */
+  }
+  .side-catalog{
+    width: 250px;
+  }
+}
+
+.post-container:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* 当鼠标悬停时增加阴影效果 */
+}
+
+.side-catalog {
+    background: #ffffff; /* 背景颜色 */
+    border-radius: 15px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    margin-left: 10pt;
+    /* width: 200px; */
+
+}
+
+
+
+.catalog-container {
+    /* ... 其他样式 ... */
+    display: none; /* 默认不显示catalog */
+    transition: all 0.3s ease; /* 过渡效果 */
+    margin-top: 20px; /* 添加顶部外边距 */
+}
+
+</style>
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; LvKouKou Blog 2025
+                    <br>
+                    <!--  删掉了作者Hux Blog
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                    -->
+                    <!-- 不蒜子 -->
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                    您是Blog的第<span id="busuanzi_value_site_uv"></span>个小伙伴 </br>
+                     <span id="busuanzi_container_page_pv">
+                        本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<!-- 自己添加的 -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TNVD6PR5TQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNVD6PR5TQ');
+</script>
+<!-- 自己添加的 -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        // a = P.find('h1,h2,h3,h4,h5,h6');
+        a = P.find('h1,h2,h3,h4');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<!--鼠标点击爱心动画-->
+<script type="text/javascript" src="/js/love.js"></script>
+</body>
+
+</html>

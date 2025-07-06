@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @LvKouKou 的个人博客，与你一起发现更大的世界 | 要做一个想环游世界的程序员">
+    <meta name="keywords" content="LvKouKou, jaredddddd, @jaredddddd, LvKouKou Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <link
+  rel="stylesheet"
+  href="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+/>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  defer="defer"
+></script>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  defer="defer"
+  onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
+></script>
+    <script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/mathtex-script-type.min.js"
+  defer="defer"
+></script>
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="Chapter4-4 流水线冒险处理 - LvKouKou的博客 | LV Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="4-4 流水线冒险处理
+
+">
+    
+    <meta property="article:published_time" content=" 2022-11-27T00:00:00Z">
+    
+    
+    <meta property="article:author" content="LvKouKou">
+    
+    
+    <meta property="article:tag" content="Computer-Organization">
+    
+    <meta property="article:tag" content="NOTES">
+    
+    
+    <meta property="og:image" content="https://jaredddddd.github.io/img/LVKOUKOU.jpg">
+    <meta property="og:url" content="https://jaredddddd.github.io/2022/11/27/4-4-Adventure-Processing/">
+    <meta property="og:site_name" content="LvKouKou的博客 | LV Blog">
+
+    <title>Chapter4-4 流水线冒险处理 - LvKouKou的博客 | LV Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jaredddddd.github.io/2022/11/27/4-4-Adventure-Processing/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* 打字机效果的样式 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #666 }
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid #666;
+            white-space: nowrap;
+            word-wrap: break-word;
+            letter-spacing: .1em;
+            width: fit-content;
+            margin: 0 auto;
+            animation: 
+                typing 2s steps(40, end), /* 打字机效果, 3s 完成打字, 每步40个字符 */
+                blink-caret .75s step-end infinite; /* 光标闪烁效果, 0.75s 完成一次闪烁  */
+        }
+
+        /* 添加包装容器样式 */
+        .typing-wrapper {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%; /* 确保不会超出父容器 */
+        }
+
+        /* 添加响应式样式 */
+        @media (max-width: 768px) {
+        .typing-effect {
+            font-size: 16px; /* 在手机上可以适当调整字体大小 */
+            letter-spacing: normal; /* 在手机上减小字间距 */
+        }
+    }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptions = document.getElementsByClassName('subheading');
+            if (descriptions.length > 0) {
+                const description = descriptions[0];
+                const text = description.textContent;
+                description.innerHTML = `<span class="typing-wrapper"><span class="typing-effect">${text}</span></span>`;
+            }
+        });
+    </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">LvKouKou Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/resume-home/">Resume</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/roadtrip/">On The Road</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="Searching...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!--//添加评论系统gitalk-->
+<link rel="stylesheet" href="../../../../css/gitalk.css">
+<script src="../../../../js/gitalk.min.js"></script>
+
+<!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=Computer-Organization" title="Computer-Organization">Computer-Organization</a>
+                        
+                        <a class="tag" href="/archive/?tag=NOTES" title="NOTES">NOTES</a>
+                        
+                    </div>
+                    <h1>Chapter4-4 流水线冒险处理</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by LvKouKou on November 27, 2022</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="4-4-流水线冒险处理">4-4 流水线冒险处理</h1>
+
+<p>流水线需要能够检测和处理竞争问题</p>
+
+<ul>
+  <li>结构竞争—硬件资源使⽤冲突（即同一周期使用同一部件）
+    <ul>
+      <li>已解决：1.指令和数据分开存储。2.寄存器读口和写口分开</li>
+    </ul>
+  </li>
+  <li>
+    <p>数据竞争—数据存储器或者寄存器内容因指令关联⽽不可获得RAW（写后读冒险） ， load-use（装入使用冒险）</p>
+  </li>
+  <li>控制竞争—因跳转分⽀指令（beq、bne、j、jr、jal）使得PC⽆法及时确定</li>
+</ul>
+
+<p>流⽔线的控制信号：控制信号如何随流⽔线运⾏？</p>
+
+<h2 id="流水线控制信号设计">流水线控制信号设计</h2>
+
+<ul>
+  <li>将各个资源和状态(流⽔级)联系起来
+    <ul>
+      <li>从设计上要避免structural hazards的出现: 保证资源是够⽤的</li>
+    </ul>
+  </li>
+  <li>在各个级别之间增加寄存器</li>
+  <li>找到所有的数据竞争和控制竞争问题
+    <ul>
+      <li>如果是寄存器关联引起的=&gt; data hazard: forward or stall to resolve them</li>
+      <li>如果是和PC有关的竞争=&gt; control hazard: we’ll see next time</li>
+    </ul>
+  </li>
+  <li>在合适的阶段使控制信号有效</li>
+  <li>合适的测试设计
+    <ul>
+      <li>if you don’t test it, it won’t work</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="数据竞争和控制竞争问题">数据竞争和控制竞争问题</h2>
+
+<ul>
+  <li>如果是寄存器关联引起的=&gt; data hazard: forward or stall to resolve them</li>
+</ul>
+
+<ol>
+  <li>RAW型 写后读 数据冒险</li>
+  <li>load-use型 装入使用冒险</li>
+</ol>
+
+<ul>
+  <li>如果是和PC有关的竞争=&gt; control hazard:</li>
+</ul>
+
+<h1 id="数据竞争">数据竞争</h1>
+
+<p>数据竞争有两种：</p>
+
+<ol>
+  <li>读后写：可以完全用转发处理，不需要阻塞</li>
+  <li>装入使用：需要阻塞一个周期</li>
+</ol>
+
+<h2 id="raw-写后读-数据冒险可由转发处理">RAW （写后读） 数据冒险–可由转发处理</h2>
+
+<h2 id="解决">解决</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127113031175.png" alt="image-20221127113031175" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127113059987.png" alt="image-20221127113059987" /></p>
+
+<h3 id="方案1-在硬件上采取措施-使相关指令延迟执行">方案1: 在硬件上采取措施， 使相关指令延迟执行</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127113154470.png" alt="image-20221127113154470" /></p>
+
+<h3 id="案-2-软件上插关指令">⽅案 2: 软件上插⼊⽆关指令</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127113228802.png" alt="image-20221127113228802" /></p>
+
+<h3 id="方案3最优-利用datapath中的中间数据转发forwarding处理也叫旁路bypassing">方案3（最优）: 利用DataPath中的中间数据转发（Forwarding）处理（也叫旁路Bypassing）</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127113250566.png" alt="image-20221127113250566" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127113412199.png" alt="image-20221127113412199" /></p>
+
+<h2 id="转发处理-data-forwarding-aka-bypassing--介绍">转发处理 Data Forwarding (aka Bypassing)  介绍</h2>
+
+<ul>
+  <li>从存在于任何流⽔线状态寄存器中的数据最早点获取结果， 并将其转发给该周期需要它的功能单元（例如， ALU）</li>
+  <li>对于 ALU 功能单元： 输⼊可以来⾃任何流⽔线寄存器， ⽽不仅仅是来⾃ ID/EX， 通过
+• 对ALU的输⼊端加选择器
+• 把在EX/MEM 或 MEM/WB 流⽔线寄存器中的Rd写数据连接到执⾏阶段ALU的Rs或者Rt选择输⼊端
+• 添加合适的硬件控制选择器</li>
+  <li>其他功能单元可能需要类似的转发逻辑（例如， DM） 即使在存在数据依赖关系的情况下， 使⽤转发也可以实现 CPI 为1</li>
+</ul>
+
+<h3 id="硬件实现转发">硬件实现转发</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127113739306.png" alt="image-20221127113739306" /></p>
+
+<h3 id="检测-raw-冒险">检测 RAW 冒险</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127113801294.png" alt="image-20221127113801294" /></p>
+
+<p>转发处理：</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127113852510.png" alt="image-20221127113852510" /></p>
+
+<h3 id="检测是否需要转发">检测是否需要转发</h3>
+
+<p>==即如果ID/EX的Rs或Rt等于EX/MEM中的Rd，则要从EX/MEM寄存器转发==</p>
+
+<p>==若ID/EX的Rs或Rt等于MEM/WB中的Rd，则要从MEM/WB寄存器转发==</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127114251891.png" alt="image-20221127114251891" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127114501670.png" alt="image-20221127114501670" /></p>
+
+<h3 id="加了转发的数据通路图不完全">加了转发的数据通路图（不完全）</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127114710401.png" alt="image-20221127114710401" /></p>
+
+<p>例子：</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127114813236.png" alt="image-20221127114813236" style="zoom:50%;" /></p>
+
+<h3 id="yet-another-complication">Yet Another Complication!</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127114854809.png" alt="image-20221127114854809" /></p>
+
+<h3 id="corrected-data-forwarding-control-conditions">Corrected Data Forwarding Control Conditions</h3>
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127114917813.png" alt="image-20221127114917813" /></p>
+
+<hr />
+
+<p>原本：</p>
+
+<p>==即如果ID/EX的Rs或Rt等于EX/MEM中的Rd，则要从EX/MEM寄存器转发==</p>
+
+<p>==若ID/EX的Rs或Rt等于MEM/WB中的Rd，则要从MEM/WB寄存器转发==</p>
+
+<p>为了保证是最新的，还要保证一点：</p>
+
+<p>==ID/EX的Rs或Rd（本条）等于MEM/WB中Rd（上两条）且不等于EX/MEM中的Rd（上一条）==</p>
+
+<hr />
+
+<h3 id="有了转发转置的数据通路图完全">有了转发转置的数据通路图（完全）</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127115236898.png" alt="image-20221127115236898" /></p>
+
+<h2 id="load-use-装入使用冒险转发不能解决所有数据冒险">Load-Use 装入使用冒险–转发不能解决所有数据冒险</h2>
+
+<p>==lw指令必须阻塞一个周期，但是如果lw后是sw，则不用==</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127115558454.png" alt="image-20221127115558454" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127115607512.png" alt="image-20221127115607512" /></p>
+
+<p>==lw指令后的数据冒险是装入使用冒险，无法用转发处理，必须阻塞一个周期==</p>
+
+<h3 id="例子">例子：</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127143246520.png" alt="image-20221127143246520" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127143300555.png" alt="image-20221127143300555" /></p>
+
+<h3 id="装入使用冒险-load-use-hazard-检测">装入使用冒险 Load-use Hazard 检测</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127143633682.png" alt="image-20221127143633682" /></p>
+
+<hr />
+
+<p>==如果lw指令后的第一条指令的Rs或Rt（在<strong>IF/ID中</strong>）与lw指令的Rt（lw的写入寄存器是Rt，在<strong>ID/EX中</strong>）相同，那么即要阻塞一个周期以解决<strong>装入使用冒险</strong>==（当前指令在IF/ID寄存器，前一条指令在ID/EX寄存器）</p>
+
+<hr />
+
+<h3 id="如何实现stall-阻塞">如何实现Stall 阻塞?</h3>
+
+<ul>
+  <li>装入使用冒险必须实现阻塞功能才能使forward发挥作⽤</li>
+  <li>阻⽌IF and ID 阶段的指令进⼊EX阶段执⾏, 只要不让PC寄存器变化和IF/ID流⽔线状态寄存器保持不变就可以了
+    <ul>
+      <li>只要让前⾯的hazard检测电路来控制这些寄存器的写⼊就可以了</li>
+    </ul>
+  </li>
+  <li>从EX开始的后半段在阻塞时应处于清空状态:执⾏NOP（为了不改变寄存器中的值，之后的指令要洗刷掉）
+    <ul>
+      <li>将 ID/EX pipeline register中与EX,MEM,WB有关的控制信号清零,不⼯作状态</li>
+      <li>由Hazard检测电路控制选择使⽤正常的控制信号还是直接为0.</li>
+      <li>假定控制信号为0总是使电路不⼯作或者不影响电路状态的变化</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="adding-the-hazard-hardware">Adding the Hazard Hardware</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127144422590.png" alt="image-20221127144422590" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127144453219.png" alt="image-20221127144453219" /></p>
+
+<h3 id="方案4-编译器进行指令顺序调整来解决load-use">方案4： 编译器进行指令顺序调整来解决load-use</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127144647475.png" alt="image-20221127144647475" /></p>
+
+<h4 id="编译器进指令顺序调整例子-">编译器进⾏指令顺序调整例子 ：</h4>
+
+<p>例1：</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127144845633.png" alt="image-20221127144845633" /></p>
+
+<p>例2：</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127144853151.png" alt="image-20221127144853151" /></p>
+
+<h4 id="编译器优化以避免阻塞的情况调查">编译器优化以避免阻塞的情况调查:</h4>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127144938936.png" alt="image-20221127144938936" /></p>
+
+<h2 id="总结-数据冒险的解决方法">总结： 数据冒险的解决方法</h2>
+
+<ul>
+  <li>
+    <p>⽅法1： 合理实现寄存器堆的读/写操作(已经是解决结构冒险的方法了)</p>
+
+    <ul>
+      <li>前半时钟周期写， 后半时钟周期读， 若同⼀个时钟内前⾯指令写⼊的数据正好是后⾯指令所读数据， 则不会发⽣数据冒险</li>
+    </ul>
+  </li>
+  <li>
+    <p>⽅法2： 硬件阻塞（stall）</p>
+  </li>
+  <li>
+    <p>⽅法3： 软件插⼊“NOP”指令</p>
+  </li>
+  <li>
+    <p>⽅法4： 转发（Forwarding或Bypassing 旁路） 技术</p>
+
+    <ul>
+      <li>若相关数据是ALU结果， 则可通过转发解决</li>
+      <li>若相关数据是上条指令DM读出内容(lw)则不能通过转发解决，随后指令需被阻塞⼀个时钟或加NOP指令</li>
+    </ul>
+  </li>
+  <li>
+    <p>⽅法5： 编译优化： 调整指令顺序–可用于调整装入使用冒险</p>
+
+    <p>实现“转发”和“阻塞” 要修改数据通路：
+（1） 检测何时需要“转发” ， 并控制实现“转发”
+（2） 检测何时需要“阻塞”， 并控制实现“阻塞”</p>
+  </li>
+</ul>
+
+<hr />
+
+<p>==即数据冒险中，RAW写后读的数据冒险可以完全由转发处理，不需要阻塞，
+但是Load-Use装入使用冒险必须要<strong>一个周期的阻塞</strong>（lw指令后是sw的话不需要阻塞，可转发处理）==</p>
+
+<hr />
+
+<h1 id="控制竞争">控制竞争</h1>
+
+<ul>
+  <li>当指令流向不是预期的⽅式
+ 有条件的分⽀ (beq, bne)需阻塞3个周期
+ ⽆条件的跳转 (j)</li>
+  <li>可能的解决⽅案
+ Stall
+ 将判断提前是否跳转
+ 预测
+ 延迟决定(即延迟分⽀)(requires compiler support)</li>
+  <li>控制竞争不像数据竞争那样频繁的发⽣， 但是也没有像forwarding这样解决它的那么有效的⽅式</li>
+</ul>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127150145418.png" alt="image-20221127150145418" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127150203049.png" alt="image-20221127150203049" /></p>
+
+<h2 id="flushing">Flushing</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127150358858.png" alt="image-20221127150358858" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127150442576.png" alt="image-20221127150442576" /></p>
+
+<h2 id="提前进分决定">提前进⾏分⽀决定</h2>
+
+<ul>
+  <li>将分⽀判断放在<strong>EX阶段</strong>中(原本在EX阶段计算是否相等，在<strong>MEM阶段</strong>判断是否跳转)
+ 可以将STALL减少为2个
+ Adds an and gate and a 2x1 mux to the EX timing path</li>
+  <li>增加硬件以在<strong>ID阶段</strong>就进⾏⽐较运算和有效地址的运算,
+ 这样可以使STALL减少为1
+ 与RF的读操作同时
+ 需要⼀个⽐较器， 多路选择器等电路
+ 需要在ID阶段引⼊forwarding hardware 电路</li>
+</ul>
+
+<h2 id="将分判断放在id阶段中">将分⽀判断放在ID阶段中</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127150704510.png" alt="image-20221127150704510" /></p>
+
+<hr />
+
+<p>==如果<strong>分⽀指令中参与⽐较的寄存器是前⼀条指令的输出</strong>， 则<strong>必须阻塞⼀个周期</strong>后再判断以等待前⼀条指令的结果(因为⽐较运算在ID阶段与前⼀条指令的EX阶段是同时的）==</p>
+
+<hr />
+
+<h2 id="分支判断提前到id阶段的数据通路图">分支判断提前到ID阶段的数据通路图</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127150900027.png" alt="image-20221127150900027" /></p>
+
+<h2 id="分支判断中的数据冒险">分支判断中的数据冒险</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127151056014.png" alt="image-20221127151056014" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127151104021.png" alt="image-20221127151104021" /></p>
+
+<hr />
+
+<p>==即Branch指令要看前三条指令（假设与上三条指令都有数据冒险）==</p>
+
+<ol>
+  <li>若有前写后读，那么相隔两条指令的指令可以正常读取，不用转发</li>
+  <li>若可以转发，那么相隔一条指令的指令需要用到转发</li>
+  <li>上一条指令一定要阻塞一个周期</li>
+</ol>
+
+<hr />
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127151720174.png" alt="image-20221127151720174" /></p>
+
+<h2 id="分支预测">分支预测</h2>
+
+<p>通过静态的假定⼀个分⽀判断结果的输出解决分⽀竞争，一般都是假设不发生</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127151955649.png" alt="image-20221127151955649" /></p>
+
+<h3 id="分预测假设总不发">分⽀预测——假设总不发⽣</h3>
+
+<p><strong>总假设分⽀不发⽣</strong> – 遇到分⽀指令仍然按照正常的流程取指令,如果在流⽔线后期确实分⽀发⽣,则<strong>阻塞</strong>并<strong>清洗</strong>（取消已进⼊流⽔线指令）</p>
+
+<ul>
+  <li>如果分⽀发⽣, 清除分⽀指令后的流⽔线内指令
+ 若在<strong>MEM判断跳转则阻塞3个周期</strong>  IF, ID, and EX if branch logic in MEM – three stalls
+ 若在<strong>ID判断跳转则阻塞1个周期</strong>  IF if branch logic in ID – one stall</li>
+  <li>确保这些被清除的指令未改变机器状态– 由于机器状态是被(MemWrite or RegWrite) 控制信号在MEM和
+WB阶段改写的， 因此这点可以保证</li>
+  <li>分⽀后继续流⽔线执⾏</li>
+</ul>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127152326373.png" alt="image-20221127152326373" /></p>
+
+<h3 id="分预测假设总发">分⽀预测——假设总发⽣</h3>
+
+<p>通过静态的假定⼀个分⽀判断结果的输出解决分⽀竞争  Predict taken – 总假定分⽀会发⽣和不会发生
+ 发⽣分⽀引起⼀个周期的阻塞 (假定ID阶段的分⽀判断电路已经加上了)
+ 这种策略损失效率
+ 另外的解决⽅案就是再增加硬件进⾏<strong>动态预测</strong>
+Dynamic branch prediction – 利⽤运⾏时的信息进⾏动态预测</p>
+
+<h3 id="分预测动态预测">分⽀预测——动态预测</h3>
+
+<p>再增加硬件进⾏<strong>动态预测</strong>Dynamic branch prediction – 利⽤运⾏时的信息进⾏动态预测</p>
+
+<ul>
+  <li>需要实现⼀个<strong>IF阶段</strong>分⽀预测缓存(即 branch historytable (BHT)), 可以以PC的低位地址为索引,以1bit记录
+上次是否发⽣了  (因为在ID节点判断是否跳转，所以在ID节点就可以知道是否预测正确，只要是之前分支指令的地址，就先预测为要跳转，)</li>
+</ul>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127152757216.png" alt="image-20221127152757216" /></p>
+
+<p>分⽀历史记录表BHT(Branch History Table）</p>
+
+<ul>
+  <li>每个表项有分⽀地址的地位索引， 故在IF段可以取到预测位：
+    <ul>
+      <li>低位地址相同的分⽀指令共享⼀个表项
+        <ul>
+          <li>可能取得时其它指令的预测位， 会不会有问题？</li>
+        </ul>
+      </li>
+      <li>仅⽤于预测， 不影响执⾏结果</li>
+    </ul>
+  </li>
+</ul>
+
+<p>现在⼏乎所有的处理器都采⽤动态预测</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127153310866.png" alt="image-20221127153310866" /></p>
+
+<h4 id="位预测状态图">⼀位预测状态图</h4>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127153333623.png" alt="image-20221127153333623" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127153357228.png" alt="image-20221127153357228" /></p>
+
+<h4 id="两位预测状态图">两位预测状态图</h4>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127153411363-1669557079770.png" alt="image-20221127153411363" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127153425872.png" alt="image-20221127153425872" /></p>
+
+<h4 id="动态分预测过程">动态分⽀预测过程</h4>
+
+<ol>
+  <li>
+    <p>当分支指令到达译码段（ID）时，根据从BHT读出的信息进行分支预测 。若预测正确，就继续处理后续的指令，流水线没有断流。否则，就要作废已经预取和分析的指令，恢复现场，并从另一条分支路径重新取指令。</p>
+  </li>
+  <li>
+    <p>根据运行状况，修改BHT的状态。</p>
+
+    <p><img src="/img/in-post/ComputerOrganizationNotes/4-4/img-1669557070291" alt="体系结构笔记------动态分支预测" /></p>
+  </li>
+</ol>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127153551458.png" alt="image-20221127153551458" /></p>
+
+<h5 id="clock-1">Clock 1</h5>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127153602059.png" alt="image-20221127153602059" /></p>
+
+<h5 id="clock-2">Clock 2</h5>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127153645211.png" alt="image-20221127153645211" /></p>
+
+<h3 id="延迟分支">延迟分支</h3>
+
+<ul>
+  <li>⾸先还是要将分⽀的判断电路放在<strong>ID阶段</strong></li>
+  <li>延迟分⽀技术使得分⽀指令的含义与原来不同,该<strong>机制规定分⽀指令后⾯紧跟的指令必须被执行， 无论条件判断结果如何</strong>
+    <ul>
+      <li>MIPS⽀持该机制, 于是MIPS 编译器将⼀条不受分⽀条件影响的指令放在分⽀指令之后， 这样可以隐藏该指令的执⾏时间</li>
+    </ul>
+  </li>
+  <li>处理器流⽔线级数增加以后需要更多的<strong>延迟分⽀槽</strong>数⽬ .
+    <ul>
+      <li>延迟分⽀毕竟不如动态分⽀灵活目前已经不那么⼴泛使⽤,但是这是个简单的解决⽅案</li>
+    </ul>
+  </li>
+  <li>基本思想：把分⽀指令前⾯的与分⽀指令⽆关的指令调到分⽀指令后⾯执⾏， 以填充延迟时间⽚（也称分⽀延迟槽Branch Delay slot） ， <strong>不够时⽤nop操作填充</strong></li>
+</ul>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127154203834.png" alt="image-20221127154203834" /></p>
+
+<p>时间片=2即branch指令后两条都一定执行
+时间片=1即branch指令后一条一定执行</p>
+
+<p>==要与解决数据冒险中的方案4：通过改变指令顺序解决<strong>装入使用冒险</strong>区别开==</p>
+
+<h4 id="j指令的分延迟如果在id段进转移地址计算和回送">J指令的分⽀延迟（如果在ID段进⾏转移地址计算和回送）</h4>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127155407931.png" alt="image-20221127155407931" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127155434987.png" alt="image-20221127155434987" /></p>
+
+<h2 id="总结control-hazard的解决法">总结：Control Hazard的解决⽅法</h2>
+
+<ul>
+  <li>⽅法1： 硬件上阻塞（stall） 分⽀指令后三条指令的执⾏（<strong>阻塞3周期</strong>）
+• 使后⾯三条指令清0或 其操作信号清0， 以插⼊三条NOP指令</li>
+  <li>⽅法2： 软件上插⼊<strong>三条“NOP”指令</strong>
+（以上两种⽅法的效率太低， 需结合分⽀预测进⾏）</li>
+  <li>⽅法3： 分⽀预测（Predict）
+    <ul>
+      <li>简单（静态） 预测（预测总是不满足or满足）：
+- 总是<strong>预测条件不满⾜(not taken)或满⾜</strong>，即： 继续执⾏分⽀指令的后续指令</li>
+      <li>动态预测：
+- 根据程序执⾏的历史情况， 进⾏<strong>动态预测</strong>调整， 能达90%的预测准确率
+注： 采⽤分⽀预测⽅式时， 流⽔线控制必须确保错误预测指令的执⾏结果不能⽣效， ⽽且要能从正确的分⽀地址处重新启动流⽔线⼯作</li>
+    </ul>
+  </li>
+  <li>⽅法4： 延迟分⽀（Delayed branch） （通过编译程序优化指令顺序！ ）
+• 把分⽀指令前⾯与分⽀指令⽆关的指令调到分⽀指令后⾯执⾏， 也称延迟转移另⼀种控制冒险： 异常或中断控制冒险的处理</li>
+</ul>
+
+<h2 id="最终的数据通路图">最终的数据通路图</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127155832470.png" alt="image-20221127155832470" /></p>
+
+<h2 id="ppt中还有异常处理和高级流水线技术">ppt中还有异常处理和高级流水线技术</h2>
+
+<h1 id="小结">小结</h1>
+
+<ul>
+  <li>Forwarding是解决由于数据关联引起的竞争的有效⽅式</li>
+  <li>保证前⾯的指令是有写⼊操作的, destination 与后⾯指令source⼀样, ⽽且没有更新的数据可以⽤</li>
+  <li>所有可以forward的地⽅需要增加新的硬件， 如果不能forward则等待
+ EX stage, MEM stage for store, ID stage for early branch</li>
+  <li>Load指令需要阻塞
+ 分⽀也可能需要阻塞</li>
+  <li>控制竞争可以通过静态分⽀\动态分⽀\预测等⽅式处理
+ 预测⽅式下, 要解决预测错误时的处理</li>
+</ul>
+
+<hr />
+
+<p>==需要阻塞的情况：==</p>
+
+<ol>
+  <li>==数据冒险中装入使用冒险lw后需要一个周期阻塞（如果lw后是sw则不用）==</li>
+  <li>==如果<strong>分⽀指令中参与⽐较的寄存器是前⼀条指令的输出</strong>， 则<strong>必须阻塞⼀个周期</strong>后再判断以等待前⼀条指令的结果(因为⽐较运算在ID阶段与前⼀条指令的EX阶段是同时的）即branch前加一个阻塞==</li>
+  <li>==j型指令后一定会有一个周期的阻塞==</li>
+</ol>
+
+<p>易错点：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>读写分开，分支指令的比较在ID阶段，有分支延迟槽，实现了转发
+lw $t0,0($a0)
+beq $t0,0,end
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>上述应该要2个周期的stall，而不是1个，因为beq是在ID阶段就需要数据，只有EX阶段需要数据的才是只需要stall一个周期。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>lw :IF ID EX MEM WB
+beq:   1  2   IF ID EX MEM WB
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<hr />
+
+<ul>
+  <li>结构冒险（资源冲突） ： 多条指令同时使⽤同⼀个功能部件
+    <ul>
+      <li>规定每个功能部件在⼀条指令中只能被⽤⼀次</li>
+      <li>规定每个功能部件只能在某个特定的阶段被⽤</li>
+      <li>指令存储器(Code Cache)和数据存储器(Data Cache)分开</li>
+    </ul>
+  </li>
+  <li>数据冒险（数据相关） ： 前⾯指令的结果是后⾯指令的操作数
+    <ul>
+      <li>软件阻塞： （如： 编译器） 在后⾯的数据相关指令前插⼊nop指令</li>
+      <li>硬件阻塞： 在后⾯数据相关指令的特定流⽔段插⼊“⽓泡”以“阻塞”指令继续执⾏， 直到取得所需数据为⽌</li>
+      <li>“转发”（旁路） ： 把前⾯指令执⾏过程中得到的数据直接传送到后⾯指令。</li>
+      <li>对于取数后直接使⽤的情况（如： Load指令取出的数据是随后的运算指令的操作数） ， 则采⽤“阻塞加转发”的⽅式解决数据冒险</li>
+    </ul>
+  </li>
+  <li>控制冒险（控制相关） ： 返回指令、 分⽀指令等可能改变顺序增量的PC值，由于获取转移⽬标地址的时间较⻓， 使得在⽬标地址产⽣前已经有指令被取到流⽔线中， 如果已经取出执⾏的指令不是正确的指令， 则发⽣控制冒险。
+    <ul>
+      <li>软件阻塞： （如： 编译器） 在控制相关指令后⾯插⼊nop指令</li>
+      <li>硬件阻塞： 在控制相关指令后⾯的指令被取出前插⼊“⽓泡”， 使流⽔线停顿若⼲时钟， 直到控制相关指令得到正确的PC值为⽌</li>
+      <li>采⽤“分⽀预测”技术。 简单（静态） 地预测每次分⽀结果都⼀样， 或根据分⽀指令执⾏历史进⾏动态预测， 动态预测能达到90%以上的成功率</li>
+      <li>采⽤延迟分⽀技术。 将前⾯⼀条与分⽀指令⽆关的指令放到分⽀指令后⾯执⾏， 这样， 流⽔线不会发⽣阻塞现象。 这种对指令顺序进⾏调整的⼯作在程序编译阶段完成</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="三种处理器实现式的较">三种处理器实现⽅式的⽐较</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127160521982.png" alt="image-20221127160521982" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-4/image-20221127160533464.png" alt="image-20221127160533464" /></p>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2022/11/22/4-3-Pipelining/" data-toggle="tooltip" data-placement="top" title="Chapter4-3 Pipelining 流水线数据通路">
+                        Previous<br>
+                        <span>Chapter4-3 Pipelining 流水线数据通路</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2022/11/29/5-1-Memory-Hierarchies/" data-toggle="tooltip" data-placement="top" title="Chapter5-1 存储器层次结构">
+                        Next<br>
+                        <span>Chapter5-1 存储器层次结构</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+
+                <!--   gitalk       -->
+                <div class="comment">
+                <div id="gitalk-container"></div>
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+                <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+                <script>
+                var gitalk = new Gitalk({
+                    id: location.pathname,
+                    clientID: '0db4b4c6d83c061f6b30',
+                    clientSecret: 'e1651c09f1a49b2b4a544cd584d3e8a55454a48a',
+                    repo: 'BlogComment',
+                    owner: 'jaredddddd',
+                    admin: ['jaredddddd'], 
+                    labels: ['Gitalk'],
+                })
+                gitalk.render('gitalk-container')
+                </script> 
+                </div>
+
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0036" 
+                    href="/archive/?tag=Computer-Organization"
+                    title="Computer-Organization"
+                    rel="21">Computer-Organization</a>
+        
+                <a data-sort="0018" 
+                    href="/archive/?tag=NOTES"
+                    title="NOTES"
+                    rel="39">NOTES</a>
+        
+                <a data-sort="0041" 
+                    href="/archive/?tag=Project"
+                    title="Project"
+                    rel="16">Project</a>
+        
+                <a data-sort="0042" 
+                    href="/archive/?tag=AI"
+                    title="AI"
+                    rel="15">AI</a>
+        
+                <a data-sort="0048" 
+                    href="/archive/?tag=OS"
+                    title="OS"
+                    rel="9">OS</a>
+        
+                <a data-sort="0052" 
+                    href="/archive/?tag=ML"
+                    title="ML"
+                    rel="5">ML</a>
+        
+                <a data-sort="0053" 
+                    href="/archive/?tag=PatternRecognition"
+                    title="PatternRecognition"
+                    rel="4">PatternRecognition</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Blog"
+                    title="Blog"
+                    rel="3">Blog</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Distributed-System"
+                    title="Distributed-System"
+                    rel="3">Distributed-System</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=ANN"
+                    title="ANN"
+                    rel="2">ANN</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CPU%E8%AE%BE%E8%AE%A1"
+                    title="CPU设计"
+                    rel="2">CPU设计</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CompilationPrinciple"
+                    title="CompilationPrinciple"
+                    rel="2">CompilationPrinciple</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     TeX: {
+       equationNumbers: {
+         autoNumber: "AMS"
+       }
+     },
+     SVG: {
+       scale: 90
+     },
+     tex2jax: {
+       inlineMath: [ ['$','$'] ],
+       displayMath: [ ['$$','$$'] ],
+       processEscapes: true,
+     }
+   });
+ </script>
+ <script type="text/javascript"
+         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+
+.post-container {
+    background: #fcfbfb; /* 背景颜色 */
+    border-radius: 25px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    padding-top: 40px; /* 特别增加顶部内边距 */
+    margin-top: 20px; /* 添加顶部外边距 */
+    /* margin-left: 40px; */
+    /* width: 900px; */
+}
+
+
+/* 在宽屏幕设备上应用特定样式 */
+@media (min-width: 1024px) {
+  .post-container {
+    margin-left: 40px; /* 向左扩展 */
+    width: 900px; /* 设置宽度 */
+  }
+  .side-catalog{
+    width: 250px;
+  }
+}
+
+.post-container:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* 当鼠标悬停时增加阴影效果 */
+}
+
+.side-catalog {
+    background: #ffffff; /* 背景颜色 */
+    border-radius: 15px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    margin-left: 10pt;
+    /* width: 200px; */
+
+}
+
+
+
+.catalog-container {
+    /* ... 其他样式 ... */
+    display: none; /* 默认不显示catalog */
+    transition: all 0.3s ease; /* 过渡效果 */
+    margin-top: 20px; /* 添加顶部外边距 */
+}
+
+</style>
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; LvKouKou Blog 2025
+                    <br>
+                    <!--  删掉了作者Hux Blog
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                    -->
+                    <!-- 不蒜子 -->
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                    您是Blog的第<span id="busuanzi_value_site_uv"></span>个小伙伴 </br>
+                     <span id="busuanzi_container_page_pv">
+                        本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<!-- 自己添加的 -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TNVD6PR5TQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNVD6PR5TQ');
+</script>
+<!-- 自己添加的 -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        // a = P.find('h1,h2,h3,h4,h5,h6');
+        a = P.find('h1,h2,h3,h4');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<!--鼠标点击爱心动画-->
+<script type="text/javascript" src="/js/love.js"></script>
+</body>
+
+</html>

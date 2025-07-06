@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Earth</title>
+</head>
+
+<body>
+    <div class="container"><canvas class="globe" width="1800" height="1600"></canvas></div>
+</body>
+
+</html>
+
+<style>
+    body {
+        margin: 0;
+        background-color: #ffffff;
+        overflow: hidden;
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+        max-height: 100vmin;
+        max-width: 100vmin;
+        margin: 0 auto;
+    }
+
+    .globe {
+        height: 100vmin;
+        width: auto;
+        cursor: -webkit-grab;
+        cursor: grab;
+    }
+
+    .globe--dragging {
+        cursor: -webkit-grabbing;
+        cursor: grabbing;
+    }
+</style>
+
+<script>
+    // 定义地图上的标记点数据，包括名称、纬度和经度
+    const markers = [
+        {
+            name: 'GuangZhou',
+            lat: 25,      // 纬度（负值表示南半球）
+            long: 113      // 经度
+        }
+    ];
+
+
+    // 全局配置对象，存储应用状态和设置
+    const $ = {
+        canvas: null,    // 画布元素引用
+        ctx: null,       // 2D绘图上下文
+        vCenter: 820,    // 垂直中心点坐标
+        scroll: {        // 当前视角位置
+            lat: 0,        // 纬度偏移
+            long: 20       // 经度偏移
+        },
+        markers: [],     // 标记点数组
+        timing: {        // 动画时间控制
+            speed: 5,     // 旋转速度
+            delta: 0,      // 时间差
+            last: 0        // 上一帧时间戳
+        },
+        drag: {          // 拖拽控制参数
+            start: { x: 0, y: 0 }, // 拖拽起始位置
+            force: 0,              // 拖拽力量/惯性
+            prevX: 0,              // 上一次X坐标
+            isDragging: false      // 是否正在拖拽
+        },
+        colors: {        // 颜色配置
+            pushPinBase: '#969799', // 标记针基座颜色
+            pushPin: '#ed5c50',     // 标记针颜色
+            land: '#fac648',        // 陆地颜色
+            landShade: '#2c606e',   // 陆地阴影
+            ocean: '#2A7B96'        // 海洋颜色
+        },
+        complexShapes: { // 存储复杂形状计算结果的缓存
+            // 用于存储计算后的大陆轮廓
+        }
+    }
+
+    // 线性插值函数：根据归一化值从最小值到最大值之间插值
+    const lerp = (norm, min, max) => {
+        return (max - min) * norm + min;
+    }
+
+    // 归一化函数：将值从一个范围归一化到0-1区间
+    const norm = (value, min, max) => {
+        return (value - min) / (max - min);
+    }
+
+    // 映射函数：将值从一个范围映射到另一个范围
+    const map = (value, sourceMin, sourceMax, destMin, destMax) => {
+        return lerp(norm(value, sourceMin, sourceMax), destMin, destMax);
+    }
+
+    // 处理拖拽移动事件
+    const dragMove = (e) => {
+        if ($.drag.isDragging) {
+            // 获取当前拖拽位置
+            let long = $.drag.start.long,
+                clientX = e.targetTouches ? e.targetTouches[0].clientX : e.clientX, // 兼容触摸和鼠标事件
+                change = clientX - $.drag.start.x,           // 与起始点的总位移
+                prevChange = clientX - $.drag.prevX,         // 与上一点的位移
+                canvasWidth = $.canvas.getBoundingClientRect().width; // 获取画布宽度
+
+            // 计算经度变化
+            long += map(change, 0, canvasWidth, 0, 200);
+
+            // 确保经度在0-360范围内
+            while (long < 0) {
+                long += 360;
+            }
+
+            // 处理拖拽方向改变的情况，重置力量
+            if (prevChange > 0 && $.drag.force < 0) {
+                $.drag.force = 0;
+            } else if (prevChange < 0 && $.drag.force > 0) {
+                $.drag.force = 0;
+            }
+
+            // 更新拖拽力量（用于惯性滚动）
+            $.drag.force += prevChange * (600 / canvasWidth);
+            $.drag.prevX = clientX;
+            // 更新当前视角经度
+            $.scroll.long = Math.abs(long) % 360;
+        }
+    }
+
+    // 开始拖拽处理函数
+    const dragStart = (e) => {
+        if (e.targetTouches) {
+            e.preventDefault(); // 防止触摸设备上的默认行为
+            // 记录触摸起始位置
+            $.drag.start = {
+                x: e.targetTouches[0].clientX,
+                y: e.targetTouches[0].clientY,
+                long: $.scroll.long
+            };
+        } else {
+            // 记录鼠标起始位置
+            $.drag.start = {
+                x: e.clientX,
+                y: e.clientY,
+                long: $.scroll.long
+            };
+        }
+        $.timing.speed = 0; // 停止自动旋转
+        $.drag.isDragging = true; // 标记正在拖拽
+        $.canvas.classList.add('globe--dragging'); // 添加样式类
+    }
+
+    // 结束拖拽处理函数
+    const dragEnd = (e) => {
+        if ($.drag.isDragging) {
+            // 根据拖拽力量设置惯性旋转速度
+            $.timing.speed = map($.drag.force, 0, 220, 0, 40);
+            $.drag.isDragging = false;
+            $.canvas.classList.remove('globe--dragging'); // 移除样式类
+        }
+    }
+
+    // 根据纬度计算球体上点的半径
+    const getRadius = (latitude) => {
+        let yPart = Math.PI * 2,
+            radius = 600,
+            frame = map(latitude, 90, -90, 0, 1.65);
+
+        return Math.max(Math.sin(yPart + frame) * radius, 0);
+    }
+
+    // 将经纬度坐标转换为3D空间中的坐标点
+    const latLongSphere = (lat, lon, radius) => {
+        let x = 900,       // 球心X坐标
+            y = $.vCenter, // 球心Y坐标
+            z = 0;         // 初始Z坐标
+
+        // 翻转经度方向
+        lon = -lon;
+        // 将经纬度转换为弧度
+        let phi = (90 - lat) * (Math.PI / 180),   // 纬度对应的极角
+            teta = (lon + 180) * (Math.PI / 180); // 经度对应的方位角
+
+        // 计算3D坐标
+        x -= -(radius * Math.sin(phi) * Math.cos(teta));
+        y -= radius * Math.cos(phi);
+        z = radius * Math.sin(phi) * Math.sin(teta); // Z轴用于判断点是否在前面
+
+        return {
+            x, y, z
+        };
+    }
+
+    // 绘制地球基础球体
+    const drawGlobe = (ctx, color) => {
+        ctx.beginPath();
+        ctx.arc(900, $.vCenter, 600, 0, 2 * Math.PI); // 画一个圆作为地球
+        ctx.closePath();
+        ctx.fillStyle = color;
+        ctx.fill(); // 填充颜色
+    }
+
+    // 获取大陆轮廓路径
+    const getLandMassPaths = (name, radius, thickness) => {
+        // 获取大陆基础轮廓点
+        let landmassBasic = continents[name],
+            landmass = null,
+            first = true,
+            rotated = false,
+            paths = {
+                ground: new Path2D(), // 地面路径
+                top: new Path2D(),    // 顶部路径
+                sections: [],         // 分段
+                isVisible: false      // 是否可见
+            },
+            section = {
+                ground: [],
+                top: []
+            };
+
+        // 使用缓存的复杂形状或生成新的
+        if ($.complexShapes[name]) {
+            landmass = $.complexShapes[name];
+        } else {
+            // 增强大陆轮廓精细度
+            landmass = complexify(landmassBasic, 1);
+            $.complexShapes[name] = landmass; // 缓存结果
+        }
+
+        // 旋转大陆点，使最前面的点在数组开头
+        for (let i = 0; i < landmass.length; i++) {
+            let point = landmass[0],
+                p = latLongSphere(point.lat + $.scroll.lat, point.long + $.scroll.long, radius);
+
+            if (p.z < 0) { // 如果点在背面
+                landmass.splice(0, 0, landmass.pop()); // 将末尾点移到开头
+                rotated = true;
+            } else {
+                break;
+            }
+        }
+
+        // 处理轮廓点，生成路径
+        let drawCurve = false,      // 是否正在绘制曲线
+            curveStart = null,      // 曲线起始点
+            sectionIsVisible = false; // 当前部分是否可见
+
+        landmass.forEach((point) => {
+            // 计算当前点的3D坐标（地面点和厚度点）
+            let p = latLongSphere(point.lat + $.scroll.lat, point.long + $.scroll.long, radius),
+                p2 = latLongSphere(point.lat + $.scroll.lat, point.long + $.scroll.long, radius + thickness);
+
+            // 检查当前点是否可见
+            if (!sectionIsVisible && p.z > -200) {
+                sectionIsVisible = true;
+            }
+
+            // 将点添加到当前部分
+            section.ground.push({
+                x: p.x,
+                y: p.y,
+                z: p.z
+            });
+            section.top.push({
+                x: p2.x,
+                y: p2.y,
+                z: p2.z
+            });
+
+            // 处理边缘点（大陆分段）
+            if (point.edge && !first) {
+                if (sectionIsVisible) {
+                    paths.sections.push(Object.assign({}, section));
+                }
+
+                // 开始新一部分
+                section = {
+                    ground: [{ x: p.x, y: p.y, z: p.z }],
+                    top: [{ x: p2.x, y: p2.y, z: p2.z }]
+                };
+
+                sectionIsVisible = false;
+            }
+
+            first = false;
+
+            // 根据点的可见性（z>0表示在前面），决定如何绘制
+            if (p.z > 0) {
+                if (drawCurve) {
+                    // 结束曲线绘制
+                    drawCurve = false;
+                    // 闭合曲线
+                    closeCurve(paths.ground, curveStart, p, radius);
+                    closeCurve(paths.top, curveStart, p2, radius + thickness);
+                } else {
+                    // 继续直线绘制
+                    paths.ground.lineTo(p.x, p.y);
+                    paths.top.lineTo(p2.x, p2.y);
+                    paths.isVisible = true;
+                }
+            } else {
+                // 当点在背面时，开始绘制曲线
+                if (!drawCurve) {
+                    drawCurve = true;
+                    curveStart = {
+                        x: p.x,
+                        y: p.y,
+                        z: p.z
+                    };
+                }
+            }
+        });
+
+        // 处理最后一点是否在曲线中
+        if (drawCurve) {
+            drawCurve = false;
+            let point = landmass.slice(-1)[0],
+                p = latLongSphere(point.lat + $.scroll.lat, point.long + $.scroll.long, radius),
+                p2 = latLongSphere(point.lat + $.scroll.lat, point.long + $.scroll.long, radius + thickness);
+
+            closeCurve(paths.ground, curveStart, p, radius);
+            closeCurve(paths.top, curveStart, p2, radius + thickness);
+        }
+
+        // 闭合路径
+        let p = latLongSphere(landmass[0].lat + $.scroll.lat, landmass[0].long + $.scroll.long, radius),
+            p2 = latLongSphere(landmass[0].lat + $.scroll.lat, landmass[0].long + $.scroll.long, radius + thickness);
+
+        section.ground.push({
+            x: p.x,
+            y: p.y,
+            z: p.z
+        });
+        section.top.push({
+            x: p2.x,
+            y: p2.y,
+            z: p2.z
+        });
+
+        // 添加最后一段
+        if (section) {
+            paths.sections.push(Object.assign({}, section));
+        }
+
+        return paths;
+    }
+
+    // 闭合曲线函数，处理大陆轮廓在地球边缘的曲线部分
+    const closeCurve = (path, curveStart, p, radius) => {
+        // 获取角度
+        let a1 = getAngle({ x: 900, y: $.vCenter }, curveStart),
+            a2 = getAngle({ x: 900, y: $.vCenter }, p),
+            compare = a1 - a2,
+            startAngle = a1 * (Math.PI / 180),
+            endAngle = a2 * (Math.PI / 180);
+
+        // 在路径上添加圆弧，模拟地球曲面
+        path.arc(900, $.vCenter, radius, startAngle, endAngle, compare > 0 && compare < 180);
+    }
+
+    // 获取圆上的点坐标
+    const getCirclePoint = (angle, radius) => {
+        let radian = (angle / 180) * Math.PI;
+
+        return {
+            x: radius * Math.cos(radian) + 900,
+            y: radius * Math.sin(radian) + 800
+        }
+    }
+
+    // 计算两点间的角度
+    const getAngle = (p1, p2) => {
+        let dy = p2.y - p1.y,
+            dx = p2.x - p1.x,
+            theta = Math.atan2(dy, dx);
+        theta *= 180 / Math.PI; // 转换为角度
+        return theta;
+    }
+
+    // 增强轮廓精细度，在原有点之间插入更多点
+    const complexify = (landmass, level) => {
+        let complex = [];
+
+        // 遍历所有点对
+        for (let i = 0; i < (landmass.length - 1); i++) {
+            let p1 = landmass[i],
+                p2 = landmass[i + 1],
+                steps = Math.floor(distanceBetween(p1, p2) / level); // 根据距离计算需要插入的点数
+
+            p1.edge = true; // 标记为边缘点
+            complex.push(p1);
+
+            // 在两点之间插入新点
+            if (steps > 0) {
+                let s = Math.floor(100 / steps);
+
+                for (let i = 1; i <= steps; i++) {
+                    let percentage = i * s;
+
+                    if (percentage <= 100) {
+                        // 线性插值生成新点
+                        let p = {
+                            lat: map(percentage, 0, 100, p1.lat, p2.lat),
+                            long: map(percentage, 0, 100, p1.long, p2.long)
+                        }
+
+                        complex.push(p);
+                    }
+                }
+            }
+        }
+
+        // 添加最后一个点
+        let last = landmass.pop();
+        last.edge = true;
+        complex.push(last);
+
+        return complex;
+    }
+
+    // 计算两点间的距离
+    const distanceBetween = (p1, p2) => {
+        let a = p1.long - p2.long,
+            b = p1.lat - p2.lat;
+
+        return Math.hypot(a, b); // 计算欧几里得距离
+    }
+
+    // 定义各大洲的轮廓点（经纬度坐标）
+    const continents = {
+        africa: [
+            { lat: 35.7, long: -5.8 },
+            { lat: 37.1, long: 10.9 },
+            { lat: 30, long: 32.2 },
+            { lat: 10.6, long: 44 },
+            { lat: 11.8, long: 51 },
+            { lat: -27.6, long: 30.5 },
+            { lat: -33.8, long: 18.6 },
+            { lat: 4.7, long: 9.2 },
+            { lat: 4.9, long: -7.7 },
+            { lat: 14.6, long: -16.8 },
+            { lat: 35.7, long: -5.8 }
+        ],
+        australia: [
+            { lat: -22, long: 114 },
+            { lat: -19, long: 121 },
+            { lat: -12, long: 130 },
+            { lat: -12, long: 136 },
+            { lat: -24, long: 153 },
+            { lat: -37, long: 150 },
+            { lat: -37, long: 140 },
+            { lat: -30, long: 131 },
+            { lat: -34, long: 115 },
+            { lat: -22, long: 114 }
+        ],
+        southamerica: [
+            { lat: 12, long: -73 },
+            { lat: 10, long: -61 },
+            { lat: -6, long: -34 },
+            { lat: -43, long: -62 },
+            { lat: -54, long: -67 },
+            { lat: -51, long: -74 },
+            { lat: -18, long: -70 },
+            { lat: -8, long: -77 },
+            { lat: -5, long: -81 },
+            { lat: 12, long: -73 }
+        ],
+        northamerica: [
+            { lat: 10, long: -72 },
+            { lat: 7, long: -75 },
+            { lat: 19, long: -104 },
+            { lat: 36, long: -121 },
+            { lat: 59, long: -140 },
+            { lat: 54, long: -167 },
+            { lat: 70, long: -163 },
+            { lat: 68, long: -137 },
+            { lat: 65, long: -88 },
+            { lat: 57, long: -92 },
+            { lat: 54, long: -80 },
+            { lat: 62, long: -75 },
+            { lat: 50, long: -54 },
+            { lat: 31, long: -80 },
+            { lat: 25, long: -79 },
+            { lat: 26, long: -81 },
+            { lat: 29, long: -84 },
+            { lat: 28, long: -96 },
+            { lat: 19, long: -95 },
+            { lat: 20, long: -87 },
+            { lat: 14, long: -83 },
+            { lat: 10, long: -72 },
+        ],
+        greenland: [
+            { lat: 78, long: -68 },
+            { lat: 81, long: -18 },
+            { lat: 69, long: -25 },
+            { lat: 60, long: -42 },
+            { lat: 67, long: -52 },
+            { lat: 78, long: -68 }
+        ],
+        japan: [
+            { lat: 45, long: 141 },
+            { lat: 43, long: 146 },
+            { lat: 35, long: 140 },
+            { lat: 31, long: 131 },
+            { lat: 34, long: 129 },
+            { lat: 36, long: 136 },
+            { lat: 39, long: 140 },
+            { lat: 45, long: 141 }
+        ],
+        indonesia: [
+            { lat: 7, long: 117 },
+            { lat: 5, long: 119 },
+            { lat: 0, long: 118 },
+            { lat: -4, long: 115 },
+            { lat: -3, long: 111 },
+            { lat: 2, long: 108 },
+            { lat: 7, long: 117 }
+        ],
+        papua: [
+            { lat: -1, long: 132 },
+            { lat: -3, long: 142 },
+            { lat: -10, long: 146 },
+            { lat: -7, long: 140 },
+            { lat: -6, long: 134 },
+            { lat: -1, long: 132 }
+        ],
+        nz: [
+            { lat: -35, long: 174 },
+            { lat: -38, long: 178 },
+            { lat: -46, long: 169 },
+            { lat: -45, long: 165 },
+            { lat: -38, long: 175 },
+            { lat: -35, long: 174 }
+        ],
+        asia: [
+            { lat: 64, long: 37 },
+            { lat: 73, long: 80 },
+            { lat: 66, long: 98 },
+            { lat: 69, long: 175 },
+            { lat: 60, long: 163 },
+            { lat: 38, long: 118 },
+            { lat: 28, long: 119 },
+            { lat: 23, long: 108 },
+            { lat: 12, long: 109 },
+            { lat: 9, long: 102 },
+            { lat: 23, long: 88 },
+            { lat: 16, long: 82 },
+            { lat: 7, long: 79 },
+            { lat: 25, long: 68 },
+            { lat: 27, long: 62 },
+            { lat: 21, long: 58 },
+            { lat: 13, long: 44 },
+            { lat: 30, long: 33.5 },
+            { lat: 64, long: 37 }
+        ],
+        europe: [
+            { lat: 37, long: -9 },
+            { lat: 43, long: -9 },
+            { lat: 44, long: 0 },
+            { lat: 48, long: -4 },
+            { lat: 53, long: 5 },
+            { lat: 56, long: 8 },
+            { lat: 54, long: 11 },
+            { lat: 55, long: 21 },
+            { lat: 59, long: 30 },
+            { lat: 60, long: 23 },
+            { lat: 61, long: 22 },
+            { lat: 65, long: 26 },
+            { lat: 65, long: 22 },
+            { lat: 60, long: 17 },
+            { lat: 59, long: 19 },
+            { lat: 56, long: 16 },
+            { lat: 56, long: 13 },
+            { lat: 60, long: 11 },
+            { lat: 60, long: 5 },
+            { lat: 69, long: 15 },
+            { lat: 70, long: 28 },
+            { lat: 68, long: 48 },
+            { lat: 36, long: 38 },
+            { lat: 45, long: 16 },
+            { lat: 45, long: 12 },
+            { lat: 40, long: 18 },
+            { lat: 37, long: 15 },
+            { lat: 40, long: 14 },
+            { lat: 44, long: 8 },
+            { lat: 41, long: 1 },
+            { lat: 37, long: -2 },
+            { lat: 37, long: -8 },
+            { lat: 37, long: -9 }
+        ],
+        britain: [
+            { lat: 50, long: -5 },
+            { lat: 54, long: -3 },
+            { lat: 57, long: -6 },
+            { lat: 57, long: -2 },
+            { lat: 51, long: 1 },
+            { lat: 50, long: -5 }
+        ],
+        madagaskar: [
+            { lat: -13, long: 49 },
+            { lat: -17, long: 43 },
+            { lat: -24, long: 44 },
+            { lat: -25, long: 47 },
+            { lat: -13, long: 49 }
+        ]
+    }
+
+    // 更新应用状态
+    const updateState = (delta) => {
+        // 衰减拖拽力量
+        $.drag.force *= 0.8;
+
+        // 如果有旋转速度，更新经度位置
+        if ($.timing.speed) {
+            $.scroll.long += Math.round = ($.timing.speed / 100) * delta;
+
+            // 确保经度在0-360范围内
+            if ($.scroll.long > 360) {
+                $.scroll.long = $.scroll.long % 360;
+            } else if ($.scroll.long < 0) {
+                $.scroll.long += 360;
+            }
+        }
+    }
+
+    // 动画循环函数
+    const animateLoop = (time) => {
+        // 计算帧间时间差
+        $.timing.delta = Math.abs($.timing.last - time);
+        $.timing.last = time;
+
+        // 更新应用状态
+        updateState($.timing.delta);
+
+        // 清空画布
+        $.ctx.fillStyle = '#ffffff';
+        $.ctx.fillRect(0, 0, 1800, 1600);
+
+        // 绘制背面标记
+        drawMarkers($.ctx, $.markers, false);
+
+        // 绘制所有大陆
+        let continentNames = ['southamerica', 'northamerica', 'greenland', 'japan', 'africa', 'australia', 'asia', 'indonesia', 'europe', 'britain', 'madagaskar', 'papua', 'nz'];
+        let landPaths = [], // 存储陆地路径
+            se = [];        // 存储分段
+
+        // 处理每个大陆
+        continentNames.forEach((name) => {
+            let paths = getLandMassPaths(name, 600, 30); // 获取大陆路径
+
+            if (paths) {
+                $.ctx.fillStyle = $.colors.landShade;
+
+                // 收集所有分段
+                paths.sections.forEach((section) => {
+                    se.push(section);
+                    drawSection($.ctx, section, true); // 绘制背面
+                });
+
+                // 收集可见的路径
+                if (paths.isVisible) {
+                    landPaths.push(paths.top);
+                }
+            }
+        });
+
+        // 绘制地球基础球体
+        drawGlobe($.ctx, $.colors.ocean);
+
+        // 绘制大陆阴影部分
+        $.ctx.fillStyle = $.colors.landShade;
+        se.forEach((section) => {
+            drawSection($.ctx, section, false);
+        });
+
+        // 绘制大陆顶部（可见部分）
+        landPaths.forEach((path) => {
+            $.ctx.fillStyle = $.colors.land;
+            $.ctx.fill(path);
+        });
+
+        // 绘制前面的标记
+        drawMarkers($.ctx, $.markers, true);
+
+        // 请求下一帧动画
+        requestAnimationFrame(animateLoop);
+    }
+
+    // 绘制大陆分段
+    const drawSection = (ctx, section, drawBackside) => {
+        let hasStarted = false,
+            limit = -25; // Z轴可见性阈值
+
+        // 绘制地面路径
+        section.ground.forEach(p => {
+            if (drawBackside && p.z < 0 || !drawBackside && p.z >= limit) {
+                if (!hasStarted) {
+                    ctx.beginPath();
+                    hasStarted = true;
+                }
+
+                ctx.lineTo(p.x, p.y);
+            }
+        });
+
+        // 反转顶部点顺序（如果绘制背面）
+        section.top = drawBackside ? section.top.reverse() : section.top;
+
+        // 绘制顶部路径
+        section.top.forEach(p => {
+            if (drawBackside && p.z < 0 || !drawBackside && p.z >= limit) {
+                ctx.lineTo(p.x, p.y);
+            }
+        });
+
+        // 闭合并填充路径
+        if (hasStarted) {
+            ctx.closePath();
+            ctx.fill();
+        }
+    }
+
+    // 绘制所有标记点
+    const drawMarkers = (ctx, markers, drawFront) => {
+        for (const marker of markers) {
+            // 计算标记点的位置
+            let ground = latLongSphere(marker.lat + $.scroll.lat, marker.long + $.scroll.long, 630), // 地面点
+                needleTop = latLongSphere(marker.lat + $.scroll.lat, marker.long + $.scroll.long, 730), // 针尖
+                pinTop = latLongSphere(marker.lat + $.scroll.lat, marker.long + $.scroll.long, 750); // 大头针顶部
+
+            // 根据Z轴判断是否绘制（前面或后面）
+            if (ground.z >= 0 && drawFront) {
+                drawMapPushPinBase(ctx, ground, needleTop, $.colors.pushPinBase); // 绘制针杆
+                drawMapPushPin(ctx, pinTop, $.colors.pushPin); // 绘制针头
+                drawMarkerText(ctx, marker.name, pinTop); // 绘制文本
+            } else if (!drawFront) {
+                drawMapPushPin(ctx, pinTop, $.colors.pushPin);
+                drawMapPushPinBase(ctx, ground, needleTop, $.colors.pushPinBase);
+                drawMarkerText(ctx, marker.name, pinTop);
+            }
+        }
+    }
+
+    // 绘制标记文本
+    const drawMarkerText = (ctx, text, pos) => {
+        ctx.font = "60px 'Pirata One', cursive"; // 设置字体
+        ctx.fillStyle = 'black';
+
+        // 获取文本宽度以便居中显示
+        let metrics = ctx.measureText(text);
+
+        // 绘制文本
+        ctx.fillText(text, pos.x - (metrics.width / 2), pos.y - 30);
+    }
+
+    // 绘制地图大头针的针杆
+    const drawMapPushPinBase = (ctx, basePos, topPos, color) => {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 7;
+        ctx.beginPath();
+        ctx.moveTo(basePos.x, basePos.y);
+        ctx.lineTo(topPos.x, topPos.y);
+        ctx.stroke();
+    }
+
+    // 绘制地图大头针的针头
+    const drawMapPushPin = (ctx, pos, color) => {
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, 20, 0, 2 * Math.PI); // 绘制圆形针头
+        ctx.fill();
+    }
+
+    // 初始化函数
+    const init = (markers) => {
+        $.markers = markers; // 设置标记点
+        $.canvas = document.querySelector('.globe'); // 获取画布元素
+        $.ctx = $.canvas.getContext('2d'); // 获取2D绘图上下文
+
+        // 添加事件监听器
+        $.canvas.addEventListener("touchstart", dragStart, false); // 触摸开始
+        $.canvas.addEventListener("mousedown", dragStart, false); // 鼠标按下
+        $.canvas.addEventListener("touchend", dragEnd, false); // 触摸结束
+        $.canvas.addEventListener("mouseup", dragEnd, false); // 鼠标释放
+        $.canvas.addEventListener("touchmove", dragMove, false); // 触摸移动
+        $.canvas.addEventListener("mousemove", dragMove, false); // 鼠标移动
+        $.canvas.addEventListener("mouseleave", dragEnd, false); // 鼠标离开
+
+        // 启动动画循环
+        requestAnimationFrame(animateLoop);
+    }
+
+    // 初始化应用
+    init(markers);
+
+</script>

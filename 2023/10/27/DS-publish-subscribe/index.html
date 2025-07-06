@@ -1,0 +1,2370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @LvKouKou 的个人博客，与你一起发现更大的世界 | 要做一个想环游世界的程序员">
+    <meta name="keywords" content="LvKouKou, jaredddddd, @jaredddddd, LvKouKou Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <link
+  rel="stylesheet"
+  href="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+/>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  defer="defer"
+></script>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  defer="defer"
+  onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
+></script>
+    <script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/mathtex-script-type.min.js"
+  defer="defer"
+></script>
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="gRPC实现消息订阅系统 - LvKouKou的博客 | LV Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="
+    
+    
+    
+        Distributed Systems
+    
+    
+    
+        Homework 3
+    
+    
+    
+        Student ID: 21307381 &nbsp;&nbsp;
+        Student Name: LJW 
+        
+        Date: 2023.10.27
+ ...">
+    
+    <meta property="article:published_time" content=" 2023-10-27T00:00:00Z">
+    
+    
+    <meta property="article:author" content="LvKouKou">
+    
+    
+    <meta property="article:tag" content="Distributed-System">
+    
+    <meta property="article:tag" content="Project">
+    
+    
+    <meta property="og:image" content="https://jaredddddd.github.io/img/LVKOUKOU.jpg">
+    <meta property="og:url" content="https://jaredddddd.github.io/2023/10/27/DS-publish-subscribe/">
+    <meta property="og:site_name" content="LvKouKou的博客 | LV Blog">
+
+    <title>gRPC实现消息订阅系统 - LvKouKou的博客 | LV Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jaredddddd.github.io/2023/10/27/DS-publish-subscribe/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* 打字机效果的样式 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #666 }
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid #666;
+            white-space: nowrap;
+            word-wrap: break-word;
+            letter-spacing: .1em;
+            width: fit-content;
+            margin: 0 auto;
+            animation: 
+                typing 2s steps(40, end), /* 打字机效果, 3s 完成打字, 每步40个字符 */
+                blink-caret .75s step-end infinite; /* 光标闪烁效果, 0.75s 完成一次闪烁  */
+        }
+
+        /* 添加包装容器样式 */
+        .typing-wrapper {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%; /* 确保不会超出父容器 */
+        }
+
+        /* 添加响应式样式 */
+        @media (max-width: 768px) {
+        .typing-effect {
+            font-size: 16px; /* 在手机上可以适当调整字体大小 */
+            letter-spacing: normal; /* 在手机上减小字间距 */
+        }
+    }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptions = document.getElementsByClassName('subheading');
+            if (descriptions.length > 0) {
+                const description = descriptions[0];
+                const text = description.textContent;
+                description.innerHTML = `<span class="typing-wrapper"><span class="typing-effect">${text}</span></span>`;
+            }
+        });
+    </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">LvKouKou Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/resume-home/">Resume</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/roadtrip/">On The Road</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="Searching...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!--//添加评论系统gitalk-->
+<link rel="stylesheet" href="../../../../css/gitalk.css">
+<script src="../../../../js/gitalk.min.js"></script>
+
+<!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=Distributed-System" title="Distributed-System">Distributed-System</a>
+                        
+                        <a class="tag" href="/archive/?tag=Project" title="Project">Project</a>
+                        
+                    </div>
+                    <h1>gRPC实现消息订阅系统</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by LvKouKou on October 27, 2023</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<div align="center" style="page-break-after: always;">
+    <img src="/img/in-post/DS-publish-subscribe/image-20230327104636895-1679885221095.png" alt="image-20230327104636895-1679885221095" style="zoom:120%;" />
+    <br /><br /><br /><br />
+    <font size="20" face="Impact">
+        Distributed Systems
+    </font>
+    <br /><br /><br />
+    <font size="6" face="Arial Black">
+        Homework 3
+    </font>
+    <br /><br /><br />
+    <font size="5" face="华文隶书">
+        Student ID: 21307381 &nbsp;&nbsp;
+        Student Name: LJW <br />
+        <br />
+        Date: 2023.10.27
+    </font>
+    <br /><br />
+    <font size="5" face="华文隶书">
+        Lectured by: Pengfei Chen<br />
+       	Distributed Systems Course<br />
+        Sun Yat-sen University<br />
+    </font>
+</div>
+
+<h1 id="要求">要求</h1>
+
+<p>使用protobuf和gRPC等远程过程调用的方法实现消息订阅（publish-subscribe）系统，该订阅系统能够实现简单的消息传输，还可以控制消息在服务器端存储的时间。(编程语言不限，但是推荐使用python和C；)</p>
+
+<h2 id="1-grpc">1. gRPC</h2>
+
+<p>gRPC是搭建分布式应用接口和客户端的框架。在 gRPC 中，客户端应用程序可以直接调用不同机器上的服务器应用程序上的方法，就像它是本地对象一样，可以更容易创建分布式应用程序和服务。与许多 RPC 系统一样，gRPC 基于定义服务的思想，指定可以远程调用的方法及其参数和返回类型。在服务端，服务端实现这个接口并运行一个 gRPC 服务器来处理客户端调用。在客户端，客户端有一个存根（在某些语言中仅称为客户端），它提供与服务器相同的方法。</p>
+
+<p>gRPC客户端和服务端可以在多种环境中运行和交互，例如用java写一个服务端，可以用go语言写客户端调用。</p>
+
+<h2 id="2-protobuf">2. protobuf</h2>
+
+<p>数据在进行网络传输的时候，需要进行序列化，序列化协议有很多种，比如xml, json，protobuf等。gRPC默认使用protocol buffers，这是google开源的一套成熟的结构数据序列化机制，适合高性能、对响应速度有要求的数据传输场景。因为profobuf是二进制数据格式，需要编码和解码。数据本身不具有可读性。因此只能反序列化之后得到真正可读的数据。</p>
+
+<p><strong>优势：</strong></p>
+
+<ol>
+  <li>序列化后体积相比Json和XML很小，适合网络传输</li>
+  <li>支持跨平台多语言</li>
+  <li>消息格式升级和兼容性还不错</li>
+  <li>序列化反序列化速度很快</li>
+</ol>
+
+<h2 id="3-样例实验熟悉grpc的使用">3. 样例实验熟悉gRPC的使用</h2>
+
+<p>参考：<a href="https://blog.csdn.net/Java_KW/article/details/124334604?spm=1001.2101.3001.6650.7&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-7-124334604-blog-121068333.235%5Ev38%5Epc_relevant_default_base&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-7-124334604-blog-121068333.235%5Ev38%5Epc_relevant_default_base&amp;utm_relevant_index=8">gRPC 框架 简单使用（python版）</a></p>
+
+<h3 id="31">3.1</h3>
+
+<p>首先，安装python需要的库</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="n">pip</span> <span class="n">install</span> <span class="n">grpcio</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">grpcio</span><span class="o">-</span><span class="n">tools</span>  
+<span class="n">pip</span> <span class="n">install</span> <span class="n">protobuf</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><img src="/img/in-post/DS-publish-subscribe/image-20231022232443807.png" alt="image-20231022232443807" /></p>
+
+<hr />
+
+<h3 id="32-定义接口并编译">3.2 定义接口并编译</h3>
+
+<p>定义接口：</p>
+
+<p>这个文件首先定义了两个数据结构，一个是用户的详细信息User，一个是用户信息格式化输出。</p>
+
+<p>需要注意的是当一个message中定义多个变量时，赋值的编号不能相同，如User中的id和name分别是1和2。</p>
+
+<p>然后定义了一个简单的服务UserInfo，将User传入，最后返回Reply（注意是returns，加了s）</p>
+
+<div class="language-protobuf highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre></td><td class="rouge-code"><pre><span class="na">syntax</span> <span class="o">=</span> <span class="s">"proto3"</span><span class="p">;</span>
+
+<span class="kn">package</span> <span class="nn">hello</span><span class="p">;</span>
+
+<span class="kd">message</span> <span class="nc">User</span> <span class="p">{</span>
+	<span class="kt">string</span> <span class="na">id</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+	<span class="kt">string</span> <span class="na">name</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">message</span> <span class="nc">Reply</span> <span class="p">{</span>
+	<span class="kt">string</span> <span class="kd">message</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">service</span> <span class="n">UserInfo</span> <span class="p">{</span>
+	<span class="k">rpc</span> <span class="n">Info</span> <span class="p">(</span><span class="n">User</span><span class="p">)</span> <span class="k">returns</span> <span class="p">(</span><span class="n">Reply</span><span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span>
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<hr />
+
+<p>然后，在命令行中使用gRPC的工具包，生成gRPC服务类：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>python3 -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. ./hello.proto
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>它会生成两个文件<code class="language-plaintext highlighter-rouge">hello_pb2.py</code>和<code class="language-plaintext highlighter-rouge">hello_pb2_grpc.py</code>.</p>
+
+<p>大致可以理解为：<code class="language-plaintext highlighter-rouge">_pb2</code>中定义了数据结构。<code class="language-plaintext highlighter-rouge">_pb2_grpc</code>中定义了相关的方法。</p>
+
+<p><img src="/img/in-post/DS-publish-subscribe/image-20231022233025336.png" alt="image-20231022233025336" /></p>
+
+<hr />
+
+<h3 id="33-编写客户端和服务器">3.3. 编写客户端和服务器</h3>
+
+<h4 id="grpc-服务器server">gRPC 服务器server</h4>
+
+<p>如下，定义 gRPC 服务器<code class="language-plaintext highlighter-rouge">hello_server.py</code>，并堵塞监测本地50051端口，等待接收数据：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+</pre></td><td class="rouge-code"><pre><span class="kn">from</span> <span class="nn">concurrent</span> <span class="kn">import</span> <span class="n">futures</span>  <span class="c1"># 导入futures模块，用于处理并发任务
+</span>
+<span class="kn">import</span> <span class="nn">grpc</span>  <span class="c1"># 导入grpc库
+</span><span class="kn">import</span> <span class="nn">hello_pb2</span>  <span class="c1"># 导入hello_pb2模块
+</span><span class="kn">import</span> <span class="nn">hello_pb2_grpc</span>  <span class="c1"># 导入hello_pb2_grpc模块
+</span>
+<span class="k">class</span> <span class="nc">UserInfo</span><span class="p">(</span><span class="n">hello_pb2_grpc</span><span class="p">.</span><span class="n">UserInfoServicer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">Info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>  <span class="c1"># 实现proto文件中定义的Info函数
+</span>        <span class="k">print</span><span class="p">(</span><span class="s">'receive data:id=%s,name=%s'</span><span class="o">%</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="nb">id</span><span class="p">,</span> <span class="n">request</span><span class="p">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">hello_pb2</span><span class="p">.</span><span class="n">Reply</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s">'id: %s; name: %s'</span> <span class="o">%</span> <span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="nb">id</span><span class="o">+</span><span class="s">' Processed by the server'</span><span class="p">,</span> <span class="n">request</span><span class="p">.</span><span class="n">name</span><span class="o">+</span><span class="s">' Processed by the server'</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">serve</span><span class="p">():</span>
+    <span class="n">server</span> <span class="o">=</span> <span class="n">grpc</span><span class="p">.</span><span class="n">server</span><span class="p">(</span><span class="n">futures</span><span class="p">.</span><span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span>  <span class="c1"># 创建一个服务器对象
+</span>    <span class="n">hello_pb2_grpc</span><span class="p">.</span><span class="n">add_UserInfoServicer_to_server</span><span class="p">(</span><span class="n">UserInfo</span><span class="p">(),</span> <span class="n">server</span><span class="p">)</span>  <span class="c1"># 将UserInfo服务添加到服务器中
+</span>    <span class="n">server</span><span class="p">.</span><span class="n">add_insecure_port</span><span class="p">(</span><span class="s">'[::]:50051'</span><span class="p">)</span>  <span class="c1"># 在指定端口上启动服务器
+</span>    <span class="n">server</span><span class="p">.</span><span class="n">start</span><span class="p">()</span>  <span class="c1"># 启动服务器
+</span>    <span class="k">print</span><span class="p">(</span><span class="s">"Server start running"</span><span class="p">)</span>
+    <span class="n">server</span><span class="p">.</span><span class="n">wait_for_termination</span><span class="p">()</span>  <span class="c1"># 保持服务器运行，等待终止信号
+</span>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
+    <span class="n">serve</span><span class="p">()</span>
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>在代码中，<code class="language-plaintext highlighter-rouge">UserInfo</code> 类继承自生成的<code class="language-plaintext highlighter-rouge">hello_pb2_grpc.UserInfoServicer</code>类，并实现了.proto文件中定义的 <code class="language-plaintext highlighter-rouge">Info</code> 函数，用于处理客户端发起的远程调用请求。这个函数接收一个请求对象 <code class="language-plaintext highlighter-rouge">request</code> 和一个上下文对象 <code class="language-plaintext highlighter-rouge">context</code>，并返回一个包含用户信息的响应对象。</p>
+
+<p><code class="language-plaintext highlighter-rouge">request</code>也就是.proto文件中定义的传入函数的值（样例中为<code class="language-plaintext highlighter-rouge">User</code>），</p>
+
+<p>在<code class="language-plaintext highlighter-rouge">serve()</code>函数中，代码首先创建了一个 gRPC 服务器对象，并通过<code class="language-plaintext highlighter-rouge">futures.ThreadPoolExecutor()</code>配置了一个线程池执行器，用于处理并发任务。然后，将<code class="language-plaintext highlighter-rouge">UserInfo</code>服务添加到服务器对象中。接下来，通过 <code class="language-plaintext highlighter-rouge">server.add_insecure_port()</code> 方法指定服务器监听的端口，并使用 <code class="language-plaintext highlighter-rouge">server.start()</code> 启动服务器。最后，使用 <code class="language-plaintext highlighter-rouge">server.wait_for_termination()</code> 保持服务器运行，等待终止信号。</p>
+
+<h4 id="grpc-客户端client">gRPC 客户端client</h4>
+
+<p>如下，定义 gRPC 客户端<code class="language-plaintext highlighter-rouge">hello_client.py</code>，通过接收参数，向本地50051端口，传输用户信息：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre></td><td class="rouge-code"><pre><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>  <span class="c1"># 导入print_function特性
+</span>
+<span class="kn">import</span> <span class="nn">sys</span>  <span class="c1"># 导入sys模块，用于获取命令行参数
+</span>
+<span class="kn">import</span> <span class="nn">grpc</span>  <span class="c1"># 导入grpc库
+</span><span class="kn">import</span> <span class="nn">hello_pb2</span>  <span class="c1"># 导入hello_pb2模块
+</span><span class="kn">import</span> <span class="nn">hello_pb2_grpc</span>  <span class="c1"># 导入hello_pb2_grpc模块
+</span>
+<span class="k">def</span> <span class="nf">run</span><span class="p">():</span>
+	<span class="k">with</span> <span class="n">grpc</span><span class="p">.</span><span class="n">insecure_channel</span><span class="p">(</span><span class="s">'localhost:50051'</span><span class="p">)</span> <span class="k">as</span> <span class="n">channel</span><span class="p">:</span>
+		<span class="n">stup</span> <span class="o">=</span> <span class="n">hello_pb2_grpc</span><span class="p">.</span><span class="n">UserInfoStub</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>  <span class="c1"># 创建一个Stub对象，用于调用远程方法
+</span>		<span class="n">response</span> <span class="o">=</span> <span class="n">stup</span><span class="p">.</span><span class="n">Info</span><span class="p">(</span><span class="n">hello_pb2</span><span class="p">.</span><span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>  <span class="c1"># 调用远程方法,Info为在.proto文件中定义的名字
+</span>	<span class="k">print</span><span class="p">(</span><span class="s">"用户信息： "</span> <span class="o">+</span> <span class="n">response</span><span class="p">.</span><span class="n">message</span><span class="p">)</span>  <span class="c1"># 打印返回的用户信息
+</span>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
+	<span class="n">run</span><span class="p">()</span>
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>在主函数<code class="language-plaintext highlighter-rouge">run()</code>中，代码首先创建了一个不安全的通道（insecure_channel）连接到指定的服务器地址（’localhost:50051’）。然后，它创建了一个 <code class="language-plaintext highlighter-rouge">UserInfoStub</code> 对象用于调用远程方法。<code class="language-plaintext highlighter-rouge">Info()</code> 方法接受一个 <code class="language-plaintext highlighter-rouge">User</code> 对象作为参数，并返回一个含有用户信息的响应对象。最后，代码打印出返回的用户信息。</p>
+
+<p><code class="language-plaintext highlighter-rouge">response</code>即为.proto文件中定义的函数返回的值（样例中为<code class="language-plaintext highlighter-rouge">Reply</code>）</p>
+
+<p>在运行脚本时，过命令行参数传递用户的id和name参数，例如：<code class="language-plaintext highlighter-rouge">python3 hello_client.py 21307381 LJW</code>。这样，代码中的 <code class="language-plaintext highlighter-rouge">sys.argv[1]</code> 就会获取到命令行参数中的id值，<code class="language-plaintext highlighter-rouge">sys.argv[2]</code> 获取到命令行参数中的name值。</p>
+
+<h3 id="34-启动grpc">3.4 启动gRPC</h3>
+
+<h4 id="启动-grpc">启动 gRPC</h4>
+
+<p>在第一个窗口启动gRPC服务端 ：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>python3 hello_server.py
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>在另一个终端窗口中，启动gRPC客户端：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>python3 hello_client.py 21307381 LJW
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>运行结果如下：可以看到client端调用了server端的函数，然后打印出处理后的数据。</p>
+
+<p><img src="/img/in-post/DS-publish-subscribe/image-20231023001445442.png" alt="image-20231023001445442" /></p>
+
+<h2 id="4-设计并完成实验">4. 设计并完成实验</h2>
+
+<h3 id="一--问题描述">一、  问题描述</h3>
+
+<p>使用protobuf和gRPC等远程过程调用的方法实现消息订阅（publish-subscribe）系统，该订阅系统能够实现简单的消息传输，还可以控制消息在服务器端存储的时间。(编程语言不限，但是推荐使用python和C；)</p>
+
+<h3 id="二--解决方案">二、  解决方案</h3>
+
+<p>设计：</p>
+
+<p>publish：向话题topic中发布消息</p>
+
+<p>subscribe：订阅话题后，客户端可以接受发送到该话题的消息</p>
+
+<p>ShowAllMessage：展示该话题内的所有历史消息</p>
+
+<p>文件结构如下：</p>
+
+<p><img src="/img/in-post/DS-publish-subscribe/image-20231027233357151.png" alt="image-20231027233357151" /></p>
+
+<hr />
+
+<p>设计好功能后，首先在proto中定义好所有的接口：</p>
+
+<div class="language-protobuf highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre></td><td class="rouge-code"><pre><span class="na">syntax</span> <span class="o">=</span> <span class="s">"proto3"</span><span class="p">;</span>
+
+<span class="kd">message</span> <span class="nc">publishRequest</span> <span class="p">{</span>
+    <span class="kt">string</span> <span class="na">topic</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="kt">string</span> <span class="na">context</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+    <span class="kt">string</span> <span class="na">clientID</span><span class="o">=</span><span class="mi">3</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">message</span> <span class="nc">reply</span> <span class="p">{</span>
+    <span class="kt">string</span> <span class="kd">message</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">message</span> <span class="nc">subRequest</span> <span class="p">{</span>
+    <span class="kt">string</span> <span class="na">topic</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>  
+<span class="p">}</span>
+
+<span class="kd">service</span> <span class="n">PubSub</span> <span class="p">{</span>
+    <span class="k">rpc</span> <span class="n">publish</span><span class="p">(</span><span class="n">publishRequest</span><span class="p">)</span> <span class="k">returns</span> <span class="p">(</span><span class="n">reply</span><span class="p">)</span> <span class="p">{}</span>
+    <span class="k">rpc</span> <span class="n">subscribe</span><span class="p">(</span><span class="n">subRequest</span><span class="p">)</span> <span class="k">returns</span> <span class="p">(</span><span class="n">stream</span> <span class="n">reply</span><span class="p">)</span> <span class="p">{}</span>
+    <span class="k">rpc</span> <span class="n">ShowAllMessage</span><span class="p">(</span><span class="n">subRequest</span><span class="p">)</span> <span class="k">returns</span> <span class="p">(</span><span class="n">stream</span> <span class="n">reply</span><span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>然后，在命令行中使用gRPC的工具包，生成gRPC服务类：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>python3 <span class="nt">-m</span> grpc_tools.protoc <span class="nt">-I</span><span class="nb">.</span> <span class="nt">--python_out</span><span class="o">=</span><span class="nb">.</span> <span class="nt">--grpc_python_out</span><span class="o">=</span><span class="nb">.</span> ./PubSub.proto
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<hr />
+
+<p>这里需要注意的是流式信息在客户端和服务器中的操作与非流式信息有所不同，具体分析见【四、遇到的问题及解决方法-1】</p>
+
+<p>然后完成客户端client：</p>
+
+<p>这里也就是用stub桩函数来远程调用服务器中实现的三个函数。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+</pre></td><td class="rouge-code"><pre><span class="kn">import</span> <span class="nn">grpc</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">PubSub_pb2</span>
+<span class="kn">import</span> <span class="nn">PubSub_pb2_grpc</span>
+
+<span class="n">clientId</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s">"Please input ClientId: "</span><span class="p">)</span>
+<span class="n">channel</span> <span class="o">=</span> <span class="n">grpc</span><span class="p">.</span><span class="n">insecure_channel</span><span class="p">(</span><span class="s">'localhost:50051'</span><span class="p">)</span>
+<span class="n">stub</span> <span class="o">=</span> <span class="n">PubSub_pb2_grpc</span><span class="p">.</span><span class="n">PubSubStub</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span> <span class="c1"># 创建一个Stub对象，用于调用远程方法
+#Stub中有在proto文件中规定的3个接口：
+</span>
+
+<span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span><span class="n">clientID</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">stub</span><span class="p">.</span><span class="n">publish</span><span class="p">(</span><span class="n">PubSub_pb2</span><span class="p">.</span><span class="n">publishRequest</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span><span class="n">clientID</span><span class="o">=</span><span class="n">clientID</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'client:'</span><span class="p">,</span><span class="n">clientID</span><span class="p">,</span><span class="s">'has published:'</span><span class="p">,</span><span class="n">response</span><span class="p">.</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'---------------------------------------'</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">subscribe</span><span class="p">(</span><span class="n">topic</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">stub</span><span class="p">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">PubSub_pb2</span><span class="p">.</span><span class="n">subRequest</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">item</span><span class="p">.</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'---------------------------------------'</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">ShowAllMessage</span><span class="p">(</span><span class="n">topic</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">stub</span><span class="p">.</span><span class="n">ShowAllMessage</span><span class="p">(</span><span class="n">PubSub_pb2</span><span class="p">.</span><span class="n">subRequest</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">item</span><span class="p">.</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'---------------------------------------'</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">'---------------------------------------'</span><span class="p">)</span>
+        <span class="n">user_input</span><span class="o">=</span><span class="nb">input</span><span class="p">(</span><span class="s">"输入 1:订阅话题 2:发布消息 3:查询话题历史消息 ,输入exit退出</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">user_input</span> <span class="o">==</span> <span class="s">"1"</span><span class="p">:</span>
+            <span class="n">user_input_topic</span><span class="o">=</span><span class="nb">input</span><span class="p">(</span><span class="s">"请输入要订阅的话题："</span><span class="p">)</span>
+            <span class="n">subscribe</span><span class="p">(</span><span class="n">user_input_topic</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">user_input</span> <span class="o">==</span> <span class="s">"2"</span><span class="p">:</span>
+            <span class="n">user_input_topic</span><span class="o">=</span><span class="nb">input</span><span class="p">(</span><span class="s">"请输入要发布消息的话题："</span><span class="p">)</span>
+            <span class="n">user_input_context</span><span class="o">=</span><span class="nb">input</span><span class="p">(</span><span class="s">"输入发布内容："</span><span class="p">)</span>
+            <span class="n">publish</span><span class="p">(</span><span class="n">user_input_topic</span><span class="p">,</span> <span class="n">user_input_context</span><span class="p">,</span><span class="n">clientId</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">user_input</span> <span class="o">==</span> <span class="s">"3"</span><span class="p">:</span>
+            <span class="n">user_input_topic</span><span class="o">=</span><span class="nb">input</span><span class="p">(</span><span class="s">"请输入要查询的话题："</span><span class="p">)</span>
+            <span class="n">ShowAllMessage</span><span class="p">(</span><span class="n">user_input_topic</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">user_input</span> <span class="o">==</span> <span class="s">'exit'</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">"退出系统"</span><span class="p">)</span>
+            <span class="k">break</span>
+<span class="k">if</span> <span class="n">__name__</span><span class="o">==</span><span class="s">"__main__"</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<hr />
+
+<p>首先，是要在服务器中用gRPC框架搭建一个服务器：</p>
+
+<p>创建一个线程池执行器ThreadPoolExecutor，用于处理客户端请求。</p>
+
+<p>然后调用自动生成的 <code class="language-plaintext highlighter-rouge">PubSub_pb2_grpc.add_PubSubServicer_to_server</code>将proto中定义的服务添加到服务器中。</p>
+
+<p>接下来，通过调用add_insecure_port方法，在50051端口上启动服务器，服务器不进行TLS加密认证。</p>
+
+<p>最后，通过调用start方法启动服务器。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre>	 <span class="c1">#gRPC
+</span>    <span class="n">server</span> <span class="o">=</span> <span class="n">grpc</span><span class="p">.</span><span class="n">server</span><span class="p">(</span><span class="n">futures</span><span class="p">.</span><span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span> <span class="c1">#创建一个gRPC服务器
+</span>    <span class="n">test_server</span> <span class="o">=</span> <span class="n">PubsubService</span><span class="p">()</span> 
+    <span class="n">PubSub_pb2_grpc</span><span class="p">.</span><span class="n">add_PubSubServicer_to_server</span><span class="p">(</span><span class="n">test_server</span><span class="p">,</span> <span class="n">server</span><span class="p">)</span> <span class="c1"># 将proto中定义的服务添加到服务器中
+</span>    <span class="n">server</span><span class="p">.</span><span class="n">add_insecure_port</span><span class="p">(</span><span class="s">'[::]:50051'</span><span class="p">)</span> <span class="c1"># 在指定端口上启动服务器
+</span>    <span class="n">server</span><span class="p">.</span><span class="n">start</span><span class="p">()</span>                          <span class="c1"># 启动服务器
+</span>    <span class="k">print</span><span class="p">(</span><span class="s">'Hello from server!'</span><span class="p">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>在发布publish服务中，为了实现实时通信，我使用了redis数据库，以保证实时通信，为了可以定期删除过期的信息，还需要维护一个<code class="language-plaintext highlighter-rouge">AllTopic</code>的字典列表，每一个消息都有一个时间戳用于定期删除。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+</pre></td><td class="rouge-code"><pre><span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publishRequest</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span> 
+        <span class="n">_topic</span><span class="o">=</span><span class="n">publishRequest</span><span class="p">.</span><span class="n">topic</span>
+        <span class="n">_context</span><span class="o">=</span><span class="n">publishRequest</span><span class="p">.</span><span class="n">context</span>
+        <span class="n">_clientID</span><span class="o">=</span><span class="n">publishRequest</span><span class="p">.</span><span class="n">clientID</span>
+        
+        <span class="c1"># 创建Redis连接池
+</span>        <span class="n">pool</span> <span class="o">=</span> <span class="n">redis</span><span class="p">.</span><span class="n">ConnectionPool</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s">'localhost'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">6379</span><span class="p">)</span>
+        <span class="c1"># 创建Redis客户端
+</span>        <span class="n">r</span> <span class="o">=</span> <span class="n">redis</span><span class="p">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">connection_pool</span><span class="o">=</span><span class="n">pool</span><span class="p">)</span>
+        <span class="n">r</span><span class="p">.</span><span class="n">publish</span><span class="p">(</span><span class="n">_topic</span><span class="p">,</span> <span class="n">_context</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">_topic</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">AllTopic</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">AllTopic</span><span class="p">[</span><span class="n">_topic</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{</span><span class="s">'context'</span><span class="p">:</span><span class="n">_context</span><span class="p">,</span> <span class="s">'timeStamp'</span><span class="p">:</span><span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()}]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">AllTopic</span><span class="p">[</span><span class="n">_topic</span><span class="p">].</span><span class="n">append</span><span class="p">({</span><span class="s">'context'</span><span class="p">:</span><span class="n">_context</span><span class="p">,</span><span class="s">'timeStamp'</span><span class="p">:</span><span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()})</span>
+   
+        <span class="k">print</span><span class="p">(</span><span class="s">'---------------------------------------'</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">'Server receive topic {} from client {}:'</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">_topic</span><span class="p">,</span><span class="n">_clientID</span><span class="p">))</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">_context</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">'---------------------------------------'</span><span class="p">)</span>
+        <span class="c1"># newmessage='serverpub'
+</span>        
+        <span class="k">return</span> <span class="n">PubSub_pb2</span><span class="p">.</span><span class="n">reply</span><span class="p">(</span><span class="n">message</span> <span class="o">=</span> <span class="n">_context</span><span class="p">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<hr />
+
+<p>订阅服务中，同样是调用redis用以实时通信，由于<code class="language-plaintext highlighter-rouge">pubsub.listen()</code>是阻塞式的，所以用<code class="language-plaintext highlighter-rouge">threading.Timer</code>定时使其退出订阅，以便客户端之后可以进行其他的操作。同样，由于是阻塞式的，所以<code class="language-plaintext highlighter-rouge">stop_listening</code>中发布一个<code class="language-plaintext highlighter-rouge">nosub</code>消息作为停止订阅的信号。值得注意的是redis中传递消息的时候用的是字节字符串（bytes）类型，所以会带来一些麻烦：具体分析见【四、遇到的问题及解决方法-3】</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre></td><td class="rouge-code"><pre> <span class="k">def</span> <span class="nf">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subRequest</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>  
+        <span class="n">_topic</span><span class="o">=</span><span class="n">subRequest</span><span class="p">.</span><span class="n">topic</span>
+        <span class="c1"># 创建Redis连接池
+</span>        <span class="n">pool</span> <span class="o">=</span> <span class="n">redis</span><span class="p">.</span><span class="n">ConnectionPool</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s">'localhost'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">6379</span><span class="p">)</span>
+        <span class="c1"># 创建Redis客户端
+</span>        <span class="n">r</span> <span class="o">=</span> <span class="n">redis</span><span class="p">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">connection_pool</span><span class="o">=</span><span class="n">pool</span><span class="p">)</span>
+        <span class="c1"># 订阅频道
+</span>        <span class="n">pubsub</span> <span class="o">=</span> <span class="n">r</span><span class="p">.</span><span class="n">pubsub</span><span class="p">()</span>
+        <span class="n">pubsub</span><span class="p">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">_topic</span><span class="p">)</span>
+        <span class="c1"># currentTime=time.time()
+</span>        <span class="c1"># 接收消息
+</span>        <span class="c1"># 设置定时 器，5秒后触发stop_listening函数
+</span>        <span class="n">timer</span> <span class="o">=</span> <span class="n">threading</span><span class="p">.</span><span class="n">Timer</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">stop_listening</span><span class="p">,</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">_topic</span><span class="p">))</span> <span class="c1">#定时20s
+</span>        <span class="n">timer</span><span class="p">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">pubsub</span><span class="p">.</span><span class="n">listen</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s">'type'</span><span class="p">]</span> <span class="o">==</span> <span class="s">'message'</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s">'data'</span><span class="p">]</span> <span class="o">==</span> <span class="s">'unsub'</span><span class="p">.</span><span class="n">encode</span><span class="p">():</span>  <span class="c1">#不知道为什么是这个，我设置的是unsub，但是打印出来看到是这个
+</span>                    <span class="k">return</span> <span class="n">PubSub_pb2</span><span class="p">.</span><span class="n">reply</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s">'退出订阅'</span><span class="p">)</span>
+                <span class="c1"># print(message['data'],'here')
+</span>                <span class="c1"># print('收到消息：', message['data'])
+</span>                <span class="k">yield</span> <span class="n">PubSub_pb2</span><span class="p">.</span><span class="n">reply</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">[</span><span class="s">'data'</span><span class="p">])</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="c1"># 定义一个函数，在定时器触发时中断监听循环
+</span><span class="k">def</span> <span class="nf">stop_listening</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">_topic</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'订阅结束'</span><span class="p">)</span>
+    <span class="n">_context</span><span class="o">=</span><span class="s">'unsub'</span>
+    <span class="n">r</span><span class="p">.</span><span class="n">publish</span><span class="p">(</span><span class="n">_topic</span><span class="p">,</span><span class="n">_context</span><span class="p">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<hr />
+
+<p>展示所有信息就是把维护的<code class="language-plaintext highlighter-rouge">AllTopic</code>字典中当前的话题topic的消息都取出来打印。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="k">def</span> <span class="nf">ShowAllMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">subRequest</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span> 
+        <span class="n">_topic</span><span class="o">=</span><span class="n">subRequest</span><span class="p">.</span><span class="n">topic</span>
+        <span class="k">if</span> <span class="n">_topic</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">AllTopic</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">newmessage</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">AllTopic</span><span class="p">[</span><span class="n">_topic</span><span class="p">]:</span> <span class="c1">#newmessage是一个字典，形如{'context':sajfoiasphfashdlkjhfjklhs}
+</span>                <span class="c1"># print(newmessage)
+</span>                <span class="n">newmessage_context</span> <span class="o">=</span> <span class="n">newmessage</span><span class="p">[</span><span class="s">'context'</span><span class="p">]</span>
+                <span class="k">yield</span> <span class="n">PubSub_pb2</span><span class="p">.</span><span class="n">reply</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">newmessage_context</span><span class="p">)</span>
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<hr />
+
+<p>更新过期信息也是在这里,遍历<code class="language-plaintext highlighter-rouge">AllTopic</code>找到过期的信息删除即可。可以修改<code class="language-plaintext highlighter-rouge">timeThreshold</code>的值来修改信息保存的时间。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre> <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">timeThreshold</span><span class="o">=</span><span class="mi">10</span>
+        <span class="c1"># print('update')
+</span>        <span class="c1"># 遍历所有话题
+</span>        <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">AllTopic</span><span class="p">:</span>
+            <span class="n">messages</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">AllTopic</span><span class="p">[</span><span class="n">topic</span><span class="p">]</span>
+            <span class="c1"># 遍历话题中的所有消息
+</span>            <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">messages</span><span class="p">:</span>
+                <span class="c1"># 如果消息超过 10 秒，则删除该消息
+</span>                <span class="k">if</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">message</span><span class="p">[</span><span class="s">'timeStamp'</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">timeThreshold</span><span class="p">:</span>
+                    <span class="n">messages</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<hr />
+
+<p>如何运行我的代码：</p>
+
+<ol>
+  <li>首先要打开redis数据库：</li>
+</ol>
+
+<blockquote>
+  <p>也就是从<a href="redis.io">官网</a>下载最新版redis-X.Y.Z.tar.gz后解压，然后进入redis-X.Y.Z文件夹后直接make即可</p>
+
+  <p>运行：</p>
+
+  <p>make成功后会在src文件夹下产生一些二进制可执行文件，直接输入<code class="language-plaintext highlighter-rouge">./redis-server</code>就可以启动服务端了</p>
+</blockquote>
+
+<ol>
+  <li>然后直接运行bash run.sh</li>
+</ol>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td><td class="rouge-code"><pre><span class="c">#!/bin/bash</span>
+
+<span class="c"># 打开第一个终端窗口并执行Python</span>
+gnome-terminal <span class="nt">--command</span><span class="o">=</span><span class="s2">"bash -c 'echo </span><span class="se">\"</span><span class="s2">window 1 as server</span><span class="se">\"</span><span class="s2">; python3 /home/ljw/DistributedSyetem/HW3/test/PubSub_server.py; exec bash'"</span>
+
+<span class="c"># 等待一段时间，确保前一个窗口已经打开</span>
+<span class="nb">sleep </span>1
+
+<span class="c"># 打开第二个终端窗口并执行Python</span>
+gnome-terminal <span class="nt">--command</span><span class="o">=</span><span class="s2">"bash -c 'echo </span><span class="se">\"</span><span class="s2">window 2 as client1</span><span class="se">\"</span><span class="s2">; python3 /home/ljw/DistributedSyetem/HW3/test/PubSub_client.py; exec bash'"</span>
+
+<span class="c"># 等待一段时间，确保前一个窗口已经打开</span>
+<span class="nb">sleep </span>1
+
+<span class="c"># 打开第三个终端窗口并执行Python</span>
+gnome-terminal <span class="nt">--command</span><span class="o">=</span><span class="s2">"bash -c 'echo </span><span class="se">\"</span><span class="s2">window 3 as client2</span><span class="se">\"</span><span class="s2">; python3 /home/ljw/DistributedSyetem/HW3/test/PubSub_client.py; exec bash'"</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="三--实验结果">三、  实验结果</h3>
+
+<p>如上图：左上角的窗口是服务器server，左下角是第一个客户端client1，右边为客户端client2：</p>
+
+<p><img src="/img/in-post/DS-publish-subscribe/image-20231027224843490.png" alt="image-20231027224843490" /></p>
+
+<hr />
+
+<p>首先client1订阅话题topic1，然后连续用client2发布2个内容到topic1，可以看到client1可以成功接收如下图：</p>
+
+<p><img src="/img/in-post/DS-publish-subscribe/image-20231027224728580.png" alt="image-20231027224728580" /></p>
+
+<hr />
+
+<p>但是不订阅的话，就不会接收：</p>
+
+<p><img src="/img/in-post/DS-publish-subscribe/image-20231027225017546.png" alt="image-20231027225017546" /></p>
+
+<hr />
+
+<p>还可以控制消息在服务器存储的时间：如下图，过期之前可以查看话题topic中所有消息，可以看到之前发过的内容都在里面（下图红框），但是第二次等到超过了我设置的时间后，记录就被删除了，再次查看了就发现历史记录已经被散掉（下路蓝框）</p>
+
+<p><img src="/img/in-post/DS-publish-subscribe/image-20231027225146596.png" alt="image-20231027225146596" /></p>
+
+<h3 id="四遇到的问题及解决方法">四、遇到的问题及解决方法</h3>
+
+<h4 id="1-搭建框架时流式数据的问题">1. 搭建框架时流式数据的问题</h4>
+
+<p>搭建框架时，由于消息订阅系统是长时间操作的，当需要执行长时间运行的操作时，使用gRPC的流式处理可以让客户端和服务端之间保持连接并持续发送和接收数据。所以在定义subcribe的时候用的是gRPC的流式处理。</p>
+
+<div class="language-protobuf highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="k">rpc</span> <span class="n">subcribe</span><span class="p">(</span><span class="n">subRequest</span><span class="p">)</span> <span class="k">returns</span> <span class="p">(</span><span class="n">stream</span> <span class="n">reply</span><span class="p">)</span> <span class="p">{}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>客户端代码如下</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="k">def</span> <span class="nf">subcribe</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="n">TTL</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">stub</span><span class="p">.</span><span class="n">subcribe</span><span class="p">(</span><span class="n">test_pb2</span><span class="p">.</span><span class="n">subRequest</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">message</span><span class="p">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>此时第一次报错：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">"/home/ljw/DistributedSyetem/HW3/test/test_client.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">45</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+    <span class="n">main</span><span class="p">()</span>
+  <span class="n">File</span> <span class="s">"/home/ljw/DistributedSyetem/HW3/test/test_client.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">33</span><span class="p">,</span> <span class="ow">in</span> <span class="n">main</span>
+    <span class="n">subcribe</span><span class="p">(</span><span class="n">user_input_topic</span><span class="p">,</span> <span class="n">user_input_ttl</span><span class="p">)</span>
+  <span class="n">File</span> <span class="s">"/home/ljw/DistributedSyetem/HW3/test/test_client.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">22</span><span class="p">,</span> <span class="ow">in</span> <span class="n">subcribe</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">message</span><span class="p">)</span>
+<span class="nb">AttributeError</span><span class="p">:</span> <span class="s">'_MultiThreadedRendezvous'</span> <span class="nb">object</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s">'message'</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>查询后发现是因为返回的是流数据，所以client中应该改为</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="k">def</span> <span class="nf">subcribe</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="n">TTL</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">stub</span><span class="p">.</span><span class="n">subcribe</span><span class="p">(</span><span class="n">test_pb2</span><span class="p">.</span><span class="n">subRequest</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">item</span><span class="p">.</span><span class="n">message</span><span class="p">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>此时运行发生第二次报错：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td><td class="rouge-code"><pre><span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">"/home/ljw/DistributedSyetem/HW3/test/test_client.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">46</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+    <span class="n">main</span><span class="p">()</span>
+  <span class="n">File</span> <span class="s">"/home/ljw/DistributedSyetem/HW3/test/test_client.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">34</span><span class="p">,</span> <span class="ow">in</span> <span class="n">main</span>
+    <span class="n">subcribe</span><span class="p">(</span><span class="n">user_input_topic</span><span class="p">,</span> <span class="n">user_input_ttl</span><span class="p">)</span>
+  <span class="n">File</span> <span class="s">"/home/ljw/DistributedSyetem/HW3/test/test_client.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">22</span><span class="p">,</span> <span class="ow">in</span> <span class="n">subcribe</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+  <span class="n">File</span> <span class="s">"/home/ljw/.local/lib/python3.8/site-packages/grpc/_channel.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">541</span><span class="p">,</span> <span class="ow">in</span> <span class="n">__next__</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">_next</span><span class="p">()</span>
+  <span class="n">File</span> <span class="s">"/home/ljw/.local/lib/python3.8/site-packages/grpc/_channel.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">967</span><span class="p">,</span> <span class="ow">in</span> <span class="n">_next</span>
+    <span class="k">raise</span> <span class="bp">self</span>
+<span class="n">grpc</span><span class="p">.</span><span class="n">_channel</span><span class="p">.</span><span class="n">_MultiThreadedRendezvous</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">_MultiThreadedRendezvous</span> <span class="n">of</span> <span class="n">RPC</span> <span class="n">that</span> <span class="n">terminated</span> <span class="k">with</span><span class="p">:</span>
+	<span class="n">status</span> <span class="o">=</span> <span class="n">StatusCode</span><span class="p">.</span><span class="n">UNKNOWN</span>
+	<span class="n">details</span> <span class="o">=</span> <span class="s">"Exception iterating responses: 'reply' object is not an iterator"</span>
+	<span class="n">debug_error_string</span> <span class="o">=</span> <span class="s">"UNKNOWN:Error received from peer  {grpc_message:"</span><span class="nb">Exception</span> <span class="n">iterating</span> <span class="n">responses</span><span class="p">:</span> \<span class="s">'reply</span><span class="se">\'</span><span class="s"> object is not an iterator", grpc_status:2, created_time:"2023-10-27T13:31:49.624390454+08:00"}"
+
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>第二次报错是因为： 服务器给客户端返回的是流数据，所以要用生成器 ，也就是return改为yield</p>
+
+<blockquote>
+  <p><code class="language-plaintext highlighter-rouge">yield</code> 是一个关键字，用于在 Python 中定义生成器函数。生成器函数是一种特殊的函数，它可以暂停执行并返回一个中间结果，然后在需要时恢复执行。</p>
+
+  <p>当在生成器函数中使用 <code class="language-plaintext highlighter-rouge">yield</code> 语句时，它会将当前函数的状态保存，并返回一个值给调用者。然后，下次调用生成器函数时，它会从上次暂停的地方继续执行，并返回下一个值。这样的过程可以重复多次，直到生成器函数的逻辑执行完毕或遇到 <code class="language-plaintext highlighter-rouge">return</code> 语句。</p>
+</blockquote>
+
+<p>server中改为如下：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="k">def</span> <span class="nf">subcribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>  
+	<span class="n">newmessage</span><span class="o">=</span><span class="s">'serversub'</span>
+	<span class="k">yield</span> <span class="n">test_pb2</span><span class="p">.</span><span class="n">reply</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">newmessage</span><span class="p">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>这时候代码框架就可以跑起来了：</p>
+
+<p><img src="/img/in-post/DS-publish-subscribe/image-20231027134406930.png" alt="image-20231027134406930" /></p>
+
+<h4 id="2-如何实现实时发送信息">2. 如何实现实时发送信息</h4>
+
+<p>一开始逻辑如下，发现只有先发布消息，然后订阅话题，才可以得到发布的消息，也就是展示历史消息：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre>    <span class="k">def</span> <span class="nf">subcribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subRequest</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>  
+        <span class="n">_topic</span><span class="o">=</span><span class="n">subRequest</span><span class="p">.</span><span class="n">topic</span>
+        <span class="k">if</span> <span class="n">_topic</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">AllTopic</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">newmessage</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">AllTopic</span><span class="p">[</span><span class="n">_topic</span><span class="p">]:</span>
+                <span class="k">print</span><span class="p">(</span><span class="n">newmessage</span><span class="p">)</span>
+                <span class="n">newmessage_context</span> <span class="o">=</span> <span class="n">newmessage</span><span class="p">[</span><span class="s">'context'</span><span class="p">]</span>
+        <span class="c1"># newmessage='serversub'
+</span>                <span class="k">yield</span> <span class="n">test_pb2</span><span class="p">.</span><span class="n">reply</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">newmessage_context</span><span class="p">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>而且只可以阻塞式的接受消息，也就是只有订阅结束之后才可以收到消息，这是因为函数subscribe结束后才可以return ，那么就想到可不可以引入一个中间件，订阅就查看消息队列，发送就发送到消息队列呢？</p>
+
+<p>但是这是RPC，所以当然不可以用程序里的一个列表作为消息队列，因为这样也是要return才可以返回。网上查询资料后发现，可以用redis来解决这一个问题：</p>
+
+<p>简介：</p>
+
+<blockquote>
+  <p>Redis是一个开源的，先进的key-value持久化产品。它通常被称为数据结构服务器，它的值可以是字符串（String）、哈希（Map）、列表（List）、集合（Sets）和有序集合（Sorted sets）等类型。可以在这些类型上面做一些原子操作，如：字符串追加、增加Hash里面的值、添加元素到列表、计算集合的交集，并集和差集；或者区有序集合中排名最高的成员。为了取得好的性能，Redis是一个内存型数据库。不限于此，Redis也可以把数据持久化到磁盘中，或者把数据操作指令追加了一个日志文件，把它用于持久化。也可以用Redis容易的搭建master-slave架构用于数据复制。其它让它像缓存的特性包括，简单的check-and-set机制，pub/sub和配置设置。Redis可以用大部分程序语言来操作：C、C++、C#、Java、Node.js、php、ruby等等。Redis是用ANSIC写的，可以运行在多数POSIX系统，如：Linux，*BSD，OS X和Soloris等。官方版本不支持Windows下构建，可以选择一些修改过的版本，照样可以使用Redis。</p>
+</blockquote>
+
+<p>下载步骤：</p>
+
+<p>从<a href="redis.io">官网</a>下载最新版redis-X.Y.Z.tar.gz后解压，然后进入redis-X.Y.Z文件夹后直接make即可</p>
+
+<p>运行：</p>
+
+<p>make成功后会在src文件夹下产生一些二进制可执行文件，直接输入<code class="language-plaintext highlighter-rouge">./redis-server</code>就可以启动服务端了</p>
+
+<hr />
+
+<h4 id="3-给subscribe设置定时">3. 给subscribe设置定时</h4>
+
+<p>发现此时进入了订阅模式就退不出来执行其他的命令了，所以给sub设置一个计时器，不可以使用singal，因为singal只可以用于主线程，但是我实现的subscribe用的是子线程。</p>
+
+<p>然后还尝试了用时间差值的方法：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre>        <span class="c1"># currentTime=time.time()
+</span>        <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">pubsub</span><span class="p">.</span><span class="n">listen</span><span class="p">():</span>
+        	<span class="n">runTime</span><span class="o">=</span><span class="p">.</span><span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
+        	<span class="k">if</span> <span class="n">runTime</span><span class="o">-</span><span class="n">currrentTime</span><span class="o">&gt;</span><span class="mi">10</span><span class="p">:</span>
+        		<span class="k">return</span> <span class="n">test_pb2</span><span class="p">.</span><span class="n">reply</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s">'退出订阅'</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s">'type'</span><span class="p">]</span> <span class="o">==</span> <span class="s">'message'</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s">'data'</span><span class="p">]</span> <span class="o">==</span> <span class="s">' b</span><span class="se">\'</span><span class="s">unsub</span><span class="se">\'</span><span class="s">'</span><span class="p">:</span>  <span class="c1">#不知道为什么是这个，我设置的是unsub，但是打印出来看到是这个
+</span>                    <span class="k">return</span> <span class="n">test_pb2</span><span class="p">.</span><span class="n">reply</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s">'退出订阅'</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">'收到消息：'</span><span class="p">,</span> <span class="n">message</span><span class="p">[</span><span class="s">'data'</span><span class="p">])</span>
+                <span class="k">yield</span> <span class="n">test_pb2</span><span class="p">.</span><span class="n">reply</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">[</span><span class="s">'data'</span><span class="p">])</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>但是发现 <code class="language-plaintext highlighter-rouge">for message in pubsub.listen():</code>是阻塞式的，所以没有新消息来就不会继续运行，所以也放弃了。</p>
+
+<p>最后发现可以用以下方法：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre> <span class="c1"># 设置定时器，5秒后触发stop_listening函数
+</span>        <span class="n">timer</span> <span class="o">=</span> <span class="n">threading</span><span class="p">.</span><span class="n">Timer</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">stop_listening</span><span class="p">,</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">_topic</span><span class="p">))</span> <span class="c1">#定时20s
+</span>        <span class="n">timer</span><span class="p">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">pubsub</span><span class="p">.</span><span class="n">listen</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s">'type'</span><span class="p">]</span> <span class="o">==</span> <span class="s">'message'</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s">'data'</span><span class="p">]</span> <span class="o">==</span> <span class="s">' b</span><span class="se">\'</span><span class="s">unsub</span><span class="se">\'</span><span class="s">'</span><span class="p">:</span>  <span class="c1">#不知道为什么是这个，我设置的是unsub，但是打印出来看到是这个
+</span>                    <span class="k">return</span> <span class="n">test_pb2</span><span class="p">.</span><span class="n">reply</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s">'退出订阅'</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">'收到消息：'</span><span class="p">,</span> <span class="n">message</span><span class="p">[</span><span class="s">'data'</span><span class="p">])</span>
+                <span class="k">yield</span> <span class="n">test_pb2</span><span class="p">.</span><span class="n">reply</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">[</span><span class="s">'data'</span><span class="p">])</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>其中有一点很怪的是我传递的是<code class="language-plaintext highlighter-rouge">unsub</code>但是，得到的却是 <code class="language-plaintext highlighter-rouge">b\'unsub\'</code></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="c1"># 定义一个函数，在定时器触发时中断监听循环
+</span><span class="k">def</span> <span class="nf">stop_listening</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">_topic</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'订阅结束'</span><span class="p">)</span>
+    <span class="n">_context</span><span class="o">=</span><span class="s">'unsub'</span>
+    <span class="n">r</span><span class="p">.</span><span class="n">publish</span><span class="p">(</span><span class="n">_topic</span><span class="p">,</span><span class="n">_context</span><span class="p">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<hr />
+
+<p>后面有尝试了一次，又不行了，需要改为如下：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s">'data'</span><span class="p">]</span> <span class="o">==</span> <span class="s">'unsub'</span><span class="p">.</span><span class="n">encode</span><span class="p">():</span>  <span class="c1">#不知道为什么是这个，我设置的是unsub，但是打印出来看到是这个
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>这是因为在 Redis 中，发布和订阅的消息都被视为二进制安全的字符串，因此在 Python 中使用 Redis 客户端时，发送和接收的消息都是字节字符串（bytes）类型。这就是为什么收到的消息是以 <code class="language-plaintext highlighter-rouge">b</code> 前缀开头的原因。所以使用 Redis 的发布功能时，需要将要发布的消息转换为字节字符串。在 Python 3 中，可以使用字符串的 <code class="language-plaintext highlighter-rouge">encode</code> 方法将字符串转换为字节字符串。</p>
+
+<hr />
+
+<h4 id="4更新消息列表删除超时消息">4.更新消息列表删除超时消息</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+</pre></td><td class="rouge-code"><pre>    <span class="k">try</span><span class="p">:</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="c1"># print('here')
+</span>            <span class="n">time</span><span class="p">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">test_server</span><span class="p">.</span><span class="n">update</span><span class="p">()</span>
+    <span class="k">except</span> <span class="nb">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">server</span><span class="p">.</span><span class="n">stop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">server</span><span class="p">.</span><span class="n">wait_for_termination</span><span class="p">()</span>  <span class="c1"># 保持服务器运行，等待终止信号
+</span>
+    <span class="c1">#redis
+</span>    <span class="c1">#创建订阅线程
+</span>    <span class="n">subscribe_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="p">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">test_server</span><span class="p">.</span><span class="n">subscribe</span><span class="p">)</span>
+    <span class="c1"># print('1')
+</span>    <span class="n">subscribe_thread</span><span class="p">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="c1"># print('2')
+</span>
+    <span class="c1"># 创建发布线程
+</span>    <span class="n">publish_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="p">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">test_server</span><span class="p">.</span><span class="n">publish</span><span class="p">)</span>
+    <span class="c1"># print('3')
+</span>    <span class="n">publish_thread</span><span class="p">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="c1"># print('4')
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>如果把while循环放到<code class="language-plaintext highlighter-rouge">server.wait_for_termination()  # 保持服务器运行，等待终止信号</code>这一句后面，那么根本就不会运行。</p>
+
+<h3 id="五遇到问题的参考教程">五、遇到问题的参考教程</h3>
+
+<p><a href="https://zhuanlan.zhihu.com/p/562009164?utm_id=0">redis 发布订阅（PubSub），深入解读</a>：解决流式数据</p>
+
+<p><a href="https://www.php.cn/faq/586933.html">Redis与Python的发布订阅功能：如何实现实时通信</a></p>
+
+<h3 id="六实验心得">六、实验心得</h3>
+
+<p>gRPC之前没了解过，但是使用起来还是比较方便的，网络上关于gRPC的订阅系统使用 go 语言的参考资料比较多，但是go + grpc + protobuf 的环境配置比较困难，python 环境配置简单而且熟悉语法，所以选择使用python语言完成。</p>
+
+<h3 id="七代码附录">七、代码附录</h3>
+
+<p>文件结构</p>
+
+<p><img src="/img/in-post/DS-publish-subscribe/image-20231027233357151.png" alt="image-20231027233357151" /></p>
+
+<p>PubSub.proto</p>
+
+<div class="language-protobuf highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre></td><td class="rouge-code"><pre><span class="na">syntax</span> <span class="o">=</span> <span class="s">"proto3"</span><span class="p">;</span>
+
+<span class="kd">message</span> <span class="nc">publishRequest</span> <span class="p">{</span>
+    <span class="kt">string</span> <span class="na">topic</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="kt">string</span> <span class="na">context</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+    <span class="kt">string</span> <span class="na">clientID</span><span class="o">=</span><span class="mi">3</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">message</span> <span class="nc">reply</span> <span class="p">{</span>
+    <span class="kt">string</span> <span class="kd">message</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">message</span> <span class="nc">subRequest</span> <span class="p">{</span>
+    <span class="kt">string</span> <span class="na">topic</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>  <span class="c1">// 主题</span>
+<span class="p">}</span>
+
+<span class="kd">service</span> <span class="n">PubSub</span> <span class="p">{</span>
+    <span class="k">rpc</span> <span class="n">publish</span><span class="p">(</span><span class="n">publishRequest</span><span class="p">)</span> <span class="k">returns</span> <span class="p">(</span><span class="n">reply</span><span class="p">)</span> <span class="p">{}</span>
+    <span class="k">rpc</span> <span class="n">subscribe</span><span class="p">(</span><span class="n">subRequest</span><span class="p">)</span> <span class="k">returns</span> <span class="p">(</span><span class="n">stream</span> <span class="n">reply</span><span class="p">)</span> <span class="p">{}</span>
+    <span class="k">rpc</span> <span class="n">ShowAllMessage</span><span class="p">(</span><span class="n">subRequest</span><span class="p">)</span> <span class="k">returns</span> <span class="p">(</span><span class="n">stream</span> <span class="n">reply</span><span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>PubSub_client,py</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+</pre></td><td class="rouge-code"><pre><span class="kn">import</span> <span class="nn">grpc</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">PubSub_pb2</span>
+<span class="kn">import</span> <span class="nn">PubSub_pb2_grpc</span>
+
+<span class="n">clientId</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s">"Please input ClientId: "</span><span class="p">)</span>
+<span class="n">channel</span> <span class="o">=</span> <span class="n">grpc</span><span class="p">.</span><span class="n">insecure_channel</span><span class="p">(</span><span class="s">'localhost:50051'</span><span class="p">)</span>
+<span class="n">stub</span> <span class="o">=</span> <span class="n">PubSub_pb2_grpc</span><span class="p">.</span><span class="n">PubSubStub</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span> <span class="c1"># 创建一个Stub对象，用于调用远程方法
+#Stub中有在proto文件中规定的3个接口：
+</span>
+
+<span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span><span class="n">clientID</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">stub</span><span class="p">.</span><span class="n">publish</span><span class="p">(</span><span class="n">PubSub_pb2</span><span class="p">.</span><span class="n">publishRequest</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span><span class="n">clientID</span><span class="o">=</span><span class="n">clientID</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'client:'</span><span class="p">,</span><span class="n">clientID</span><span class="p">,</span><span class="s">'has published:'</span><span class="p">,</span><span class="n">response</span><span class="p">.</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'---------------------------------------'</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">subscribe</span><span class="p">(</span><span class="n">topic</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">stub</span><span class="p">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">PubSub_pb2</span><span class="p">.</span><span class="n">subRequest</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">item</span><span class="p">.</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'---------------------------------------'</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">ShowAllMessage</span><span class="p">(</span><span class="n">topic</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">stub</span><span class="p">.</span><span class="n">ShowAllMessage</span><span class="p">(</span><span class="n">PubSub_pb2</span><span class="p">.</span><span class="n">subRequest</span><span class="p">(</span><span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">item</span><span class="p">.</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'---------------------------------------'</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">'---------------------------------------'</span><span class="p">)</span>
+        <span class="n">user_input</span><span class="o">=</span><span class="nb">input</span><span class="p">(</span><span class="s">"输入 1:订阅话题 2:发布消息 3:查询话题历史消息 ,输入exit退出</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">user_input</span> <span class="o">==</span> <span class="s">"1"</span><span class="p">:</span>
+            <span class="n">user_input_topic</span><span class="o">=</span><span class="nb">input</span><span class="p">(</span><span class="s">"请输入要订阅的话题："</span><span class="p">)</span>
+            <span class="n">subscribe</span><span class="p">(</span><span class="n">user_input_topic</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">user_input</span> <span class="o">==</span> <span class="s">"2"</span><span class="p">:</span>
+            <span class="n">user_input_topic</span><span class="o">=</span><span class="nb">input</span><span class="p">(</span><span class="s">"请输入要发布消息的话题："</span><span class="p">)</span>
+            <span class="n">user_input_context</span><span class="o">=</span><span class="nb">input</span><span class="p">(</span><span class="s">"输入发布内容："</span><span class="p">)</span>
+            <span class="n">publish</span><span class="p">(</span><span class="n">user_input_topic</span><span class="p">,</span> <span class="n">user_input_context</span><span class="p">,</span><span class="n">clientId</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">user_input</span> <span class="o">==</span> <span class="s">"3"</span><span class="p">:</span>
+            <span class="n">user_input_topic</span><span class="o">=</span><span class="nb">input</span><span class="p">(</span><span class="s">"请输入要查询的话题："</span><span class="p">)</span>
+            <span class="n">ShowAllMessage</span><span class="p">(</span><span class="n">user_input_topic</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">user_input</span> <span class="o">==</span> <span class="s">'exit'</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">"退出系统"</span><span class="p">)</span>
+            <span class="k">break</span>
+
+<span class="k">if</span> <span class="n">__name__</span><span class="o">==</span><span class="s">"__main__"</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>PubSub_server.py</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+</pre></td><td class="rouge-code"><pre><span class="kn">from</span> <span class="nn">concurrent</span> <span class="kn">import</span> <span class="n">futures</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">grpc</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">redis</span>
+<span class="kn">import</span> <span class="nn">PubSub_pb2</span>
+<span class="kn">import</span> <span class="nn">PubSub_pb2_grpc</span>
+
+
+
+<span class="c1"># 定义一个函数，在定时器触发时中断监听循环
+</span><span class="k">def</span> <span class="nf">stop_listening</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">_topic</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'订阅结束'</span><span class="p">)</span>
+    <span class="n">_context</span><span class="o">=</span><span class="s">'unsub'</span>
+    <span class="n">r</span><span class="p">.</span><span class="n">publish</span><span class="p">(</span><span class="n">_topic</span><span class="p">,</span><span class="n">_context</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">PubsubService</span><span class="p">(</span><span class="n">PubSub_pb2_grpc</span><span class="p">.</span><span class="n">PubSubServicer</span><span class="p">):</span> <span class="c1">#这一个类是用来实现proto文件中规定的2个接口的
+</span>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">AllTopic</span><span class="o">=</span><span class="p">{}</span> <span class="c1">#话题对应的内容
+</span>     
+    <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publishRequest</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span> 
+        <span class="n">_topic</span><span class="o">=</span><span class="n">publishRequest</span><span class="p">.</span><span class="n">topic</span>
+        <span class="n">_context</span><span class="o">=</span><span class="n">publishRequest</span><span class="p">.</span><span class="n">context</span>
+        <span class="n">_clientID</span><span class="o">=</span><span class="n">publishRequest</span><span class="p">.</span><span class="n">clientID</span>
+        <span class="c1"># 创建Redis连接池
+</span>        <span class="n">pool</span> <span class="o">=</span> <span class="n">redis</span><span class="p">.</span><span class="n">ConnectionPool</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s">'localhost'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">6379</span><span class="p">)</span>
+        <span class="c1"># 创建Redis客户端
+</span>        <span class="n">r</span> <span class="o">=</span> <span class="n">redis</span><span class="p">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">connection_pool</span><span class="o">=</span><span class="n">pool</span><span class="p">)</span>
+        <span class="n">r</span><span class="p">.</span><span class="n">publish</span><span class="p">(</span><span class="n">_topic</span><span class="p">,</span> <span class="n">_context</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">_topic</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">AllTopic</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">AllTopic</span><span class="p">[</span><span class="n">_topic</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{</span><span class="s">'context'</span><span class="p">:</span><span class="n">_context</span><span class="p">,</span> <span class="s">'timeStamp'</span><span class="p">:</span><span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()}]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">AllTopic</span><span class="p">[</span><span class="n">_topic</span><span class="p">].</span><span class="n">append</span><span class="p">({</span><span class="s">'context'</span><span class="p">:</span><span class="n">_context</span><span class="p">,</span><span class="s">'timeStamp'</span><span class="p">:</span><span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()})</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="s">'---------------------------------------'</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">'Server receive topic {} from client {}:'</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">_topic</span><span class="p">,</span><span class="n">_clientID</span><span class="p">))</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">_context</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">'---------------------------------------'</span><span class="p">)</span>
+        <span class="c1"># newmessage='serverpub'
+</span>        
+        <span class="k">return</span> <span class="n">PubSub_pb2</span><span class="p">.</span><span class="n">reply</span><span class="p">(</span><span class="n">message</span> <span class="o">=</span> <span class="n">_context</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subRequest</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>  
+        <span class="n">_topic</span><span class="o">=</span><span class="n">subRequest</span><span class="p">.</span><span class="n">topic</span>
+        <span class="c1"># 创建Redis连接池
+</span>        <span class="n">pool</span> <span class="o">=</span> <span class="n">redis</span><span class="p">.</span><span class="n">ConnectionPool</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s">'localhost'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">6379</span><span class="p">)</span>
+        <span class="c1"># 创建Redis客户端
+</span>        <span class="n">r</span> <span class="o">=</span> <span class="n">redis</span><span class="p">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">connection_pool</span><span class="o">=</span><span class="n">pool</span><span class="p">)</span>
+        <span class="c1"># 订阅频道
+</span>        <span class="n">pubsub</span> <span class="o">=</span> <span class="n">r</span><span class="p">.</span><span class="n">pubsub</span><span class="p">()</span>
+        <span class="n">pubsub</span><span class="p">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">_topic</span><span class="p">)</span>
+        <span class="c1"># currentTime=time.time()
+</span>        <span class="c1"># 接收消息
+</span>        <span class="c1"># 设置定时 器，5秒后触发stop_listening函数
+</span>        <span class="n">timer</span> <span class="o">=</span> <span class="n">threading</span><span class="p">.</span><span class="n">Timer</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">stop_listening</span><span class="p">,</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">_topic</span><span class="p">))</span> <span class="c1">#定时20s
+</span>        <span class="n">timer</span><span class="p">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">pubsub</span><span class="p">.</span><span class="n">listen</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s">'type'</span><span class="p">]</span> <span class="o">==</span> <span class="s">'message'</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s">'data'</span><span class="p">]</span> <span class="o">==</span> <span class="s">'unsub'</span><span class="p">.</span><span class="n">encode</span><span class="p">():</span>  <span class="c1">#不知道为什么是这个，我设置的是unsub，但是打印出来看到是这个
+</span>                    <span class="k">return</span> <span class="n">PubSub_pb2</span><span class="p">.</span><span class="n">reply</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s">'退出订阅'</span><span class="p">)</span>
+                <span class="c1"># print(message['data'],'here')
+</span>                <span class="c1"># print('收到消息：', message['data'])
+</span>                <span class="k">yield</span> <span class="n">PubSub_pb2</span><span class="p">.</span><span class="n">reply</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">[</span><span class="s">'data'</span><span class="p">])</span>
+        
+
+    <span class="k">def</span> <span class="nf">ShowAllMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">subRequest</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span> 
+        <span class="n">_topic</span><span class="o">=</span><span class="n">subRequest</span><span class="p">.</span><span class="n">topic</span>
+        <span class="k">if</span> <span class="n">_topic</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">AllTopic</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">newmessage</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">AllTopic</span><span class="p">[</span><span class="n">_topic</span><span class="p">]:</span> <span class="c1">#newmessage是一个字典，形如{'context':sajfoiasphfashdlkjhfjklhs}
+</span>                <span class="c1"># print(newmessage)
+</span>                <span class="n">newmessage_context</span> <span class="o">=</span> <span class="n">newmessage</span><span class="p">[</span><span class="s">'context'</span><span class="p">]</span>
+                <span class="k">yield</span> <span class="n">PubSub_pb2</span><span class="p">.</span><span class="n">reply</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">newmessage_context</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># print('update')
+</span>        <span class="c1"># 遍历所有话题
+</span>        <span class="n">timeThreshold</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">AllTopic</span><span class="p">:</span>
+            <span class="n">messages</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">AllTopic</span><span class="p">[</span><span class="n">topic</span><span class="p">]</span>
+            <span class="c1"># 遍历话题中的所有消息
+</span>            <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">messages</span><span class="p">:</span>
+                <span class="c1"># 如果消息超过 10 分钟，则删除该消息
+</span>                <span class="k">if</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">message</span><span class="p">[</span><span class="s">'timeStamp'</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">timeThreshold</span><span class="p">:</span>
+                    <span class="n">messages</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
+
+    <span class="c1">#gRPC
+</span>    <span class="n">server</span> <span class="o">=</span> <span class="n">grpc</span><span class="p">.</span><span class="n">server</span><span class="p">(</span><span class="n">futures</span><span class="p">.</span><span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">20</span><span class="p">))</span> <span class="c1">#创建一个gRPC服务器
+</span>    <span class="n">test_server</span> <span class="o">=</span> <span class="n">PubsubService</span><span class="p">()</span> 
+    <span class="n">PubSub_pb2_grpc</span><span class="p">.</span><span class="n">add_PubSubServicer_to_server</span><span class="p">(</span><span class="n">test_server</span><span class="p">,</span> <span class="n">server</span><span class="p">)</span> <span class="c1"># 将proto中定义的test服务添加到服务器中
+</span>    <span class="n">server</span><span class="p">.</span><span class="n">add_insecure_port</span><span class="p">(</span><span class="s">'[::]:50051'</span><span class="p">)</span> <span class="c1"># 在指定端口上启动服务器
+</span>    <span class="n">server</span><span class="p">.</span><span class="n">start</span><span class="p">()</span>                          <span class="c1"># 启动服务器
+</span>    <span class="k">print</span><span class="p">(</span><span class="s">'Hello from server!'</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="c1"># print('here')
+</span>            <span class="n">time</span><span class="p">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">test_server</span><span class="p">.</span><span class="n">update</span><span class="p">()</span>
+    <span class="k">except</span> <span class="nb">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">server</span><span class="p">.</span><span class="n">stop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">server</span><span class="p">.</span><span class="n">wait_for_termination</span><span class="p">()</span>  <span class="c1"># 保持服务器运行，等待终止信号
+</span>
+    <span class="c1">#redis
+</span>    <span class="c1">#创建订阅线程
+</span>    <span class="n">subscribe_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="p">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">test_server</span><span class="p">.</span><span class="n">subscribe</span><span class="p">)</span>
+    <span class="c1"># print('1')
+</span>    <span class="n">subscribe_thread</span><span class="p">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="c1"># print('2')
+</span>
+    <span class="c1"># 创建发布线程
+</span>    <span class="n">publish_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="p">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">test_server</span><span class="p">.</span><span class="n">publish</span><span class="p">)</span>
+    <span class="c1"># print('3')
+</span>    <span class="n">publish_thread</span><span class="p">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="c1"># print('4')
+</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>cmd.sh</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>python3 <span class="nt">-m</span> grpc_tools.protoc <span class="nt">-I</span><span class="nb">.</span> <span class="nt">--python_out</span><span class="o">=</span><span class="nb">.</span> <span class="nt">--grpc_python_out</span><span class="o">=</span><span class="nb">.</span> ./PubSub.proto
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>run.sh</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre></td><td class="rouge-code"><pre><span class="c">#!/bin/bash</span>
+
+
+<span class="c"># 打开第一个终端窗口并执行Python</span>
+gnome-terminal <span class="nt">--command</span><span class="o">=</span><span class="s2">"bash -c 'echo </span><span class="se">\"</span><span class="s2">window 1 as server</span><span class="se">\"</span><span class="s2">; python3 /home/ljw/DistributedSyetem/HW3/test/PubSub_server.py; exec bash'"</span>
+
+<span class="c"># 等待一段时间，确保前一个窗口已经打开</span>
+<span class="nb">sleep </span>1
+
+<span class="c"># 打开第二个终端窗口并执行Python</span>
+gnome-terminal <span class="nt">--command</span><span class="o">=</span><span class="s2">"bash -c 'echo </span><span class="se">\"</span><span class="s2">window 2 as client1</span><span class="se">\"</span><span class="s2">; python3 /home/ljw/DistributedSyetem/HW3/test/PubSub_client.py; exec bash'"</span>
+
+<span class="c"># 等待一段时间，确保前一个窗口已经打开</span>
+<span class="nb">sleep </span>1
+
+<span class="c"># 打开第三个终端窗口并执行Python</span>
+gnome-terminal <span class="nt">--command</span><span class="o">=</span><span class="s2">"bash -c 'echo </span><span class="se">\"</span><span class="s2">window 3 as client2</span><span class="se">\"</span><span class="s2">; python3 /home/ljw/DistributedSyetem/HW3/test/PubSub_client.py; exec bash'"</span>
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2023/07/07/Emotion-Classification/" data-toggle="tooltip" data-placement="top" title="单层神经网络文本情感分类&朴素贝叶斯文本情感分类">
+                        Previous<br>
+                        <span>单层神经网络文本情感分类&朴素贝叶斯文本情感分类</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2023/12/07/CG-FinalProject/" data-toggle="tooltip" data-placement="top" title="用OpenGL搭建并渲染一个场景">
+                        Next<br>
+                        <span>用OpenGL搭建并渲染一个场景</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+
+                <!--   gitalk       -->
+                <div class="comment">
+                <div id="gitalk-container"></div>
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+                <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+                <script>
+                var gitalk = new Gitalk({
+                    id: location.pathname,
+                    clientID: '0db4b4c6d83c061f6b30',
+                    clientSecret: 'e1651c09f1a49b2b4a544cd584d3e8a55454a48a',
+                    repo: 'BlogComment',
+                    owner: 'jaredddddd',
+                    admin: ['jaredddddd'], 
+                    labels: ['Gitalk'],
+                })
+                gitalk.render('gitalk-container')
+                </script> 
+                </div>
+
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0036" 
+                    href="/archive/?tag=Computer-Organization"
+                    title="Computer-Organization"
+                    rel="21">Computer-Organization</a>
+        
+                <a data-sort="0018" 
+                    href="/archive/?tag=NOTES"
+                    title="NOTES"
+                    rel="39">NOTES</a>
+        
+                <a data-sort="0041" 
+                    href="/archive/?tag=Project"
+                    title="Project"
+                    rel="16">Project</a>
+        
+                <a data-sort="0042" 
+                    href="/archive/?tag=AI"
+                    title="AI"
+                    rel="15">AI</a>
+        
+                <a data-sort="0048" 
+                    href="/archive/?tag=OS"
+                    title="OS"
+                    rel="9">OS</a>
+        
+                <a data-sort="0052" 
+                    href="/archive/?tag=ML"
+                    title="ML"
+                    rel="5">ML</a>
+        
+                <a data-sort="0053" 
+                    href="/archive/?tag=PatternRecognition"
+                    title="PatternRecognition"
+                    rel="4">PatternRecognition</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Blog"
+                    title="Blog"
+                    rel="3">Blog</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Distributed-System"
+                    title="Distributed-System"
+                    rel="3">Distributed-System</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=ANN"
+                    title="ANN"
+                    rel="2">ANN</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CPU%E8%AE%BE%E8%AE%A1"
+                    title="CPU设计"
+                    rel="2">CPU设计</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CompilationPrinciple"
+                    title="CompilationPrinciple"
+                    rel="2">CompilationPrinciple</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     TeX: {
+       equationNumbers: {
+         autoNumber: "AMS"
+       }
+     },
+     SVG: {
+       scale: 90
+     },
+     tex2jax: {
+       inlineMath: [ ['$','$'] ],
+       displayMath: [ ['$$','$$'] ],
+       processEscapes: true,
+     }
+   });
+ </script>
+ <script type="text/javascript"
+         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+
+.post-container {
+    background: #fcfbfb; /* 背景颜色 */
+    border-radius: 25px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    padding-top: 40px; /* 特别增加顶部内边距 */
+    margin-top: 20px; /* 添加顶部外边距 */
+    /* margin-left: 40px; */
+    /* width: 900px; */
+}
+
+
+/* 在宽屏幕设备上应用特定样式 */
+@media (min-width: 1024px) {
+  .post-container {
+    margin-left: 40px; /* 向左扩展 */
+    width: 900px; /* 设置宽度 */
+  }
+  .side-catalog{
+    width: 250px;
+  }
+}
+
+.post-container:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* 当鼠标悬停时增加阴影效果 */
+}
+
+.side-catalog {
+    background: #ffffff; /* 背景颜色 */
+    border-radius: 15px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    margin-left: 10pt;
+    /* width: 200px; */
+
+}
+
+
+
+.catalog-container {
+    /* ... 其他样式 ... */
+    display: none; /* 默认不显示catalog */
+    transition: all 0.3s ease; /* 过渡效果 */
+    margin-top: 20px; /* 添加顶部外边距 */
+}
+
+</style>
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; LvKouKou Blog 2025
+                    <br>
+                    <!--  删掉了作者Hux Blog
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                    -->
+                    <!-- 不蒜子 -->
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                    您是Blog的第<span id="busuanzi_value_site_uv"></span>个小伙伴 </br>
+                     <span id="busuanzi_container_page_pv">
+                        本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<!-- 自己添加的 -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TNVD6PR5TQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNVD6PR5TQ');
+</script>
+<!-- 自己添加的 -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        // a = P.find('h1,h2,h3,h4,h5,h6');
+        a = P.find('h1,h2,h3,h4');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<!--鼠标点击爱心动画-->
+<script type="text/javascript" src="/js/love.js"></script>
+</body>
+
+</html>

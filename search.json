@@ -1,0 +1,459 @@
+[
+  
+    {
+      "title"    : "语法分析",
+      "subtitle" : "",
+      "tags"     : "CompilationPrinciple, NOTES",
+      "url"      : "/2024/07/08/SyntaxAnalysis/",
+      "date"     : "2024-07-08 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "词法分析",
+      "subtitle" : "",
+      "tags"     : "CompilationPrinciple, NOTES",
+      "url"      : "/2024/07/07/LexicalAnalysis/",
+      "date"     : "2024-07-07 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "开放词汇检测综述",
+      "subtitle" : "A Survey on Open-Vocabulary Detection",
+      "tags"     : "AI, PatternRecognition, NOTES",
+      "url"      : "/2024/07/01/PROpenVocabulary/",
+      "date"     : "2024-07-01 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Seq2Seq+attention中英机器翻译",
+      "subtitle" : "",
+      "tags"     : "AI, ANN, NOTES, Project",
+      "url"      : "/2024/06/22/finalterm/",
+      "date"     : "2024-06-22 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "半监督图像分类",
+      "subtitle" : "",
+      "tags"     : "AI, PatternRecognition, NOTES, Project",
+      "url"      : "/2024/06/18/HW3-mixmatch-fixmatch/",
+      "date"     : "2024-06-18 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "VLSI作业及知识点复习",
+      "subtitle" : "",
+      "tags"     : "VLSI, NOTES",
+      "url"      : "/2024/06/11/VLSI-HW/",
+      "date"     : "2024-06-11 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "基于PCA/LDA和KNN的人脸识别",
+      "subtitle" : "",
+      "tags"     : "AI, PatternRecognition, NOTES, Project",
+      "url"      : "/2024/06/09/HW2-PCA-LDA/",
+      "date"     : "2024-06-09 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "全景图像拼接",
+      "subtitle" : "",
+      "tags"     : "AI, PatternRecognition, NOTES, Project",
+      "url"      : "/2024/05/25/HW1-ImageStitching/",
+      "date"     : "2024-05-25 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Facial Expression Recognition (FER)",
+      "subtitle" : "",
+      "tags"     : "AI, ANN, NOTES, Project",
+      "url"      : "/2024/05/01/midterm/",
+      "date"     : "2024-05-01 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "有趣的小页面",
+      "subtitle" : "Interesting Web",
+      "tags"     : "Blog",
+      "url"      : "/2024/04/30/InterestingWeb/",
+      "date"     : "2024-04-30 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "LvKouKou的第二个Blog",
+      "subtitle" : "Second Blog！To test some function",
+      "tags"     : "Blog",
+      "url"      : "/2024/01/12/Second_Blog/",
+      "date"     : "2024-01-12 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "LvKouKou的第一个Blog",
+      "subtitle" : "First Blog！",
+      "tags"     : "Blog",
+      "url"      : "/2024/01/12/First-Blog/",
+      "date"     : "2024-01-12 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "中山大学机器学习与数据挖掘期末复习笔记",
+      "subtitle" : "",
+      "tags"     : "AI, ML, NOTES",
+      "url"      : "/2024/01/05/MachineLearning-Final-Review/",
+      "date"     : "2024-01-05 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "中山大学分布式系统期末总结",
+      "subtitle" : "",
+      "tags"     : "Distributed-System, NOTES",
+      "url"      : "/2024/01/04/DistributedSystem-Fianl-Review/",
+      "date"     : "2024-01-04 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "GMM的推导和理解",
+      "subtitle" : "",
+      "tags"     : "AI, ML",
+      "url"      : "/2024/01/02/GMM/",
+      "date"     : "2024-01-02 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "EM算法的理解和详细推导",
+      "subtitle" : "",
+      "tags"     : "AI, ML",
+      "url"      : "/2024/01/01/EM/",
+      "date"     : "2024-01-01 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "OpenWrt实现智能路由器",
+      "subtitle" : "",
+      "tags"     : "ComputerNetwork, Project",
+      "url"      : "/2023/12/23/OpenWrt/",
+      "date"     : "2023-12-23 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "集成学习/元学习 Bagging&amp;Boosting",
+      "subtitle" : "",
+      "tags"     : "AI, ML",
+      "url"      : "/2023/12/23/Ensemble-Learning/",
+      "date"     : "2023-12-23 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "分布式系统文件系统设计",
+      "subtitle" : "",
+      "tags"     : "Distributed-System, Project",
+      "url"      : "/2023/12/17/DSFileSystem/",
+      "date"     : "2023-12-17 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "超市管理数据库设计",
+      "subtitle" : "",
+      "tags"     : "Database, Project",
+      "url"      : "/2023/12/12/Database-Supermarket/",
+      "date"     : "2023-12-12 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "线性回归和逻辑回归数学推导",
+      "subtitle" : "",
+      "tags"     : "AI, ML",
+      "url"      : "/2023/12/12/Linear-Logic-Regression/",
+      "date"     : "2023-12-12 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "用OpenGL搭建并渲染一个场景",
+      "subtitle" : "",
+      "tags"     : "ComputerGraphic, Project",
+      "url"      : "/2023/12/07/CG-FinalProject/",
+      "date"     : "2023-12-07 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "gRPC实现消息订阅系统",
+      "subtitle" : "",
+      "tags"     : "Distributed-System, Project",
+      "url"      : "/2023/10/27/DS-publish-subscribe/",
+      "date"     : "2023-10-27 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "单层神经网络文本情感分类&amp;朴素贝叶斯文本情感分类",
+      "subtitle" : "",
+      "tags"     : "AI, Project",
+      "url"      : "/2023/07/07/Emotion-Classification/",
+      "date"     : "2023-07-07 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter9 Processes",
+      "subtitle" : "第九章 虚拟内存管理！",
+      "tags"     : "OS, NOTES",
+      "url"      : "/2023/06/18/OS-Ch9/",
+      "date"     : "2023-06-18 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter8 Memory Management",
+      "subtitle" : "第八章 内存管理策略！",
+      "tags"     : "OS, NOTES",
+      "url"      : "/2023/06/04/OS-Ch8/",
+      "date"     : "2023-06-04 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter7 Deadlock",
+      "subtitle" : "第七章 死锁！",
+      "tags"     : "OS, NOTES",
+      "url"      : "/2023/06/01/OS-Ch7/",
+      "date"     : "2023-06-01 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter6  Process Synchronization  ",
+      "subtitle" : "第六章 进程同步！",
+      "tags"     : "OS, NOTES",
+      "url"      : "/2023/04/30/OS-Ch6/",
+      "date"     : "2023-04-30 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "使用模拟退火和遗传算法求解TSP问题",
+      "subtitle" : "",
+      "tags"     : "AI, Project",
+      "url"      : "/2023/04/29/TSP/",
+      "date"     : "2023-04-29 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Alpha-beta剪枝算法设计一个中国象棋博弈程序",
+      "subtitle" : "",
+      "tags"     : "AI, Project",
+      "url"      : "/2023/04/19/AI-Chess/",
+      "date"     : "2023-04-19 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter5 Process scheduling",
+      "subtitle" : "第五章 进程调度（CPU调度）！",
+      "tags"     : "OS, NOTES",
+      "url"      : "/2023/04/15/OS-Ch5/",
+      "date"     : "2023-04-15 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter4 Threads  ",
+      "subtitle" : "第四章 多线程编程！",
+      "tags"     : "OS, NOTES",
+      "url"      : "/2023/04/10/OS-Ch4/",
+      "date"     : "2023-04-10 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "使用A* 与IDA* 算法解决15-Puzzle问题",
+      "subtitle" : "",
+      "tags"     : "AI, Project",
+      "url"      : "/2023/03/27/AI-15Puzzle/",
+      "date"     : "2023-03-27 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter3 Processes",
+      "subtitle" : "第三章 进程管理！",
+      "tags"     : "OS, NOTES",
+      "url"      : "/2023/03/25/OS-Ch3/",
+      "date"     : "2023-03-25 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter2 Operating-System Structures  ",
+      "subtitle" : "第二章 操作体系体系结构！",
+      "tags"     : "OS, NOTES",
+      "url"      : "/2023/03/24/Ch2-Operating-System-Structures/",
+      "date"     : "2023-03-24 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter1 Introduction of Operating System",
+      "subtitle" : "第一章 导论！",
+      "tags"     : "OS, NOTES",
+      "url"      : "/2023/03/20/Chapter1-Introduction/",
+      "date"     : "2023-03-20 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "流水线CPU设计与实现",
+      "subtitle" : "",
+      "tags"     : "Computer-Organization, CPU设计, Project",
+      "url"      : "/2022/12/20/PipelineCPU/",
+      "date"     : "2022-12-20 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "单周期CPU设计与实现",
+      "subtitle" : "",
+      "tags"     : "Computer-Organization, CPU设计, Project",
+      "url"      : "/2022/11/29/SingleCPU/",
+      "date"     : "2022-11-29 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter5-1 存储器层次结构",
+      "subtitle" : "",
+      "tags"     : "Computer-Organization, NOTES",
+      "url"      : "/2022/11/29/5-1-Memory-Hierarchies/",
+      "date"     : "2022-11-29 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter4-4 流水线冒险处理",
+      "subtitle" : "",
+      "tags"     : "Computer-Organization, NOTES",
+      "url"      : "/2022/11/27/4-4-Adventure-Processing/",
+      "date"     : "2022-11-27 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter4-3 Pipelining 流水线数据通路",
+      "subtitle" : "",
+      "tags"     : "Computer-Organization, NOTES",
+      "url"      : "/2022/11/22/4-3-Pipelining/",
+      "date"     : "2022-11-22 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "MIPS汇编语言指令分类及寻址模式",
+      "subtitle" : "",
+      "tags"     : "Computer-Organization, NOTES",
+      "url"      : "/2022/11/09/MIPS/",
+      "date"     : "2022-11-09 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter4-2 多周期数据通路",
+      "subtitle" : "",
+      "tags"     : "Computer-Organization, NOTES",
+      "url"      : "/2022/11/06/4-2-Multi-Cycle-datapath/",
+      "date"     : "2022-11-06 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter4-1 单周期数据通路",
+      "subtitle" : "",
+      "tags"     : "Computer-Organization, NOTES",
+      "url"      : "/2022/10/24/4-1-Single-cycle-datapath/",
+      "date"     : "2022-10-24 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter3-2-3 浮点数及其运算",
+      "subtitle" : "",
+      "tags"     : "Computer-Organization, NOTES",
+      "url"      : "/2022/10/18/3-2-3-Float/",
+      "date"     : "2022-10-18 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter3-2-2  DIvision",
+      "subtitle" : "",
+      "tags"     : "Computer-Organization, NOTES",
+      "url"      : "/2022/10/18/3-2-2-DIvision/",
+      "date"     : "2022-10-18 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter3-2-1 Binary Multipliters 整数乘法",
+      "subtitle" : "",
+      "tags"     : "Computer-Organization, NOTES",
+      "url"      : "/2022/10/17/3-2-1-Binary-Multipliters-%E6%95%B4%E6%95%B0%E4%B9%98%E6%B3%95/",
+      "date"     : "2022-10-17 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter3-1 ALU Design",
+      "subtitle" : "",
+      "tags"     : "Computer-Organization, NOTES",
+      "url"      : "/2022/10/16/3-1-ALU-Design/",
+      "date"     : "2022-10-16 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter2-5 Addressing Modes 寻址模式",
+      "subtitle" : "",
+      "tags"     : "Computer-Organization, NOTES",
+      "url"      : "/2022/10/15/2-5-Addressing-Modes/",
+      "date"     : "2022-10-15 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter2-4 Assembly &amp; Compilation",
+      "subtitle" : "",
+      "tags"     : "Computer-Organization, NOTES",
+      "url"      : "/2022/10/14/2-4-Assembly&Compilation/",
+      "date"     : "2022-10-14 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter2-3 Assembly &amp; Simulation 汇编与仿真",
+      "subtitle" : "",
+      "tags"     : "Computer-Organization, NOTES",
+      "url"      : "/2022/10/13/2-3-Assembly&Simulation/",
+      "date"     : "2022-10-13 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter2-2-2 MIPS Architecture",
+      "subtitle" : "",
+      "tags"     : "Computer-Organization, NOTES",
+      "url"      : "/2022/10/12/2-2-2-MIPS-Architecture/",
+      "date"     : "2022-10-12 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter2-2-1 ISA",
+      "subtitle" : "",
+      "tags"     : "Computer-Organization, NOTES",
+      "url"      : "/2022/10/12/2-2-1-ISA/",
+      "date"     : "2022-10-12 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter2-1 The Instruction Set Architecture  ",
+      "subtitle" : "",
+      "tags"     : "Computer-Organization, NOTES",
+      "url"      : "/2022/10/11/2-1-The-Instruction-Set-Architecture/",
+      "date"     : "2022-10-11 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter1-3 Performance",
+      "subtitle" : "",
+      "tags"     : "Computer-Organization, NOTES",
+      "url"      : "/2022/10/10/1-3-Performance/",
+      "date"     : "2022-10-10 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter1-2 Below Your Program",
+      "subtitle" : "",
+      "tags"     : "Computer-Organization, NOTES",
+      "url"      : "/2022/10/09/1-2-BelowYourProgram/",
+      "date"     : "2022-10-09 00:00:00 +0000"
+    } ,
+  
+    {
+      "title"    : "Chapter1-1 Introduction",
+      "subtitle" : "",
+      "tags"     : "Computer-Organization, NOTES",
+      "url"      : "/2022/10/08/1-1-Introduction/",
+      "date"     : "2022-10-08 00:00:00 +0000"
+    } 
+  
+]

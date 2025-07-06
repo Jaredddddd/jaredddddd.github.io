@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @LvKouKou 的个人博客，与你一起发现更大的世界 | 要做一个想环游世界的程序员">
+    <meta name="keywords" content="LvKouKou, jaredddddd, @jaredddddd, LvKouKou Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <link
+  rel="stylesheet"
+  href="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+/>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  defer="defer"
+></script>
+<script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  defer="defer"
+  onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
+></script>
+    <script
+  src="//cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/mathtex-script-type.min.js"
+  defer="defer"
+></script>
+    <!-- 这里是自己加的，为了可以适应$$的公式-->
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="Chapter4-3 Pipelining 流水线数据通路 - LvKouKou的博客 | LV Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="4-3 Pipelining 流水线数据通路
+
+">
+    
+    <meta property="article:published_time" content=" 2022-11-22T00:00:00Z">
+    
+    
+    <meta property="article:author" content="LvKouKou">
+    
+    
+    <meta property="article:tag" content="Computer-Organization">
+    
+    <meta property="article:tag" content="NOTES">
+    
+    
+    <meta property="og:image" content="https://jaredddddd.github.io/img/LVKOUKOU.jpg">
+    <meta property="og:url" content="https://jaredddddd.github.io/2022/11/22/4-3-Pipelining/">
+    <meta property="og:site_name" content="LvKouKou的博客 | LV Blog">
+
+    <title>Chapter4-3 Pipelining 流水线数据通路 - LvKouKou的博客 | LV Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jaredddddd.github.io/2022/11/22/4-3-Pipelining/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* 打字机效果的样式 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #666 }
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid #666;
+            white-space: nowrap;
+            word-wrap: break-word;
+            letter-spacing: .1em;
+            width: fit-content;
+            margin: 0 auto;
+            animation: 
+                typing 2s steps(40, end), /* 打字机效果, 3s 完成打字, 每步40个字符 */
+                blink-caret .75s step-end infinite; /* 光标闪烁效果, 0.75s 完成一次闪烁  */
+        }
+
+        /* 添加包装容器样式 */
+        .typing-wrapper {
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%; /* 确保不会超出父容器 */
+        }
+
+        /* 添加响应式样式 */
+        @media (max-width: 768px) {
+        .typing-effect {
+            font-size: 16px; /* 在手机上可以适当调整字体大小 */
+            letter-spacing: normal; /* 在手机上减小字间距 */
+        }
+    }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptions = document.getElementsByClassName('subheading');
+            if (descriptions.length > 0) {
+                const description = descriptions[0];
+                const text = description.textContent;
+                description.innerHTML = `<span class="typing-wrapper"><span class="typing-effect">${text}</span></span>`;
+            }
+        });
+    </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">LvKouKou Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/resume-home/">Resume</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/roadtrip/">On The Road</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="Searching...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!--//添加评论系统gitalk-->
+<link rel="stylesheet" href="../../../../css/gitalk.css">
+<script src="../../../../js/gitalk.min.js"></script>
+
+<!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+    header.intro-header .header-mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0, 0.3);
+    }
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=Computer-Organization" title="Computer-Organization">Computer-Organization</a>
+                        
+                        <a class="tag" href="/archive/?tag=NOTES" title="NOTES">NOTES</a>
+                        
+                    </div>
+                    <h1>Chapter4-3 Pipelining 流水线数据通路</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by LvKouKou on November 22, 2022</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="4-3-pipelining-流水线数据通路">4-3 Pipelining 流水线数据通路</h1>
+
+<p><strong>==易错点：流水线的时钟周期除了五个阶段中最长的阶段所需时间外，还有CLK-to-Q time 和 setup time==</strong></p>
+
+<h1 id="流水线实现简介">流水线实现简介</h1>
+
+<h2 id="数据通路流水线化">数据通路流水线化</h2>
+
+<p>⽬标: 保证(⼏乎) 1.0 的CPI, 同时提⾼时钟速率⽅法: 将处理器转变为⼀个多级流⽔线</p>
+
+<ul>
+  <li>Instruction Fetch IF: 维护 PC. 每周期取⼀个指令.</li>
+  <li>Register File(RF/ID): 从寄存器组RF中读取操作数.</li>
+  <li>ALU: 执⾏指定的运算.</li>
+  <li>Data Access:存储器访问(I type load store指令需要)</li>
+  <li>Reg Write-Back(WB): 将结果写回到寄存器</li>
+</ul>
+
+<p>R型指令的四级流水线：IF -&gt; ID -&gt; ALU -&gt; WB</p>
+
+<h2 id="non-pipelined-execution">Non-Pipelined Execution</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221112203402419.png" alt="image-20221112203402419" /></p>
+
+<p>注意每种指令所需阶段</p>
+
+<h2 id="pipelining">Pipelining</h2>
+
+<p>通过提⾼指令吞吐率(throughput)改善性能</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113104529332.png" alt="image-20221113104529332" style="zoom:80%;" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113104553854.png" alt="image-20221113104553854" style="zoom:80%;" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113104623147.png" alt="image-20221113104623147" style="zoom:80%;" /></p>
+
+<p>==<strong>N条指令所需的阶段数：5+N-1=4+N</strong>==</p>
+
+<h2 id="pipelining-performance--与多周期比">Pipelining Performance  （与多周期比）</h2>
+
+<p>多周期数据通路需要知道每种指令的比例，多周期时钟周期选用5个阶段中最长的一个</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113104750391.png" alt="image-20221113104750391" /></p>
+
+<h2 id="五级流水线的实现单周期">五级流水线的实现（单周期）</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113110235258.png" alt="image-20221113110235258" /></p>
+
+<h2 id="pipeline-registers">Pipeline registers</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113110340253.png" alt="image-20221113110340253" /></p>
+
+<h2 id="classic-5-stage-risc-pipeline">Classic 5-Stage RISC Pipeline</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113110619721.png" alt="image-20221113110619721" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113110803552.png" alt="image-20221113110803552" /></p>
+
+<h2 id="nonuniform-pipelining非均匀流水线">Nonuniform Pipelining非均匀流水线</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113110858424.png" alt="image-20221113110858424" /></p>
+
+<p>==时钟周期除了五个阶段的时间外，还需要CLK-to-Q Time and Setup Time==</p>
+
+<h2 id="流水线操作说明">流水线操作说明</h2>
+
+<h3 id="操作视角">操作视角</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113111201144.png" alt="image-20221113111201144" /></p>
+
+<h3 id="资源视角">资源视角</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113111217173.png" alt="image-20221113111217173" /></p>
+
+<h2 id="指令流水线-不是理想化的流水线">指令流水线: 不是理想化的流水线</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113111742259.png" alt="image-20221113111742259" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113111913000.png" alt="image-20221113111913000" /></p>
+
+<p>NOP阶段即为空阶段，什么都不做，只是为了延迟写操作，使得条指令都是五个状态</p>
+
+<h2 id="五个阶段的操作">五个阶段的操作</h2>
+
+<h3 id="stage-1-pipelining-the-fetch-phase">Stage 1 Pipelining the Fetch Phase</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113112345579.png" alt="image-20221113112345579" /></p>
+
+<p>流水线寄存器IF/ID中数据：</p>
+
+<ol>
+  <li>PC+4</li>
+  <li>取出的指令</li>
+</ol>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113112551247.png" alt="image-20221113112551247" /></p>
+
+<h3 id="stage-2-译码">Stage 2: 译码</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113112849567.png" alt="image-20221113112849567" /></p>
+
+<p>流水线寄存器ID/EX中数据：</p>
+
+<ol>
+  <li>
+    <p>PC+4</p>
+  </li>
+  <li>
+    <p>A（rs的内容）</p>
+  </li>
+  <li>
+    <p>B（rt的内容）</p>
+  </li>
+  <li>
+    <p>imm</p>
+  </li>
+  <li>
+    <p>目的寄存器地址（rs和rd的地址，因为还没有译码得出是何种指令，不知道write back的寄存器是rt还是rd）</p>
+  </li>
+  <li>
+    <p>控制信号</p>
+  </li>
+</ol>
+
+<h3 id="stage-3-execute">Stage 3: Execute</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113113237221.png" alt="image-20221113113237221" /></p>
+
+<p><strong>在此完成条件分支地址的计算</strong></p>
+
+<p>流水线寄存器EX/MEM中数据：</p>
+
+<ol>
+  <li>ALU运算结果</li>
+  <li>B（rt的内容，sw指令需要）</li>
+  <li>PC+4+offset（branch需要）</li>
+  <li>目的寄存器地址（此时译码完毕，知道是何种指令了，所以这里只存rt和rd中其中一个的地址）</li>
+  <li>控制信号</li>
+</ol>
+
+<h4 id="回顾多周期">回顾多周期</h4>
+
+<p>多周期的PC+4在IF阶段计算，与流水线一样，但是<strong>多周期的条件分支跳转地址是在译码阶段ID就完成</strong>了，ALU运算阶段只需计算A和B的值，然后决定是否将分支地址写入PC</p>
+
+<h3 id="stage-4-memory-operation">Stage 4: Memory Operation</h3>
+
+<ul>
+  <li>内存访问（lw/sw指令）
+❒ ALU 结果包含 lw 和 sw的访问地址
+❒ 控制信号包含内存访问的读写信号</li>
+  <li>写状态值到下⼀级流⽔线寄存器 (Mem/WB)
+❒ ALU 结果或内存读取的数据
+❒ ⽬的及寄存器地址及控制信号等</li>
+</ul>
+
+<p>流水线寄存器MEM/WB中数据：</p>
+
+<ol>
+  <li>ALU计算结果 or 内存中取出来的值</li>
+  <li>目的寄存器地址（rt和rd中一个）</li>
+  <li>控制信号。</li>
+</ol>
+
+<h3 id="stage-5-write-back">Stage 5: Write back</h3>
+
+<ul>
+  <li>结果写⼊寄存器堆 (if required)
+❒ 写内存读取数据到⽬的寄存器 (rt)（对于lw 指令）
+❒ 写 ALU 结果到⽬的寄存器(rd/rt)（对于运算指令）
+❒ 控制信号（寄存器写使能等）</li>
+</ul>
+
+<h2 id="流水线各阶段操作细节">流水线各阶段操作细节</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113114650572.png" alt="image-20221113114650572" /></p>
+
+<p>3周期：条件分支branch</p>
+
+<p>4周期：R型，sw</p>
+
+<p>5周期：其他全部</p>
+
+<h2 id="basic-5-stage-pipeline">Basic 5 Stage Pipeline</h2>
+
+<p>以下的图仍有要修正的地方：目的寄存器地址的来源</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113115140150.png" alt="image-20221113115140150" /></p>
+
+<h3 id="lw-instruction-fetch-if">lw: Instruction Fetch (IF)</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113135623682.png" alt="image-20221113135623682" /></p>
+
+<h3 id="lw-instruction-decode-id">lw: Instruction Decode (ID)</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113135836714.png" alt="image-20221113135836714" /></p>
+
+<h3 id="lwexecution-ex">lw:Execution (EX)</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113135922637.png" alt="image-20221113135922637" /></p>
+
+<p>lw: Memory (MEM)</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113135940977.png" alt="image-20221113135940977" /></p>
+
+<h3 id="修正">修正</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113140012517.png" alt="image-20221113140012517" /></p>
+
+<p>对 MIPS 数据通路修正，目的寄存器地址随流⽔线寄存器传送</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113140145675.png" alt="image-20221113140145675" /></p>
+
+<h3 id="mips-pipeline-datapath-modifications">MIPS Pipeline Datapath Modifications</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113140158077.png" alt="image-20221113140158077" /></p>
+
+<h2 id="how-many-bits-wide-is-each-pipeline-register">How many bits wide is each pipeline register?</h2>
+
+<ul>
+  <li>
+    <p><strong>PC – 32 bits</strong></p>
+  </li>
+  <li>
+    <p><strong>IF/ID – 64 bits(PC+IR)</strong></p>
+
+    <p><strong>PC+4和取出的指令，各32位</strong></p>
+  </li>
+  <li>
+    <p><strong>ID/EX – 9(con) + 32x4 + 10 = 147</strong>
+<strong>rs=32,pc=32,off=32(扩展后imm),rt=32,rt-addr=5,rd-addr=5（A、B、PC+4、扩展后imm、rt和rd地址）</strong></p>
+  </li>
+  <li>
+    <p><strong>EX/MEM – 5(con) + 1 + 32x3 + 5 = 107</strong>
+<strong>zero=1,Aluout=32,Braddr=32,rt=32（rt中数据，sw要用）,rt/rd-addr=5</strong></p>
+  </li>
+  <li>
+    <p><strong>MEM/WB – 2(con) + 32x2 + 5 = 71</strong>
+<strong>Ldata=32（lw读出的数据）,Aluout=32, rt/rdaddr=5</strong></p>
+  </li>
+</ul>
+
+<h2 id="时钟驱动的流水线时空图">时钟驱动的流水线时空图</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113140725394.png" alt="image-20221113140725394" /></p>
+
+<p>（作业中需要画）</p>
+
+<h2 id="pipelining-example">Pipelining Example</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113141013077.png" alt="image-20221113141013077" /></p>
+
+<h1 id="控制信号">控制信号</h1>
+
+<ul>
+  <li><strong>控制信号在RF/ID译码阶段产生————由控制逻辑电路译码生成</strong></li>
+  <li>控制信号也必须流⽔线化
+    <ul>
+      <li>针对EX阶段的控制信号
+ExtOP, ALUSrc等；⼀个时钟周期后⽤到</li>
+      <li>针对Memory的控制信号
+MemWr, Branch；两个周期后⽤到</li>
+      <li>针对寄存器回写的控制信号
+MemToReg, RegWr等； 三个周期后⽤到</li>
+    </ul>
+  </li>
+</ul>
+
+<p>(只有这三个阶段有控制信号）</p>
+
+<h2 id="mips-pipeline-data-and-control-paths">MIPS Pipeline Data and Control Paths</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113141513661.png" alt="image-20221113141513661" /></p>
+
+<p>==分支branch地址在MEN阶段解析，在ALU阶段计算==，因为需要branch信号和zero信号与才能判断是否跳转</p>
+
+<h2 id="control-signal-generation">Control Signal Generation</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113141719363.png" alt="image-20221113141719363" /></p>
+
+<h2 id="control-settings">Control Settings</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113141750427.png" alt="image-20221113141750427" /></p>
+
+<h2 id="control-signals-per-stage">Control Signals per Stage</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113141816194.png" alt="image-20221113141816194" /></p>
+
+<h2 id="pipeline-control">Pipeline Control</h2>
+
+<p>每个阶段 (IF, ID, EX, MEM, WB)需要控制什么?</p>
+
+<ul>
+  <li>IF: 取指 、 PC 递增</li>
+  <li>ID: 指令译码和从寄存器堆取操作数/或⽴即数</li>
+  <li>EX: Execution stage
+    <ul>
+      <li>RegDst</li>
+      <li>ALUop[1:0]</li>
+      <li>ALUSrc</li>
+    </ul>
+  </li>
+  <li>MEM: Memory stage
+    <ul>
+      <li>Branch</li>
+      <li>MemRead</li>
+      <li>MemWrite</li>
+    </ul>
+  </li>
+  <li>WB: Writeback
+    <ul>
+      <li>MemtoReg</li>
+      <li>RegWrite (注意这个信号在ID阶段的寄存器堆)</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113142109886.png" alt="image-20221113142109886" /></p>
+
+<h2 id="datapath-with-control">Datapath with Control</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113142732170.png" alt="" /></p>
+
+<p>PPT第45页</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113142650771.png" alt="image-20221113142650771" /></p>
+
+<h2 id="stage-control">Stage Control</h2>
+
+<ul>
+  <li>Instruction Fetch: 总是要读取指令存储器和写⼊ 更新的PC，所以在这个流⽔线阶段<strong>没有什么特别需要控制</strong>的</li>
+  <li>ID/RF:与前⼀阶段⼀样， <strong>每个时钟周期都会发⽣相同的事情， 因此⽆需设置选择控制线</strong></li>
+</ul>
+
+<p>前两个周期是所有指令都需要的，所以没有特别需要控制的</p>
+
+<ul>
+  <li>Execution:设置的信号是 RegDst、 ALUop/Func 和 ALUSrc。 这些信号确定指令的结果是否写⼊位 rt (20-16)（对于load） 或 rd(15-11)（对于 R 格式） 寄存器， 并指定 ALU 操作， 确定 ALU 的第⼆个操作数是寄存器还是符号扩展⽴即数</li>
+  <li>Memory Stage: 这个阶段设置的控制线是Branch、 MemRead和MemWrite。这些信号分别为 BEQ、 LW 和 SW 指令设置</li>
+  <li>WriteBack: 两条控制线分别是 RegWrite 和 MemToReg， 决定写⼊寄存器数据是ALU 结果还是内存值</li>
+</ul>
+
+<h2 id="例子">例子</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113143119834.png" alt="image-20221113143119834" /></p>
+
+<p>分析：所需周期数为4+N=4+5=9</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113143412870.png" alt="image-20221113143412870" /></p>
+
+<h3 id="cycle-1">Cycle 1</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113143207931.png" alt="image-20221113143207931" /></p>
+
+<h3 id="cycle-2">Cycle 2</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113143224731.png" alt="image-20221113143224731" /></p>
+
+<h3 id="cycle-3">Cycle 3</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113143239105.png" alt="image-20221113143239105" /></p>
+
+<h3 id="cycle-4">Cycle 4</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113143250551.png" alt="image-20221113143250551" /></p>
+
+<h3 id="cycle-5">Cycle 5</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113143301799.png" alt="image-20221113143301799" /></p>
+
+<h3 id="cycle-6">Cycle 6</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113143313860.png" alt="image-20221113143313860" /></p>
+
+<h3 id="cycle-7">Cycle 7</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113143324687.png" alt="image-20221113143324687" /></p>
+
+<h3 id="cycle-8">Cycle 8</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113143337938.png" alt="image-20221113143337938" /></p>
+
+<h3 id="cycle-9">Cycle 9</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113143350531.png" alt="image-20221113143350531" /></p>
+
+<h1 id="流水线存在问题">流水线存在问题</h1>
+
+<ol>
+  <li>结构冒险：试图被两条不同的指令同时使⽤相同的资源</li>
+  <li>数据冒险：试图在数据准备好之前使⽤它</li>
+  <li>控制冒险：试图尝试在转移条件没确定时以及新的 PC ⽬标地址计算出来之前对程序控制流提前做出决定</li>
+</ol>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113143623354.png" alt="image-20221113143623354" /></p>
+
+<h2 id="structural-hazard结构冒险-现象">Structural Hazard（结构冒险） 现象</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113143825171.png" alt="image-20221113143825171" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113143842336.png" alt="image-20221113143842336" /></p>
+
+<h2 id="structural-hazard的解决方法">Structural Hazard的解决方法</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113143910625.png" alt="image-20221113143910625" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113143932069.png" alt="image-20221113143932069" /></p>
+
+<h2 id="data-hazards-数据冒险">Data Hazards 数据冒险</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113144124132.png" alt="image-20221113144124132" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113144142104.png" alt="image-20221113144142104" /></p>
+
+<h3 id="register-usage-can-cause-data-hazards">Register Usage Can Cause Data Hazards</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113144349263.png" alt="image-20221113144349263" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113144418194.png" alt="image-20221113144418194" /></p>
+
+<h3 id="loads-can-cause-data-hazards">Loads Can Cause Data Hazards</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113144538662.png" alt="image-20221113144538662" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113144517181.png" alt="image-20221113144517181" /></p>
+
+<h3 id="load-delay-and-data-hazard-此时对寄存器操作的阶段id和wb无前半段写入后半段读取规定">Load delay and data hazard (此时对寄存器操作的阶段ID和WB无前半段写入，后半段读取规定)</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113144635584.png" alt="image-20221113144635584" /></p>
+
+<h2 id="control-hazards控制竞争">Control Hazards控制竞争</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113144831879.png" alt="image-20221113144831879" /></p>
+
+<h3 id="branch流水线执行过程和转移分支指令branch引起的延迟现象">branch流水线执行过程和转移分支指令(Branch)引起的“延迟”现象</h3>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113144901623.png" alt="image-20221113144901623" /></p>
+
+<p>即本来应该是要跳转到其他指令的，</p>
+
+<p>了</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113144953343.png" alt="image-20221113144953343" /></p>
+
+<h2 id="总结-流水线的三种冲突冒险hazard-情况">总结： 流水线的三种冲突/冒险（Hazard） 情况</h2>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113145131723.png" alt="image-20221113145131723" /></p>
+
+<h1 id="内容小结">内容小结</h1>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113145208011.png" alt="image-20221113145208011" /></p>
+
+<ul>
+  <li>指令的执⾏可以像洗⾐服⼀样， 分为N个步骤， 并⽤流⽔线⽅式进⾏
+    <ul>
+      <li>均衡时指令吞吐率提⾼N倍， 但不能缩短⼀条指令的执⾏时间</li>
+      <li>流⽔段数以最复杂指令所需步骤数为准（有些指令的某些阶段为空操作） ， 每个阶段的宽度以最复杂阶段所需时间为准（尽量调整使各阶段均衡）</li>
+    </ul>
+  </li>
+  <li>以Load指令为准， 分为五个阶段
+    <ul>
+      <li>取指令段(IF)
+- 取指令、 计算PC+4（IUnit： Instruction Memory、 Adder）</li>
+      <li>译码/读寄存器(ID/Reg)段
+- 指令译码、 读Rs和Rt（寄存器读⼝）</li>
+      <li>执⾏(EXE)段
+- 计算转移⽬标地址、 ALU运算（Extender、 ALU、 Adder）</li>
+      <li>存储器(MEM)段
+- 读或写存储单元（Data Memory）</li>
+      <li>写寄存器(Wr)段
+- ALU结果或从DM读出数据写到寄存器（寄存器写⼝）</li>
+    </ul>
+  </li>
+  <li>流⽔线控制器的实现
+    <ul>
+      <li>IF和ID/Reg段不需控制信号控制， 只有EXE、 MEM和Wr需要</li>
+      <li>ID段⽣成所有控制信号， 并随指令的数据同步向后续阶段流动</li>
+    </ul>
+  </li>
+  <li>寄存器和存储器的竞争问题可利⽤时钟信号来解决</li>
+  <li>流⽔线冒险： 结构冒险、 控制冒险、 数据冒险
+（下⼀讲主要介绍解决流⽔线冒险的数据通路如何设计）</li>
+</ul>
+
+<h1 id="例子单周期和流水线对比">例子：单周期和流水线对比</h1>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113145427483.png" alt="image-20221113145427483" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113145458174.png" alt="image-20221113145458174" /></p>
+
+<p>==易错点：流水线的时钟周期除了五个阶段中最长的阶段所需时间外，还又CLK-to-Q time 和 setup time==</p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113145507708.png" alt="image-20221113145507708" /></p>
+
+<p><img src="/img/in-post/ComputerOrganizationNotes/4-3/image-20221113145530866.png" alt="image-20221113145530866" /></p>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2022/11/09/MIPS/" data-toggle="tooltip" data-placement="top" title="MIPS汇编语言指令分类及寻址模式">
+                        Previous<br>
+                        <span>MIPS汇编语言指令分类及寻址模式</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2022/11/27/4-4-Adventure-Processing/" data-toggle="tooltip" data-placement="top" title="Chapter4-4 流水线冒险处理">
+                        Next<br>
+                        <span>Chapter4-4 流水线冒险处理</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+
+                <!--   gitalk       -->
+                <div class="comment">
+                <div id="gitalk-container"></div>
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+                <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+                <script>
+                var gitalk = new Gitalk({
+                    id: location.pathname,
+                    clientID: '0db4b4c6d83c061f6b30',
+                    clientSecret: 'e1651c09f1a49b2b4a544cd584d3e8a55454a48a',
+                    repo: 'BlogComment',
+                    owner: 'jaredddddd',
+                    admin: ['jaredddddd'], 
+                    labels: ['Gitalk'],
+                })
+                gitalk.render('gitalk-container')
+                </script> 
+                </div>
+
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0036" 
+                    href="/archive/?tag=Computer-Organization"
+                    title="Computer-Organization"
+                    rel="21">Computer-Organization</a>
+        
+                <a data-sort="0018" 
+                    href="/archive/?tag=NOTES"
+                    title="NOTES"
+                    rel="39">NOTES</a>
+        
+                <a data-sort="0041" 
+                    href="/archive/?tag=Project"
+                    title="Project"
+                    rel="16">Project</a>
+        
+                <a data-sort="0042" 
+                    href="/archive/?tag=AI"
+                    title="AI"
+                    rel="15">AI</a>
+        
+                <a data-sort="0048" 
+                    href="/archive/?tag=OS"
+                    title="OS"
+                    rel="9">OS</a>
+        
+                <a data-sort="0052" 
+                    href="/archive/?tag=ML"
+                    title="ML"
+                    rel="5">ML</a>
+        
+                <a data-sort="0053" 
+                    href="/archive/?tag=PatternRecognition"
+                    title="PatternRecognition"
+                    rel="4">PatternRecognition</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Blog"
+                    title="Blog"
+                    rel="3">Blog</a>
+        
+                <a data-sort="0054" 
+                    href="/archive/?tag=Distributed-System"
+                    title="Distributed-System"
+                    rel="3">Distributed-System</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=ANN"
+                    title="ANN"
+                    rel="2">ANN</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CPU%E8%AE%BE%E8%AE%A1"
+                    title="CPU设计"
+                    rel="2">CPU设计</a>
+        
+                <a data-sort="0055" 
+                    href="/archive/?tag=CompilationPrinciple"
+                    title="CompilationPrinciple"
+                    rel="2">CompilationPrinciple</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     TeX: {
+       equationNumbers: {
+         autoNumber: "AMS"
+       }
+     },
+     SVG: {
+       scale: 90
+     },
+     tex2jax: {
+       inlineMath: [ ['$','$'] ],
+       displayMath: [ ['$$','$$'] ],
+       processEscapes: true,
+     }
+   });
+ </script>
+ <script type="text/javascript"
+         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+
+
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+
+.post-container {
+    background: #fcfbfb; /* 背景颜色 */
+    border-radius: 25px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    padding-top: 40px; /* 特别增加顶部内边距 */
+    margin-top: 20px; /* 添加顶部外边距 */
+    /* margin-left: 40px; */
+    /* width: 900px; */
+}
+
+
+/* 在宽屏幕设备上应用特定样式 */
+@media (min-width: 1024px) {
+  .post-container {
+    margin-left: 40px; /* 向左扩展 */
+    width: 900px; /* 设置宽度 */
+  }
+  .side-catalog{
+    width: 250px;
+  }
+}
+
+.post-container:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* 当鼠标悬停时增加阴影效果 */
+}
+
+.side-catalog {
+    background: #ffffff; /* 背景颜色 */
+    border-radius: 15px; /* 圆角边框 - 根据需要进行调整 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    padding: 20px; /* 内填充 - 根据需要进行调整 */
+    transition: box-shadow 0.3s ease; /* 过渡动画使阴影效果更平滑 */
+    margin-left: 10pt;
+    /* width: 200px; */
+
+}
+
+
+
+.catalog-container {
+    /* ... 其他样式 ... */
+    display: none; /* 默认不显示catalog */
+    transition: all 0.3s ease; /* 过渡效果 */
+    margin-top: 20px; /* 添加顶部外边距 */
+}
+
+</style>
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; LvKouKou Blog 2025
+                    <br>
+                    <!--  删掉了作者Hux Blog
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                    -->
+                    <!-- 不蒜子 -->
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                    您是Blog的第<span id="busuanzi_value_site_uv"></span>个小伙伴 </br>
+                     <span id="busuanzi_container_page_pv">
+                        本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<!-- 自己添加的 -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TNVD6PR5TQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNVD6PR5TQ');
+</script>
+<!-- 自己添加的 -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        // a = P.find('h1,h2,h3,h4,h5,h6');
+        a = P.find('h1,h2,h3,h4');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<!--鼠标点击爱心动画-->
+<script type="text/javascript" src="/js/love.js"></script>
+</body>
+
+</html>
